@@ -1,8 +1,8 @@
-# Roadmap: Emlak Danışmanı AI Asistanı
+# Roadmap: Emlak Danismani AI Asistani
 
 ## Overview
 
-This roadmap delivers an AI-first real estate CRM for Turkish agents in 7 phases. We start with auth and basic property management to prove Firebase + Next.js works, then immediately add AI text generation to validate the core value prop. Phases 2-3 build the conversational AI interface and scraping infrastructure. Phases 4-5 add media processing, Telegram bot, and portal publishing. Phases 6-7 complete multi-channel access with PWA and email features. Each phase delivers verifiable user-facing capabilities, with KVKK compliance and prompt caching built into the foundation from day one.
+This roadmap delivers an AI-first real estate CRM for Turkish agents in 7 phases. We start with auth and basic property management to prove Firebase + Vite + React works, then immediately add AI text generation to validate the core value prop. Phases 2-3 build the conversational AI interface and scraping infrastructure. Phases 4-5 add media processing, Telegram bot, and portal publishing. Phases 6-7 complete multi-channel access with PWA and email features. Each phase delivers verifiable user-facing capabilities, with KVKK compliance and prompt caching built into the foundation from day one.
 
 ## Phases
 
@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 1: Foundation & Compliance** - Auth, basic property CRUD, KVKK compliance, basic AI text generation
 - [ ] **Phase 2: AI Interface & Matching** - Natural language commands, customer management, property-customer matching
 - [ ] **Phase 3: Background Processing & Scraping** - Photo upload, portal import, competitor monitoring, async job processing
-- [ ] **Phase 4: Media Enhancement & Voice** - AI photo editing, voice commands (Türkçe)
+- [ ] **Phase 4: Media Enhancement & Voice** - AI photo editing, voice commands (Turkce)
 - [ ] **Phase 5: Telegram Bot & Publishing** - Telegram interface, portal publishing, advanced matching features
 - [ ] **Phase 6: Mobile PWA & Sharing** - Progressive Web App, WhatsApp sharing, offline support
 - [ ] **Phase 7: Email & Advanced Features** - Email communication, customer filtering, lead scoring polish
@@ -32,23 +32,23 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. User can see dashboard with basic metrics (property count, status breakdown)
   4. User can generate Turkish property description from property attributes using AI
   5. System stores data in KVKK-compliant manner (Europe region, consent management)
-**Plans**: TBD
+**Plans**: 3 plans in 3 waves
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
-- [ ] 01-03: TBD
+- [ ] 01-01-PLAN.md - Project setup, Firebase config, auth system (email/password, Google OAuth, password reset)
+- [ ] 01-02-PLAN.md - KVKK consent flow, property types/schemas, property CRUD operations
+- [ ] 01-03-PLAN.md - Dashboard with metrics, property cards/grid, filters, AI description generation
 
 ### Phase 2: AI Interface & Matching
 **Goal**: Users can interact with the system using natural Turkish language and get intelligent property-customer matches
 **Depends on**: Phase 1
 **Requirements**: MUST-01, MUST-02, MUST-03, MUST-04, AIUI-01, AIUI-02, AIUI-03, AIUI-04, AIUI-05, AIUI-06, AIUI-08, ESLE-01, ESLE-02, ESLE-03
 **Success Criteria** (what must be TRUE):
-  1. User can add properties by typing "3+1 daire Ankara Çankaya 2M TL" in chat interface
+  1. User can add properties by typing "3+1 daire Ankara Cankaya 2M TL" in chat interface
   2. User can add customers and their preferences using natural language
-  3. User can search properties using natural Turkish queries ("Bodrum'da 10-20M arası villalar")
-  4. User can update property status by saying "Çankaya daireyi satıldı yap"
-  5. User can type "Mehmet için mülk bul" and see matching properties with match scores and reasons
+  3. User can search properties using natural Turkish queries ("Bodrum'da 10-20M arasi villalar")
+  4. User can update property status by saying "Cankaya daireyi satildi yap"
+  5. User can type "Mehmet icin mulk bul" and see matching properties with match scores and reasons
   6. AI maintains conversation context across multi-step commands
 **Plans**: TBD
 
@@ -83,7 +83,7 @@ Plans:
   2. AI automatically enhances photos (HDR, brightness, contrast adjustment)
   3. AI can replace cloudy skies with blue skies in property photos
   4. AI corrects perspective distortion in photos
-  5. User can speak commands in Turkish and see them executed (e.g., "Yeni mülk ekle")
+  5. User can speak commands in Turkish and see them executed (e.g., "Yeni mulk ekle")
 **Plans**: TBD
 
 Plans:
@@ -144,11 +144,11 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Compliance | 0/3 | Not started | - |
+| 1. Foundation & Compliance | 0/3 | Planning complete | - |
 | 2. AI Interface & Matching | 0/3 | Not started | - |
 | 3. Background Processing & Scraping | 0/3 | Not started | - |
 | 4. Media Enhancement & Voice | 0/2 | Not started | - |
