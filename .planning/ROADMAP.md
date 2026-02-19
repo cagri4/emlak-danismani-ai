@@ -36,7 +36,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 Plans:
 - [x] 01-01-PLAN.md - Project setup, Firebase config, auth system (email/password, Google OAuth, password reset) ✅ **COMPLETED** (17 min, 3 tasks, 29 files)
-- [ ] 01-02-PLAN.md - KVKK consent flow, property types/schemas, property CRUD operations
+- [x] 01-02-PLAN.md - KVKK consent flow, property types/schemas, property CRUD operations ✅ **COMPLETED** (8 min, 3 tasks, 14 files)
 - [ ] 01-03-PLAN.md - Dashboard with metrics, property cards/grid, filters, AI description generation
 
 ### Phase 2: AI Interface & Matching

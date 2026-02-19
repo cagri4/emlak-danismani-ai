@@ -9,10 +9,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Mülk Yönetimi (MULK)
 
-- [ ] **MULK-01**: Kullanıcı mülk ekleyebilmeli (tip, konum, fiyat, oda sayısı, m², özellikler)
-- [ ] **MULK-02**: Kullanıcı mülk bilgilerini düzenleyebilmeli
-- [ ] **MULK-03**: Kullanıcı mülk silebilmeli
-- [ ] **MULK-04**: Kullanıcı mülk durumunu değiştirebilmeli (müsait/opsiyonlu/satıldı/kiralandı)
+- [x] **MULK-01**: Kullanıcı mülk ekleyebilmeli (tip, konum, fiyat, oda sayısı, m², özellikler)
+- [x] **MULK-02**: Kullanıcı mülk bilgilerini düzenleyebilmeli
+- [x] **MULK-03**: Kullanıcı mülk silebilmeli
+- [x] **MULK-04**: Kullanıcı mülk durumunu değiştirebilmeli (müsait/opsiyonlu/satıldı/kiralandı)
 - [ ] **MULK-05**: Kullanıcı mülke 10-20 fotoğraf yükleyebilmeli (toplu)
 - [ ] **MULK-06**: Kullanıcı fotoğrafları sürükle-bırak ile sıralayabilmeli
 - [ ] **MULK-07**: Kullanıcı fotoğrafları kırpabilmeli
@@ -90,7 +90,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **ALTI-01**: Kullanıcı e-posta ve şifre ile kayıt olabilmeli
 - [ ] **ALTI-02**: Kullanıcı giriş yapıp oturum açık kalabilmeli
 - [ ] **ALTI-03**: Kullanıcı şifresini sıfırlayabilmeli
-- [ ] **ALTI-04**: Sistem KVKK uyumlu olmalı (veri saklama, onay yönetimi)
+- [x] **ALTI-04**: Sistem KVKK uyumlu olmalı (veri saklama, onay yönetimi)
 - [ ] **ALTI-05**: Temel dashboard ile ana metrikleri görebilmeli
 
 ## v2 Requirements
@@ -128,12 +128,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ALTI-01 | Phase 1 | Pending |
 | ALTI-02 | Phase 1 | Pending |
 | ALTI-03 | Phase 1 | Pending |
-| ALTI-04 | Phase 1 | Pending |
+| ALTI-04 | Phase 1 | Complete (01-02) |
 | ALTI-05 | Phase 1 | Pending |
-| MULK-01 | Phase 1 | Pending |
-| MULK-02 | Phase 1 | Pending |
-| MULK-03 | Phase 1 | Pending |
-| MULK-04 | Phase 1 | Pending |
+| MULK-01 | Phase 1 | Complete (01-02) |
+| MULK-02 | Phase 1 | Complete (01-02) |
+| MULK-03 | Phase 1 | Complete (01-02) |
+| MULK-04 | Phase 1 | Complete (01-02) |
 | AIUI-07 | Phase 1 | Pending |
 | MUST-01 | Phase 2 | Pending |
 | MUST-02 | Phase 2 | Pending |
