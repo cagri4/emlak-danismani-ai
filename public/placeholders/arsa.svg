@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+  <rect width="400" height="300" fill="#f0f4f8"/>
+  <!-- Ground -->
+  <rect x="50" y="80" width="300" height="150" fill="#d9f99d" stroke="#65a30d" stroke-width="3" stroke-dasharray="10,5"/>
+  <!-- Measurement lines -->
+  <line x1="60" y1="90" x2="340" y2="90" stroke="#475569" stroke-width="2"/>
+  <line x1="60" y1="90" x2="60" y2="100" stroke="#475569" stroke-width="2"/>
+  <line x1="340" y1="90" x2="340" y2="100" stroke="#475569" stroke-width="2"/>
+  <text x="200" y="85" text-anchor="middle" font-family="Arial" font-size="12" fill="#475569">500 m²</text>
+  <!-- Trees -->
+  <circle cx="100" cy="150" r="15" fill="#22c55e"/>
+  <rect x="95" y="165" width="10" height="20" fill="#78350f"/>
+  <circle cx="300" cy="180" r="15" fill="#22c55e"/>
+  <rect x="295" y="195" width="10" height="20" fill="#78350f"/>
+  <!-- Text -->
+  <text x="200" y="270" text-anchor="middle" font-family="Arial" font-size="14" fill="#475569">Arsa</text>
+</svg>

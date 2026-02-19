@@ -27,10 +27,11 @@ export interface Property {
   description?: string
   aiDescription?: string
   imageUrl?: string // Optional - Phase 3 will add uploads
-  createdAt: Date
-  updatedAt: Date
+  photos?: string[] // Optional - Phase 3 will add uploads
+  createdAt: Date | { toDate: () => Date } // Can be Firestore Timestamp or Date
+  updatedAt: Date | { toDate: () => Date }
   userId: string
 }
 
 // For form handling (without id and timestamps)
-export type PropertyFormData = Omit<Property, 'id' | 'createdAt' | 'updatedAt' | 'userId'>
+export type PropertyFormData = Omit<Property, 'id' | 'createdAt' | 'updatedAt' | 'userId' | 'photos'>

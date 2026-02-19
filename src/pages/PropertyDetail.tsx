@@ -307,11 +307,27 @@ export default function PropertyDetail() {
           <CardContent className="grid grid-cols-2 gap-4">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Oluşturulma Tarihi</p>
-              <p className="text-sm">{format(property.createdAt, 'PPpp', { locale: tr })}</p>
+              <p className="text-sm">
+                {format(
+                  property.createdAt instanceof Date
+                    ? property.createdAt
+                    : property.createdAt.toDate(),
+                  'PPpp',
+                  { locale: tr }
+                )}
+              </p>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">Son Güncelleme</p>
-              <p className="text-sm">{format(property.updatedAt, 'PPpp', { locale: tr })}</p>
+              <p className="text-sm">
+                {format(
+                  property.updatedAt instanceof Date
+                    ? property.updatedAt
+                    : property.updatedAt.toDate(),
+                  'PPpp',
+                  { locale: tr }
+                )}
+              </p>
             </div>
           </CardContent>
         </Card>

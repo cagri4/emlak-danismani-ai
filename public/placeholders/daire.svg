@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+  <rect width="400" height="300" fill="#f0f4f8"/>
+  <rect x="100" y="50" width="200" height="200" fill="#cbd5e1" stroke="#64748b" stroke-width="4"/>
+  <!-- Windows -->
+  <rect x="130" y="80" width="40" height="40" fill="#94a3b8" stroke="#64748b" stroke-width="2"/>
+  <rect x="230" y="80" width="40" height="40" fill="#94a3b8" stroke="#64748b" stroke-width="2"/>
+  <rect x="130" y="140" width="40" height="40" fill="#94a3b8" stroke="#64748b" stroke-width="2"/>
+  <rect x="230" y="140" width="40" height="40" fill="#94a3b8" stroke="#64748b" stroke-width="2"/>
+  <rect x="130" y="200" width="40" height="40" fill="#94a3b8" stroke="#64748b" stroke-width="2"/>
+  <rect x="230" y="200" width="40" height="40" fill="#94a3b8" stroke="#64748b" stroke-width="2"/>
+  <!-- Door -->
+  <rect x="180" y="200" width="40" height="50" fill="#475569" stroke="#64748b" stroke-width="2"/>
+  <circle cx="210" cy="225" r="2" fill="#94a3b8"/>
+  <!-- Text -->
+  <text x="200" y="280" text-anchor="middle" font-family="Arial" font-size="14" fill="#475569">Daire</text>
+</svg>

@@ -9,7 +9,8 @@ import {
   getDoc,
   query,
   where,
-  orderBy,
+  orderBy as firestoreOrderBy,
+  limit as firestoreLimit,
   serverTimestamp,
   onSnapshot,
   QueryConstraint,
@@ -27,11 +28,20 @@ interface PropertyFilters {
 interface UsePropertiesOptions {
   useRealtime?: boolean
   filters?: PropertyFilters
+  limit?: number
+  orderBy?: string
+  orderDirection?: 'asc' | 'desc'
 }
 
 export function useProperties(options: UsePropertiesOptions = {}) {
   const { user } = useAuth()
-  const { useRealtime = true, filters = {} } = options
+  const {
+    useRealtime = true,
+    filters = {},
+    limit,
+    orderBy = 'createdAt',
+    orderDirection = 'desc'
+  } = options
   const [properties, setProperties] = useState<Property[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -44,7 +54,7 @@ export function useProperties(options: UsePropertiesOptions = {}) {
     }
 
     const propertiesRef = collection(db, 'users', user.uid, 'properties')
-    const constraints: QueryConstraint[] = [orderBy('createdAt', 'desc')]
+    const constraints: QueryConstraint[] = [firestoreOrderBy(orderBy, orderDirection)]
 
     // Apply filters
     if (filters.status) {
@@ -55,6 +65,11 @@ export function useProperties(options: UsePropertiesOptions = {}) {
     }
     if (filters.listingType) {
       constraints.push(where('listingType', '==', filters.listingType))
+    }
+
+    // Apply limit if specified
+    if (limit) {
+      constraints.push(firestoreLimit(limit))
     }
 
     const q = query(propertiesRef, ...constraints)
@@ -105,7 +120,7 @@ export function useProperties(options: UsePropertiesOptions = {}) {
 
       fetchProperties()
     }
-  }, [user, useRealtime, filters.status, filters.type, filters.listingType])
+  }, [user, useRealtime, filters.status, filters.type, filters.listingType, limit, orderBy, orderDirection])
 
   const addProperty = async (data: PropertyFormData) => {
     if (!user) {
@@ -199,7 +214,7 @@ export function useProperties(options: UsePropertiesOptions = {}) {
 
     setLoading(true)
     const propertiesRef = collection(db, 'users', user.uid, 'properties')
-    const constraints: QueryConstraint[] = [orderBy('createdAt', 'desc')]
+    const constraints: QueryConstraint[] = [firestoreOrderBy(orderBy, orderDirection)]
 
     if (filters.status) {
       constraints.push(where('status', '==', filters.status))
@@ -209,6 +224,10 @@ export function useProperties(options: UsePropertiesOptions = {}) {
     }
     if (filters.listingType) {
       constraints.push(where('listingType', '==', filters.listingType))
+    }
+
+    if (limit) {
+      constraints.push(firestoreLimit(limit))
     }
 
     const q = query(propertiesRef, ...constraints)

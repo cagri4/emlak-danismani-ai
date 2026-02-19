@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { PropertyFormData, propertySchema, turkishCities, propertyFeatures, roomOptions } from '@/lib/validations'
+import { propertySchema, turkishCities, propertyFeatures, roomOptions, PropertyFormData as ZodPropertyFormData } from '@/lib/validations'
+import { PropertyFormData } from '@/types/property'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -12,7 +13,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-react'
 
 interface PropertyFormProps {
-  defaultValues?: Partial<PropertyFormData>
+  defaultValues?: Partial<ZodPropertyFormData>
   onSubmit: (data: PropertyFormData) => Promise<{ success: boolean; error?: string }>
   isLoading: boolean
   mode?: 'create' | 'edit'
@@ -25,8 +26,8 @@ export function PropertyForm({ defaultValues, onSubmit, isLoading, mode = 'creat
     formState: { errors },
     setValue,
     watch,
-  } = useForm<PropertyFormData>({
-    resolver: zodResolver(propertySchema),
+  } = useForm({
+    resolver: zodResolver(propertySchema) as any,
     defaultValues: {
       status: 'aktif',
       features: [],
@@ -44,8 +45,8 @@ export function PropertyForm({ defaultValues, onSubmit, isLoading, mode = 'creat
     setValue('features', newFeatures)
   }
 
-  const onFormSubmit = async (data: PropertyFormData) => {
-    await onSubmit(data)
+  const onFormSubmit = async (data: any) => {
+    await onSubmit(data as PropertyFormData)
   }
 
   return (

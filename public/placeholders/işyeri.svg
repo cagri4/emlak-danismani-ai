@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+  <rect width="400" height="300" fill="#f0f4f8"/>
+  <!-- Building -->
+  <rect x="80" y="50" width="240" height="200" fill="#e0e7ff" stroke="#4338ca" stroke-width="4"/>
+  <!-- Windows grid -->
+  <rect x="100" y="70" width="50" height="40" fill="#93c5fd" stroke="#3b82f6" stroke-width="2"/>
+  <rect x="175" y="70" width="50" height="40" fill="#93c5fd" stroke="#3b82f6" stroke-width="2"/>
+  <rect x="250" y="70" width="50" height="40" fill="#93c5fd" stroke="#3b82f6" stroke-width="2"/>
+  <rect x="100" y="130" width="50" height="40" fill="#93c5fd" stroke="#3b82f6" stroke-width="2"/>
+  <rect x="175" y="130" width="50" height="40" fill="#93c5fd" stroke="#3b82f6" stroke-width="2"/>
+  <rect x="250" y="130" width="50" height="40" fill="#93c5fd" stroke="#3b82f6" stroke-width="2"/>
+  <!-- Entrance -->
+  <rect x="150" y="190" width="100" height="60" fill="#1e3a8a" stroke="#1e40af" stroke-width="2"/>
+  <circle cx="240" cy="220" r="3" fill="#fbbf24"/>
+  <!-- Text -->
+  <text x="200" y="280" text-anchor="middle" font-family="Arial" font-size="14" fill="#475569">İşyeri</text>
+</svg>
