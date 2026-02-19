@@ -37,7 +37,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **AIUI-04**: Kullanıcı doğal dille durum güncelleyebilmeli ("Çankaya daireyi satıldı yap")
 - [ ] **AIUI-05**: AI Türkçe doğal dil anlayabilmeli
 - [ ] **AIUI-06**: AI konuşma bağlamını koruyabilmeli (çok adımlı komutlar)
-- [ ] **AIUI-07**: AI mülk özelliklerinden ilan metni yazabilmeli
+- [x] **AIUI-07**: AI mülk özelliklerinden ilan metni yazabilmeli
 - [ ] **AIUI-08**: Kullanıcı ilan metnini düzenleyebilmeli
 - [ ] **AIUI-09**: Kullanıcı sesli komut verebilmeli (Türkçe)
 - [ ] **AIUI-10**: AI sesli komutu metne çevirip işleyebilmeli
@@ -91,7 +91,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **ALTI-02**: Kullanıcı giriş yapıp oturum açık kalabilmeli
 - [ ] **ALTI-03**: Kullanıcı şifresini sıfırlayabilmeli
 - [x] **ALTI-04**: Sistem KVKK uyumlu olmalı (veri saklama, onay yönetimi)
-- [ ] **ALTI-05**: Temel dashboard ile ana metrikleri görebilmeli
+- [x] **ALTI-05**: Temel dashboard ile ana metrikleri görebilmeli
 
 ## v2 Requirements
 
@@ -129,12 +129,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ALTI-02 | Phase 1 | Pending |
 | ALTI-03 | Phase 1 | Pending |
 | ALTI-04 | Phase 1 | Complete (01-02) |
-| ALTI-05 | Phase 1 | Pending |
+| ALTI-05 | Phase 1 | Complete |
 | MULK-01 | Phase 1 | Complete (01-02) |
 | MULK-02 | Phase 1 | Complete (01-02) |
 | MULK-03 | Phase 1 | Complete (01-02) |
 | MULK-04 | Phase 1 | Complete (01-02) |
-| AIUI-07 | Phase 1 | Pending |
+| AIUI-07 | Phase 1 | Complete |
 | MUST-01 | Phase 2 | Pending |
 | MUST-02 | Phase 2 | Pending |
 | MUST-03 | Phase 2 | Pending |
