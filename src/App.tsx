@@ -5,7 +5,9 @@ import Login from '@/pages/Login'
 import Register from '@/pages/Register'
 import ForgotPassword from '@/pages/ForgotPassword'
 import VerifyEmail from '@/pages/VerifyEmail'
+import KVKKConsent from '@/pages/KVKKConsent'
 import Dashboard from '@/pages/Dashboard'
+import Settings from '@/pages/Settings'
 
 function App() {
   return (
@@ -17,6 +19,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
+          <Route path="/kvkk" element={<KVKKConsent />} />
 
           {/* Protected routes */}
           <Route
@@ -24,6 +27,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <Settings />
               </ProtectedRoute>
             }
           />
