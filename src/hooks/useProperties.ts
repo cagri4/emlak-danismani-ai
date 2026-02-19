@@ -23,6 +23,9 @@ interface PropertyFilters {
   status?: PropertyStatus
   type?: PropertyType
   listingType?: ListingType
+  city?: string
+  minPrice?: number
+  maxPrice?: number
 }
 
 interface UsePropertiesOptions {
@@ -56,7 +59,8 @@ export function useProperties(options: UsePropertiesOptions = {}) {
     const propertiesRef = collection(db, 'users', user.uid, 'properties')
     const constraints: QueryConstraint[] = [firestoreOrderBy(orderBy, orderDirection)]
 
-    // Apply filters
+    // Apply Firestore filters (limited by compound query constraints)
+    // Priority: status + city (most common filter combination)
     if (filters.status) {
       constraints.push(where('status', '==', filters.status))
     }
@@ -65,6 +69,9 @@ export function useProperties(options: UsePropertiesOptions = {}) {
     }
     if (filters.listingType) {
       constraints.push(where('listingType', '==', filters.listingType))
+    }
+    if (filters.city) {
+      constraints.push(where('location.city', '==', filters.city))
     }
 
     // Apply limit if specified
@@ -79,12 +86,21 @@ export function useProperties(options: UsePropertiesOptions = {}) {
       const unsubscribe = onSnapshot(
         q,
         (snapshot) => {
-          const propertiesData: Property[] = snapshot.docs.map((doc) => ({
+          let propertiesData: Property[] = snapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
             createdAt: doc.data().createdAt?.toDate() || new Date(),
             updatedAt: doc.data().updatedAt?.toDate() || new Date(),
           })) as Property[]
+
+          // Client-side price filtering (Firestore range queries are complex with other filters)
+          if (filters.minPrice !== undefined) {
+            propertiesData = propertiesData.filter((p) => p.price >= filters.minPrice!)
+          }
+          if (filters.maxPrice !== undefined) {
+            propertiesData = propertiesData.filter((p) => p.price <= filters.maxPrice!)
+          }
+
           setProperties(propertiesData)
           setLoading(false)
           setError(null)
@@ -102,12 +118,21 @@ export function useProperties(options: UsePropertiesOptions = {}) {
       const fetchProperties = async () => {
         try {
           const snapshot = await getDocs(q)
-          const propertiesData: Property[] = snapshot.docs.map((doc) => ({
+          let propertiesData: Property[] = snapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
             createdAt: doc.data().createdAt?.toDate() || new Date(),
             updatedAt: doc.data().updatedAt?.toDate() || new Date(),
           })) as Property[]
+
+          // Client-side price filtering
+          if (filters.minPrice !== undefined) {
+            propertiesData = propertiesData.filter((p) => p.price >= filters.minPrice!)
+          }
+          if (filters.maxPrice !== undefined) {
+            propertiesData = propertiesData.filter((p) => p.price <= filters.maxPrice!)
+          }
+
           setProperties(propertiesData)
           setError(null)
         } catch (err) {
@@ -120,7 +145,7 @@ export function useProperties(options: UsePropertiesOptions = {}) {
 
       fetchProperties()
     }
-  }, [user, useRealtime, filters.status, filters.type, filters.listingType, limit, orderBy, orderDirection])
+  }, [user, useRealtime, filters.status, filters.type, filters.listingType, filters.city, filters.minPrice, filters.maxPrice, limit, orderBy, orderDirection])
 
   const addProperty = async (data: PropertyFormData) => {
     if (!user) {
@@ -225,6 +250,9 @@ export function useProperties(options: UsePropertiesOptions = {}) {
     if (filters.listingType) {
       constraints.push(where('listingType', '==', filters.listingType))
     }
+    if (filters.city) {
+      constraints.push(where('location.city', '==', filters.city))
+    }
 
     if (limit) {
       constraints.push(firestoreLimit(limit))
@@ -234,12 +262,21 @@ export function useProperties(options: UsePropertiesOptions = {}) {
 
     try {
       const snapshot = await getDocs(q)
-      const propertiesData: Property[] = snapshot.docs.map((doc) => ({
+      let propertiesData: Property[] = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
         createdAt: doc.data().createdAt?.toDate() || new Date(),
         updatedAt: doc.data().updatedAt?.toDate() || new Date(),
       })) as Property[]
+
+      // Client-side price filtering
+      if (filters.minPrice !== undefined) {
+        propertiesData = propertiesData.filter((p) => p.price >= filters.minPrice!)
+      }
+      if (filters.maxPrice !== undefined) {
+        propertiesData = propertiesData.filter((p) => p.price <= filters.maxPrice!)
+      }
+
       setProperties(propertiesData)
       setError(null)
     } catch (err) {

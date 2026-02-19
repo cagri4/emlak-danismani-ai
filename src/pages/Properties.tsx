@@ -1,13 +1,43 @@
-import { useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useProperties } from '@/hooks/useProperties'
 import { Button } from '@/components/ui/button'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import PropertyGrid from '@/components/property/PropertyGrid'
+import PropertyFilters, { FilterValues } from '@/components/property/PropertyFilters'
 import { Plus } from 'lucide-react'
+import { PropertyStatus, ListingType } from '@/types/property'
 
 export default function Properties() {
   const navigate = useNavigate()
-  const { properties, loading, error } = useProperties()
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  // Parse filters from URL
+  const [filters, setFilters] = useState<FilterValues>(() => {
+    return {
+      status: (searchParams.get('status') as PropertyStatus) || undefined,
+      listingType: (searchParams.get('listingType') as ListingType) || undefined,
+      city: searchParams.get('city') || undefined,
+      minPrice: searchParams.get('minPrice') ? Number(searchParams.get('minPrice')) : undefined,
+      maxPrice: searchParams.get('maxPrice') ? Number(searchParams.get('maxPrice')) : undefined,
+    }
+  })
+
+  const { properties, loading, error } = useProperties({ filters })
+
+  // Update URL params when filters change
+  const handleFilterChange = (newFilters: FilterValues) => {
+    setFilters(newFilters)
+
+    const params = new URLSearchParams()
+    if (newFilters.status) params.set('status', newFilters.status)
+    if (newFilters.listingType) params.set('listingType', newFilters.listingType)
+    if (newFilters.city) params.set('city', newFilters.city)
+    if (newFilters.minPrice) params.set('minPrice', newFilters.minPrice.toString())
+    if (newFilters.maxPrice) params.set('maxPrice', newFilters.maxPrice.toString())
+
+    setSearchParams(params)
+  }
 
   if (loading) {
     return (
@@ -50,7 +80,7 @@ export default function Properties() {
           </Button>
         </div>
 
-        {/* Filters will be added in Task 2 */}
+        <PropertyFilters onFilterChange={handleFilterChange} activeFilters={filters} />
 
         <PropertyGrid properties={properties} />
       </div>
