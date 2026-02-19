@@ -6,19 +6,21 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select } from '@/components/ui/select'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { ArrowLeft, Edit, Trash2, MapPin, Home, AlertCircle } from 'lucide-react'
+import AIDescriptionGenerator from '@/components/property/AIDescriptionGenerator'
+import { ArrowLeft, Edit, Trash2, MapPin, Home, AlertCircle, Pencil } from 'lucide-react'
 import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
 
 export default function PropertyDetail() {
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
-  const { getProperty, deleteProperty, updateStatus } = useProperties({ useRealtime: false })
+  const { getProperty, deleteProperty, updateStatus, updateProperty } = useProperties({ useRealtime: false })
   const [property, setProperty] = useState<Property | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [editingDescription, setEditingDescription] = useState(false)
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -69,6 +71,18 @@ export default function PropertyDetail() {
       alert(result.error || 'Mülk silinemedi')
       setIsDeleting(false)
       setShowDeleteConfirm(false)
+    }
+  }
+
+  const handleAIDescriptionSelect = async (description: string) => {
+    if (!id || !property) return
+
+    const result = await updateProperty(id, { aiDescription: description })
+
+    if (result.success) {
+      setProperty({ ...property, aiDescription: description })
+    } else {
+      throw new Error(result.error || 'AI açıklaması kaydedilemedi')
     }
   }
 
@@ -298,6 +312,47 @@ export default function PropertyDetail() {
             </CardContent>
           </Card>
         )}
+
+        {/* AI Description Section */}
+        <div>
+          {property.aiDescription ? (
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle>AI İlan Metni</CardTitle>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setEditingDescription(!editingDescription)}
+                      className="gap-2"
+                    >
+                      <Pencil className="h-4 w-4" />
+                      {editingDescription ? 'İptal' : 'Düzenle'}
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {editingDescription ? (
+                  <AIDescriptionGenerator
+                    property={property}
+                    onSelect={handleAIDescriptionSelect}
+                  />
+                ) : (
+                  <p className="text-sm whitespace-pre-wrap leading-relaxed">
+                    {property.aiDescription}
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          ) : (
+            <AIDescriptionGenerator
+              property={property}
+              onSelect={handleAIDescriptionSelect}
+            />
+          )}
+        </div>
 
         {/* Metadata */}
         <Card>
