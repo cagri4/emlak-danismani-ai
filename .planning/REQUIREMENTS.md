@@ -125,13 +125,74 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| — | — | Pending roadmap |
+| ALTI-01 | Phase 1 | Pending |
+| ALTI-02 | Phase 1 | Pending |
+| ALTI-03 | Phase 1 | Pending |
+| ALTI-04 | Phase 1 | Pending |
+| ALTI-05 | Phase 1 | Pending |
+| MULK-01 | Phase 1 | Pending |
+| MULK-02 | Phase 1 | Pending |
+| MULK-03 | Phase 1 | Pending |
+| MULK-04 | Phase 1 | Pending |
+| AIUI-07 | Phase 1 | Pending |
+| MUST-01 | Phase 2 | Pending |
+| MUST-02 | Phase 2 | Pending |
+| MUST-03 | Phase 2 | Pending |
+| MUST-04 | Phase 2 | Pending |
+| AIUI-01 | Phase 2 | Pending |
+| AIUI-02 | Phase 2 | Pending |
+| AIUI-03 | Phase 2 | Pending |
+| AIUI-04 | Phase 2 | Pending |
+| AIUI-05 | Phase 2 | Pending |
+| AIUI-06 | Phase 2 | Pending |
+| AIUI-08 | Phase 2 | Pending |
+| ESLE-01 | Phase 2 | Pending |
+| ESLE-02 | Phase 2 | Pending |
+| ESLE-03 | Phase 2 | Pending |
+| MULK-05 | Phase 3 | Pending |
+| MULK-06 | Phase 3 | Pending |
+| PORT-01 | Phase 3 | Pending |
+| PORT-02 | Phase 3 | Pending |
+| PORT-03 | Phase 3 | Pending |
+| PORT-04 | Phase 3 | Pending |
+| PORT-09 | Phase 3 | Pending |
+| PORT-10 | Phase 3 | Pending |
+| MUST-05 | Phase 3 | Pending |
+| MULK-07 | Phase 4 | Pending |
+| MULK-08 | Phase 4 | Pending |
+| MULK-09 | Phase 4 | Pending |
+| MULK-10 | Phase 4 | Pending |
+| AIUI-09 | Phase 4 | Pending |
+| AIUI-10 | Phase 4 | Pending |
+| ILET-03 | Phase 5 | Pending |
+| ILET-04 | Phase 5 | Pending |
+| ILET-05 | Phase 5 | Pending |
+| PORT-05 | Phase 5 | Pending |
+| PORT-06 | Phase 5 | Pending |
+| PORT-07 | Phase 5 | Pending |
+| PORT-08 | Phase 5 | Pending |
+| ESLE-04 | Phase 5 | Pending |
+| ESLE-05 | Phase 5 | Pending |
+| ESLE-06 | Phase 5 | Pending |
+| ESLE-07 | Phase 5 | Pending |
+| MOBL-01 | Phase 6 | Pending |
+| MOBL-02 | Phase 6 | Pending |
+| MOBL-03 | Phase 6 | Pending |
+| MOBL-04 | Phase 6 | Pending |
+| MOBL-05 | Phase 6 | Pending |
+| MOBL-06 | Phase 6 | Pending |
+| MOBL-07 | Phase 6 | Pending |
+| ILET-01 | Phase 6 | Pending |
+| ILET-02 | Phase 6 | Pending |
+| ILET-06 | Phase 7 | Pending |
+| ILET-07 | Phase 7 | Pending |
+| MUST-06 | Phase 7 | Pending |
 
 **Coverage:**
-- v1 requirements: 52 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 52 ⚠️
+- v1 requirements: 62 total
+- Mapped to phases: 62 (100%)
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-19*
-*Last updated: 2026-02-19 after initial definition*
+*Last updated: 2026-02-19 after roadmap creation*
