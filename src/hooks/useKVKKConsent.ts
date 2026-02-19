@@ -4,25 +4,35 @@ import { useAuth } from '@/contexts/AuthContext'
 import { KvkkConsent } from '@/types/user'
 
 export function useKVKKConsent() {
-  const { user, userProfile } = useAuth()
+  const { user, userProfile, loading } = useAuth()
 
-  const needsConsent = !!(user && userProfile && !userProfile.kvkkConsent)
+  // User needs consent if:
+  // 1. User is logged in AND
+  // 2. Either userProfile doesn't exist yet OR userProfile exists without kvkkConsent
+  const needsConsent = !!(user && !loading && (!userProfile || !userProfile.kvkkConsent))
 
   const saveConsent = async () => {
     if (!user) {
-      throw new Error('Kullanıcı oturumu bulunamadı')
+      return { success: false, error: 'Kullanıcı oturumu bulunamadı' }
     }
 
     try {
-      const userDoc = doc(db, 'users', user.uid)
+      const userDocRef = doc(db, 'users', user.uid)
       const consentData: KvkkConsent = {
         acceptedAt: new Date().toISOString(),
         version: '1.0',
       }
 
+      // Create or update user document with consent
+      // For Google OAuth users, also create basic profile from auth data
       await setDoc(
-        userDoc,
+        userDocRef,
         {
+          uid: user.uid,
+          email: user.email,
+          name: user.displayName || '',
+          emailVerified: user.emailVerified,
+          createdAt: serverTimestamp(),
           kvkkConsent: {
             ...consentData,
             acceptedAt: serverTimestamp(),
@@ -31,8 +41,11 @@ export function useKVKKConsent() {
         { merge: true }
       )
 
+      // Force reload the page to refresh userProfile state
+      window.location.href = '/dashboard'
       return { success: true }
     } catch (error: any) {
+      console.error('KVKK save error:', error)
       return { success: false, error: error?.message || 'KVKK onayı kaydedilemedi' }
     }
   }

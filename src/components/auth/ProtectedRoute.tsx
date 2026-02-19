@@ -28,7 +28,8 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     return <Navigate to="/verify-email" replace />
   }
 
-  if (userProfile && !userProfile.kvkkConsent) {
+  // Redirect to KVKK if userProfile doesn't exist yet or doesn't have consent
+  if (!userProfile || !userProfile.kvkkConsent) {
     return <Navigate to="/kvkk" replace />
   }
 

@@ -42,13 +42,11 @@ export default function KVKKConsent() {
 
     const result = await saveConsent()
 
-    if (result.success) {
-      // Redirect to dashboard after consent is saved
-      navigate('/dashboard')
-    } else {
+    if (!result.success) {
       setError(result.error || 'KVKK onayı kaydedilemedi')
       setIsSubmitting(false)
     }
+    // If success, saveConsent handles redirect with page reload
   }
 
   const handleSignOut = async () => {
