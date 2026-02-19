@@ -8,6 +8,10 @@ import VerifyEmail from '@/pages/VerifyEmail'
 import KVKKConsent from '@/pages/KVKKConsent'
 import Dashboard from '@/pages/Dashboard'
 import Settings from '@/pages/Settings'
+import Properties from '@/pages/Properties'
+import PropertyAdd from '@/pages/PropertyAdd'
+import PropertyEdit from '@/pages/PropertyEdit'
+import PropertyDetail from '@/pages/PropertyDetail'
 
 function App() {
   return (
@@ -35,6 +39,38 @@ function App() {
             element={
               <ProtectedRoute>
                 <Settings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/properties"
+            element={
+              <ProtectedRoute>
+                <Properties />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/properties/new"
+            element={
+              <ProtectedRoute>
+                <PropertyAdd />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/properties/:id"
+            element={
+              <ProtectedRoute>
+                <PropertyDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/properties/:id/edit"
+            element={
+              <ProtectedRoute>
+                <PropertyEdit />
               </ProtectedRoute>
             }
           />
