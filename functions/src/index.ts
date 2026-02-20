@@ -1,7 +1,9 @@
 // Export image processor functions
 export { processPropertyPhoto } from './jobs/imageProcessor';
 
+// Export property importer functions
+export { importPropertyFromUrl, processPropertyImport } from './jobs/propertyImporter';
+
 // Future exports:
-// - Portal scrapers (sahibinden.com, hepsiemlak.com)
 // - Competitor monitoring schedulers
 // - Email notification functions
