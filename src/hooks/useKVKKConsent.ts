@@ -41,8 +41,7 @@ export function useKVKKConsent() {
         { merge: true }
       )
 
-      // Force reload the page to refresh userProfile state
-      window.location.href = '/dashboard'
+      // No need to reload - AuthContext uses real-time listener and will auto-update
       return { success: true }
     } catch (error: any) {
       console.error('KVKK save error:', error)

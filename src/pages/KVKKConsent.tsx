@@ -42,11 +42,13 @@ export default function KVKKConsent() {
 
     const result = await saveConsent()
 
-    if (!result.success) {
+    if (result.success) {
+      // Navigate to dashboard - AuthContext will auto-update via real-time listener
+      navigate('/dashboard')
+    } else {
       setError(result.error || 'KVKK onayı kaydedilemedi')
       setIsSubmitting(false)
     }
-    // If success, saveConsent handles redirect with page reload
   }
 
   const handleSignOut = async () => {

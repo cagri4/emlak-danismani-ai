@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import type { ChatMessage } from '@/types/chat';
 import { parseCommand } from '@/lib/ai/command-parser';
 import { handleCommand } from '@/lib/ai/command-handlers';
@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useProperties } from './useProperties';
 import { useCustomers } from './useCustomers';
 import { useMatching } from './useMatching';
-import { saveMessage } from '@/lib/firebase/conversation-service';
+import { saveMessage, getConversation } from '@/lib/firebase/conversation-service';
 
 interface UseChatReturn {
   messages: ChatMessage[];
@@ -17,12 +17,54 @@ interface UseChatReturn {
   conversationId: string;
 }
 
+// Get or create a persistent conversation ID for the user
+function getConversationId(userId: string): string {
+  const storageKey = `chat_conversation_${userId}`;
+  let conversationId = localStorage.getItem(storageKey);
+
+  if (!conversationId) {
+    conversationId = crypto.randomUUID();
+    localStorage.setItem(storageKey, conversationId);
+  }
+
+  return conversationId;
+}
+
 export function useChat(): UseChatReturn {
   const { user } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [conversationId] = useState(() => crypto.randomUUID());
+  const [conversationId, setConversationId] = useState<string>('');
   const [pendingConfirmation, setPendingConfirmation] = useState<any>(null);
+  const [historyLoaded, setHistoryLoaded] = useState(false);
+
+  // Initialize conversation ID and load history when user is available
+  useEffect(() => {
+    if (user && !conversationId) {
+      const id = getConversationId(user.uid);
+      setConversationId(id);
+    }
+  }, [user, conversationId]);
+
+  // Load conversation history from Firestore
+  useEffect(() => {
+    async function loadHistory() {
+      if (!user || !conversationId || historyLoaded) return;
+
+      try {
+        const result = await getConversation(user.uid, conversationId);
+        if (result.success && result.messages && result.messages.length > 0) {
+          setMessages(result.messages);
+        }
+      } catch (error) {
+        console.error('Error loading conversation history:', error);
+      } finally {
+        setHistoryLoaded(true);
+      }
+    }
+
+    loadHistory();
+  }, [user, conversationId, historyLoaded]);
 
   // Get property and customer hooks for command execution
   const {
@@ -212,7 +254,14 @@ export function useChat(): UseChatReturn {
   const clearMessages = useCallback(() => {
     setMessages([]);
     setPendingConfirmation(null);
-  }, []);
+    setHistoryLoaded(false);
+    // Start a new conversation
+    if (user) {
+      const newConversationId = crypto.randomUUID();
+      localStorage.setItem(`chat_conversation_${user.uid}`, newConversationId);
+      setConversationId(newConversationId);
+    }
+  }, [user]);
 
   return {
     messages,

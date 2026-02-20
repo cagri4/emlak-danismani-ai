@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { User, onAuthStateChanged } from 'firebase/auth'
-import { doc, getDoc } from 'firebase/firestore'
+import { doc, onSnapshot } from 'firebase/firestore'
 import { auth, db } from '@/lib/firebase'
 import { UserProfile } from '@/types/user'
 
@@ -24,31 +24,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     console.log('🔐 AuthProvider: Setting up auth state listener')
 
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    let unsubscribeProfile: (() => void) | null = null
+
+    const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
       console.log('🔐 Auth state changed:', firebaseUser?.email || 'No user')
       setUser(firebaseUser)
 
-      if (firebaseUser) {
-        // Fetch user profile from Firestore
-        try {
-          const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid))
-          if (userDoc.exists()) {
-            setUserProfile(userDoc.data() as UserProfile)
-          } else {
-            setUserProfile(null)
-          }
-        } catch (error) {
-          console.error('Error fetching user profile:', error)
-          setUserProfile(null)
-        }
-      } else {
-        setUserProfile(null)
+      // Clean up previous profile listener
+      if (unsubscribeProfile) {
+        unsubscribeProfile()
+        unsubscribeProfile = null
       }
 
-      setLoading(false)
+      if (firebaseUser) {
+        // Use real-time listener for user profile (fixes KVKK race condition)
+        unsubscribeProfile = onSnapshot(
+          doc(db, 'users', firebaseUser.uid),
+          (docSnapshot) => {
+            if (docSnapshot.exists()) {
+              setUserProfile(docSnapshot.data() as UserProfile)
+            } else {
+              setUserProfile(null)
+            }
+            setLoading(false)
+          },
+          (error) => {
+            console.error('Error fetching user profile:', error)
+            setUserProfile(null)
+            setLoading(false)
+          }
+        )
+      } else {
+        setUserProfile(null)
+        setLoading(false)
+      }
     })
 
-    return () => unsubscribe()
+    return () => {
+      unsubscribeAuth()
+      if (unsubscribeProfile) {
+        unsubscribeProfile()
+      }
+    }
   }, [])
 
   return (
