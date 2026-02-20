@@ -30,6 +30,10 @@ export interface Customer {
   preferences: CustomerPreferences
   interactionCount: number  // Denormalized for quick display
   lastInteraction?: Date | { toDate: () => Date }
+  leadScore?: number
+  leadTemperature?: 'hot' | 'warm' | 'cold'
+  isBoosted?: boolean  // Manual boost/pin (per user decision)
+  lastScoreUpdate?: Date | { toDate: () => Date }
   createdAt: Date | { toDate: () => Date }
   updatedAt: Date | { toDate: () => Date }
   userId: string
