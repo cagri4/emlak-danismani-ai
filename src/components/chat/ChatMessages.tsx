@@ -1,7 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { ChatBubble } from './ChatBubble';
+import { InlinePropertyCard } from './InlinePropertyCard';
+import { InlineCustomerCard } from './InlineCustomerCard';
+import { MatchResults } from './MatchResults';
 import { useChatContext } from './ChatProvider';
 import { Loader2 } from 'lucide-react';
+import type { ChatMessage } from '@/types/chat';
 
 export function ChatMessages() {
   const { messages, isLoading } = useChatContext();
@@ -12,6 +16,23 @@ export function ChatMessages() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
+  // Render embedded content if available
+  const renderEmbeddedContent = (message: ChatMessage) => {
+    if (message.embeddedProperty) {
+      return <InlinePropertyCard propertyId={message.embeddedProperty} />;
+    }
+
+    if (message.embeddedCustomer) {
+      return <InlineCustomerCard customerId={message.embeddedCustomer} />;
+    }
+
+    if (message.embeddedMatches && message.embeddedMatches.length > 0) {
+      return <MatchResults matches={message.embeddedMatches} />;
+    }
+
+    return null;
+  };
+
   return (
     <div className="flex-1 overflow-y-auto p-4 space-y-4">
       {messages.length === 0 ? (
@@ -21,7 +42,10 @@ export function ChatMessages() {
       ) : (
         <div className="flex flex-col gap-3">
           {messages.map((message) => (
-            <ChatBubble key={message.id} message={message} />
+            <div key={message.id}>
+              <ChatBubble message={message} />
+              {renderEmbeddedContent(message)}
+            </div>
           ))}
           {isLoading && (
             <div className="flex items-center gap-2 text-gray-500 self-start">
