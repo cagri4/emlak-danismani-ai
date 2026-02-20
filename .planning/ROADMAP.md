@@ -69,7 +69,7 @@ Plans:
   3. System automatically monitors competitor listings and notifies user of new relevant properties
   4. Photo upload processes in background without blocking the interface
   5. AI automatically scores leads as hot/cold based on interaction history
-**Plans**: 5 plans in 2 waves
+**Plans**: 6 plans in 2 waves
 
 Plans:
 - [x] 03-01-PLAN.md — Cloud Functions setup, image processor, upload infrastructure (Wave 1) ✅ **COMPLETED** (11 min, 3 tasks, 10 files)
@@ -77,6 +77,7 @@ Plans:
 - [x] 03-03-PLAN.md — Portal scrapers: sahibinden, hepsiemlak, emlakjet with chat integration (Wave 1) ✅ **COMPLETED**
 - [x] 03-04-PLAN.md — Competitor monitoring: scheduled function, notifications, settings (Wave 2) ✅ **COMPLETED** (12 min, 3 tasks, 9 files)
 - [x] 03-05-PLAN.md — Lead scoring: time-decay algorithm, badges, dashboard card (Wave 2) ✅ **COMPLETED** (8 min, 3 tasks, 10 files)
+- [ ] 03-06-PLAN.md — Gap closure: implement scrapeSearchResults for competitor monitoring (Wave 1) **GAP CLOSURE**
 
 ### Phase 4: Media Enhancement & Voice
 **Goal**: Users can enhance property photos with AI and give voice commands in Turkish
@@ -154,7 +155,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 |-------|----------------|--------|-----------|
 | 1. Foundation & Compliance | 3/3 | Complete | 2026-02-19 |
 | 2. AI Interface & Matching | 5/5 | Complete | 2026-02-20 |
-| 3. Background Processing & Scraping | 0/5 | Not started | - |
+| 3. Background Processing & Scraping | 5/6 | Gap closure needed | - |
 | 4. Media Enhancement & Voice | 0/2 | Not started | - |
 | 5. Telegram Bot & Publishing | 0/3 | Not started | - |
 | 6. Mobile PWA & Sharing | 0/3 | Not started | - |
