@@ -122,3 +122,33 @@ export const roomOptions = [
   '9+1',
   '10+',
 ] as const
+
+// Turkish phone validation regex (0xxx xxx xx xx format)
+const turkishPhoneRegex = /^0?\d{3}\s?\d{3}\s?\d{2}\s?\d{2}$/
+
+// Customer validation schema
+export const customerSchema = z.object({
+  name: z.string().min(2, 'Ad Soyad en az 2 karakter olmalıdır'),
+  phone: z.string().regex(turkishPhoneRegex, 'Geçerli bir telefon numarası giriniz').optional().or(z.literal('')),
+  email: z.string().email('Geçerli bir e-posta adresi giriniz').optional().or(z.literal('')),
+  preferences: z.object({
+    location: z.array(z.string()).default([]),
+    budget: z.object({
+      min: z.coerce.number({ message: 'Geçerli bir minimum bütçe giriniz' }).nonnegative('Minimum bütçe negatif olamaz'),
+      max: z.coerce.number({ message: 'Geçerli bir maksimum bütçe giriniz' }).positive('Maksimum bütçe pozitif olmalı'),
+    }).refine((data) => data.max >= data.min, {
+      message: 'Maksimum bütçe minimum bütçeden büyük olmalı',
+      path: ['max'],
+    }),
+    propertyType: z.array(z.string()).default([]),
+    rooms: z.array(z.string()).optional(),
+    minArea: z.coerce.number({ message: 'Geçerli bir minimum alan giriniz' }).nonnegative('Minimum alan negatif olamaz').optional(),
+    maxArea: z.coerce.number({ message: 'Geçerli bir maksimum alan giriniz' }).positive('Maksimum alan pozitif olmalı').optional(),
+    urgency: z.enum(['low', 'medium', 'high'], {
+      message: 'Aciliyet durumu seçiniz',
+    }).default('medium'),
+    notes: z.string().optional(),
+  }),
+})
+
+export type CustomerFormData = z.infer<typeof customerSchema>
