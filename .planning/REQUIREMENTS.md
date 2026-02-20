@@ -31,14 +31,14 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### AI Arayüz (AIUI)
 
-- [ ] **AIUI-01**: Kullanıcı doğal dille mülk ekleyebilmeli ("3+1 daire Ankara Çankaya 2M TL")
-- [ ] **AIUI-02**: Kullanıcı doğal dille müşteri ekleyebilmeli
-- [ ] **AIUI-03**: Kullanıcı doğal dille arama yapabilmeli ("Bodrum'da 10-20M arası villalar")
-- [ ] **AIUI-04**: Kullanıcı doğal dille durum güncelleyebilmeli ("Çankaya daireyi satıldı yap")
+- [x] **AIUI-01**: Kullanıcı doğal dille mülk ekleyebilmeli ("3+1 daire Ankara Çankaya 2M TL")
+- [x] **AIUI-02**: Kullanıcı doğal dille müşteri ekleyebilmeli
+- [x] **AIUI-03**: Kullanıcı doğal dille arama yapabilmeli ("Bodrum'da 10-20M arası villalar")
+- [x] **AIUI-04**: Kullanıcı doğal dille durum güncelleyebilmeli ("Çankaya daireyi satıldı yap")
 - [x] **AIUI-05**: AI Türkçe doğal dil anlayabilmeli
 - [x] **AIUI-06**: AI konuşma bağlamını koruyabilmeli (çok adımlı komutlar)
 - [x] **AIUI-07**: AI mülk özelliklerinden ilan metni yazabilmeli
-- [ ] **AIUI-08**: Kullanıcı ilan metnini düzenleyebilmeli
+- [x] **AIUI-08**: Kullanıcı ilan metnini düzenleyebilmeli
 - [ ] **AIUI-09**: Kullanıcı sesli komut verebilmeli (Türkçe)
 - [ ] **AIUI-10**: AI sesli komutu metne çevirip işleyebilmeli
 
@@ -139,13 +139,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MUST-02 | Phase 2 | Pending |
 | MUST-03 | Phase 2 | Pending |
 | MUST-04 | Phase 2 | Pending |
-| AIUI-01 | Phase 2 | Pending |
-| AIUI-02 | Phase 2 | Pending |
-| AIUI-03 | Phase 2 | Pending |
-| AIUI-04 | Phase 2 | Pending |
+| AIUI-01 | Phase 2 | Complete |
+| AIUI-02 | Phase 2 | Complete |
+| AIUI-03 | Phase 2 | Complete |
+| AIUI-04 | Phase 2 | Complete |
 | AIUI-05 | Phase 2 | Complete (02-02) |
 | AIUI-06 | Phase 2 | Complete (02-02) |
-| AIUI-08 | Phase 2 | Pending |
+| AIUI-08 | Phase 2 | Complete |
 | ESLE-01 | Phase 2 | Complete |
 | ESLE-02 | Phase 2 | Complete |
 | ESLE-03 | Phase 2 | Complete |
