@@ -26,7 +26,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **MUST-02**: Kullanıcı müşteri tercihlerini kaydedebilmeli (konum, bütçe, tip)
 - [x] **MUST-03**: Kullanıcı müşteriye not ekleyebilmeli
 - [x] **MUST-04**: Sistem müşteri etkileşim geçmişini tutmalı
-- [ ] **MUST-05**: AI müşterileri önceliklendirmeli (lead scoring)
+- [x] **MUST-05**: AI müşterileri önceliklendirmeli (lead scoring)
 - [ ] **MUST-06**: Kullanıcı müşterileri filtreleyebilmeli (sıcak/soğuk lead)
 
 ### AI Arayüz (AIUI)
@@ -157,7 +157,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PORT-04 | Phase 3 | Complete |
 | PORT-09 | Phase 3 | Pending |
 | PORT-10 | Phase 3 | Pending |
-| MUST-05 | Phase 3 | Pending |
+| MUST-05 | Phase 3 | Complete |
 | MULK-07 | Phase 4 | Pending |
 | MULK-08 | Phase 4 | Pending |
 | MULK-09 | Phase 4 | Pending |
