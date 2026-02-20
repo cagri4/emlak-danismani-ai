@@ -19,6 +19,9 @@ export interface CommandContext {
   updateCustomer: (id: string, data: Partial<CustomerFormData>) => Promise<{ success: boolean; error?: string }>
   getCustomer: (id: string) => Promise<{ success: boolean; customer?: Customer; error?: string }>
   addInteraction: (customerId: string, interaction: any) => Promise<{ success: boolean; error?: string }>
+  // Matching hooks
+  findPropertiesForCustomer: (customerId: string, limit?: number) => Promise<any[]>
+  findCustomersForProperty: (propertyId: string, limit?: number) => Promise<any[]>
 }
 
 /**
@@ -451,62 +454,111 @@ async function handleRequestMatches(
   entities: IntentResult['entities'],
   context: CommandContext
 ): Promise<CommandResult> {
-  if (!entities?.customerReference) {
-    return { success: false, message: 'Hangi müşteri için eşleştirme yapacağınızı belirtin.', error: 'No customer' }
-  }
+  // Customer -> Properties matching
+  if (entities?.customerReference) {
+    // Search for customer by name
+    const customers = context.customers.filter(c =>
+      c.name.toLowerCase().includes(entities.customerReference!.toLowerCase())
+    )
 
-  // Find customer
-  const customer = context.customers.find(c =>
-    c.name.toLowerCase().includes(entities.customerReference!.toLowerCase())
-  )
-
-  if (!customer) {
-    return { success: true, message: 'Müşteri bulunamadı.' }
-  }
-
-  // Simple matching based on customer preferences
-  const matches = context.properties.filter(p => {
-    // Check budget
-    if (p.price < customer.preferences.budget.min || p.price > customer.preferences.budget.max) {
-      return false
+    if (customers.length === 0) {
+      return {
+        success: false,
+        message: `"${entities.customerReference}" adında müşteri bulunamadı. Müşteri adını kontrol eder misin?`,
+        error: 'Customer not found'
+      }
     }
 
-    // Check location
-    if (customer.preferences.location.length > 0) {
-      const matchesLocation = customer.preferences.location.some(loc =>
-        p.location.city.toLowerCase().includes(loc.toLowerCase()) ||
-        p.location.district.toLowerCase().includes(loc.toLowerCase())
-      )
-      if (!matchesLocation) return false
+    if (customers.length > 1) {
+      return {
+        success: true,
+        message: `${customers.length} müşteri buldum:\n${customers.map((c, i) =>
+          `${i + 1}. ${c.name} (${formatPrice(c.preferences.budget.min)}-${formatPrice(c.preferences.budget.max)})`
+        ).join('\n')}\nHangisi için arayım?`,
+        needsConfirmation: true,
+        confirmationData: {
+          action: 'select_customer',
+          options: customers.map(c => ({ id: c.id, name: c.name }))
+        }
+      }
     }
 
-    // Check property type
-    if (customer.preferences.propertyType.length > 0) {
-      const matchesType = customer.preferences.propertyType.some(type =>
-        p.type.toLowerCase() === type.toLowerCase()
-      )
-      if (!matchesType) return false
+    // Single customer found
+    const customer = customers[0]
+    const matches = await context.findPropertiesForCustomer(customer.id)
+
+    if (matches.length === 0) {
+      return {
+        success: true,
+        message: `${customer.name} için uygun mülk bulunamadı. Tercihlerini kontrol edebilir veya yeni mülkler ekleyebilirsiniz.`
+      }
     }
 
-    return true
-  })
-
-  if (matches.length === 0) {
     return {
       success: true,
-      message: `${customer.name} için uygun mülk bulunamadı.`
+      message: `${customer.name} için ${matches.length} mülk buldum:`,
+      matches: matches.map(m => ({
+        propertyId: m.property.id,
+        customerId: customer.id,
+        score: m.score.score,
+        explanation: m.explanation
+      }))
+    }
+  }
+
+  // Property -> Customers matching
+  if (entities?.propertyReference) {
+    // Find matching properties
+    const properties = findPropertyByReference(entities.propertyReference, context.properties)
+
+    if (properties.length === 0) {
+      return {
+        success: false,
+        message: `"${entities.propertyReference}" ile eşleşen mülk bulunamadı.`,
+        error: 'Property not found'
+      }
+    }
+
+    if (properties.length > 1) {
+      return {
+        success: true,
+        message: buildPropertySelectionMessage(properties),
+        needsConfirmation: true,
+        confirmationData: {
+          action: 'select_property',
+          matches: properties.map(p => p.id),
+          nextAction: 'find_customers'
+        }
+      }
+    }
+
+    // Single property found
+    const property = properties[0]
+    const matches = await context.findCustomersForProperty(property.id)
+
+    if (matches.length === 0) {
+      return {
+        success: true,
+        message: `${property.title} için uygun müşteri bulunamadı.`
+      }
+    }
+
+    return {
+      success: true,
+      message: `${property.title} için ${matches.length} müşteri buldum:`,
+      matches: matches.map(m => ({
+        propertyId: property.id,
+        customerId: m.customer.id,
+        score: m.score.score,
+        explanation: m.explanation
+      }))
     }
   }
 
   return {
-    success: true,
-    message: `${customer.name} için ${matches.length} uygun mülk buldum:`,
-    matches: matches.slice(0, 5).map((p, idx) => ({
-      propertyId: p.id,
-      customerId: customer.id,
-      score: 90 - idx * 10,
-      explanation: `${p.type} - ${p.location.district} - ${formatPrice(p.price)}`
-    }))
+    success: false,
+    message: 'Kimin için mülk aramamı istersin? Müşteri adını veya mülk referansını söyle.',
+    error: 'No reference provided'
   }
 }
 

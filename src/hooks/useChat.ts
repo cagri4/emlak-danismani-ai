@@ -5,6 +5,7 @@ import { handleCommand } from '@/lib/ai/command-handlers';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProperties } from './useProperties';
 import { useCustomers } from './useCustomers';
+import { useMatching } from './useMatching';
 import { saveMessage } from '@/lib/firebase/conversation-service';
 
 interface UseChatReturn {
@@ -38,6 +39,11 @@ export function useChat(): UseChatReturn {
     getCustomer,
     addInteraction,
   } = useCustomers();
+
+  const {
+    findPropertiesForCustomer,
+    findCustomersForProperty,
+  } = useMatching();
 
   const addMessage = useCallback((message: ChatMessage) => {
     setMessages((prev) => [...prev, message]);
@@ -101,6 +107,8 @@ export function useChat(): UseChatReturn {
             updateCustomer,
             getCustomer,
             addInteraction,
+            findPropertiesForCustomer,
+            findCustomersForProperty,
           },
           pendingConfirmation
         );
@@ -153,6 +161,8 @@ export function useChat(): UseChatReturn {
           updateCustomer,
           getCustomer,
           addInteraction,
+          findPropertiesForCustomer,
+          findCustomersForProperty,
         },
         pendingConfirmation
       );
@@ -197,7 +207,7 @@ export function useChat(): UseChatReturn {
     } finally {
       setIsLoading(false);
     }
-  }, [user, messages, pendingConfirmation, addMessage, properties, customers, addProperty, updateProperty, getProperty, addCustomer, updateCustomer, getCustomer, addInteraction]);
+  }, [user, messages, pendingConfirmation, addMessage, properties, customers, addProperty, updateProperty, getProperty, addCustomer, updateCustomer, getCustomer, addInteraction, findPropertiesForCustomer, findCustomersForProperty]);
 
   const clearMessages = useCallback(() => {
     setMessages([]);
