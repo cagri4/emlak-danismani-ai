@@ -159,10 +159,8 @@ export const processPropertyImport = onTaskDispatched(
 
       console.log('Property imported successfully:', propertyRef.id);
 
-      return {
-        success: true,
-        propertyId: propertyRef.id
-      };
+      // Task completed successfully
+      console.log('Task completed with property ID:', propertyRef.id);
     } catch (error) {
       console.error('Error processing property import:', error);
       throw error;
