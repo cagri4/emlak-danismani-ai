@@ -1,6 +1,6 @@
 import { onObjectFinalized } from 'firebase-functions/v2/storage';
 import * as admin from 'firebase-admin';
-import * as sharp from 'sharp';
+import sharp from 'sharp';
 import { REGION } from '../config';
 
 /**
