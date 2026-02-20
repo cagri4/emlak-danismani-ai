@@ -17,6 +17,7 @@ export const intentSchema = {
         'add_note',
         'request_matches',
         'edit_description',
+        'import_property',
         'confirm_action',
         'cancel_action',
         'need_clarification',
@@ -103,6 +104,10 @@ export const intentSchema = {
         descriptionText: {
           type: 'string',
           description: 'New or edited description text'
+        },
+        url: {
+          type: 'string',
+          description: 'Property URL from portal (sahibinden.com, hepsiemlak.com, emlakjet.com)'
         }
       },
       description: 'Extracted entities from user message'
@@ -123,7 +128,7 @@ export const intentSchema = {
 export type IntentResult = {
   intent: 'add_property' | 'add_customer' | 'search_properties' | 'search_customers' |
           'update_status' | 'add_note' | 'request_matches' | 'edit_description' |
-          'confirm_action' | 'cancel_action' | 'need_clarification' | 'general_chat'
+          'import_property' | 'confirm_action' | 'cancel_action' | 'need_clarification' | 'general_chat'
   confidence: 'high' | 'medium' | 'low'
   entities?: {
     propertyType?: string
@@ -154,6 +159,7 @@ export type IntentResult = {
     customerReference?: string
     noteContent?: string
     descriptionText?: string
+    url?: string
   }
   clarificationNeeded?: string
   suggestedActions?: string[]

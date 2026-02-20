@@ -2,6 +2,7 @@ import type { IntentResult } from './structured-schemas'
 import type { Property, PropertyFormData } from '@/types/property'
 import type { Customer, CustomerFormData } from '@/types/customer'
 import { validateCommandEntities } from './command-parser'
+import { getFunctions, httpsCallable } from 'firebase/functions'
 
 /**
  * Command execution context - hooks and data access
@@ -88,6 +89,9 @@ export async function handleCommand(
     case 'edit_description':
       return handleEditDescription(entities, context, pendingConfirmation)
 
+
+    case 'import_property':
+      return handleImportProperty(entities, context, pendingConfirmation)
     case 'confirm_action':
       return handleConfirmAction(pendingConfirmation, context)
 
@@ -616,6 +620,118 @@ async function handleCancelAction(): Promise<CommandResult> {
   return {
     success: true,
     message: 'İşlem iptal edildi.'
+  }
+}
+
+
+/**
+ * Handle import property from URL command
+ */
+async function handleImportProperty(
+  entities: IntentResult['entities'],
+  context: CommandContext,
+  pendingConfirmation?: any
+): Promise<CommandResult> {
+  if (!entities?.url) {
+    return {
+      success: false,
+      message: 'İlan URLsi belirtilmedi. Lütfen sahibinden.com, hepsiemlak.com veya emlakjet.com dan bir ilan linki paylaşın.',
+      error: 'No URL provided'
+    }
+  }
+
+  // If confirming, create the property
+  if (pendingConfirmation?.action === 'import_property') {
+    try {
+      const propertyData: PropertyFormData = removeUndefined(pendingConfirmation.data)
+      const result = await context.addProperty(propertyData)
+
+      if (result.success) {
+        return {
+          success: true,
+          message: 'İlan başarıyla içe aktarıldı!',
+          propertyId: result.id
+        }
+      } else {
+        return {
+          success: false,
+          message: 'İlan içe aktarılırken hata oluştu: ' + (result.error || 'Bilinmeyen hata'),
+          error: result.error
+        }
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Hata oluştu',
+        error: 'Import failed'
+      }
+    }
+  }
+
+  // Call scraper function to get property data
+  try {
+    const functions = getFunctions()
+    const importFn = httpsCallable(functions, 'importPropertyFromUrl')
+
+    const response: any = await importFn({
+      url: entities.url,
+      userId: context.userId
+    })
+
+    const { scraped, similar } = response.data
+
+    // Build property data from scraped data
+    const propertyData: PropertyFormData = {
+      title: scraped.title,
+      type: scraped.propertyType === 'other' ? 'daire' : scraped.propertyType,
+      listingType: 'satılık',
+      status: 'aktif',
+      price: scraped.price,
+      location: {
+        city: scraped.location.city,
+        district: scraped.location.district || '',
+        neighborhood: scraped.location.neighborhood
+      },
+      area: scraped.area || 0,
+      rooms: scraped.rooms,
+      features: scraped.features || [],
+      description: scraped.description
+    }
+
+    // Build confirmation message
+    let message = 'İlan bilgileri çekildi:\n\n'
+    message += '📍 ' + scraped.title + '\n'
+    message += '💰 ' + formatPrice(scraped.price) + '\n'
+    message += '📏 ' + (scraped.area ? scraped.area + ' m²' : 'Belirtilmedi') + '\n'
+    if (scraped.rooms) message += '🏠 ' + scraped.rooms + '\n'
+    message += '📸 ' + (scraped.photoUrls?.length || 0) + ' fotoğraf\n'
+
+    // Add warning if similar properties exist
+    if (similar && similar.length > 0) {
+      message += '\n⚠️ Dikkat: ' + similar.length + ' benzer ilan bulundu.\n'
+    }
+
+    message += '\n"Evet" diyerek içe aktarın veya "hayır" diyerek iptal edin.'
+
+    const cleanedPropertyData = removeUndefined(propertyData)
+    return {
+      success: true,
+      message,
+      needsConfirmation: true,
+      confirmationData: {
+        action: 'import_property',
+        data: cleanedPropertyData,
+        scraped,
+        similar
+      }
+    }
+  } catch (error) {
+    console.error('Import error:', error)
+    return {
+      success: false,
+      message: 'İlan çekilirken hata oluştu',
+      error: 'Scraping failed'
+    }
   }
 }
 
