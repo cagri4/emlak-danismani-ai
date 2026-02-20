@@ -3,7 +3,7 @@ import { db } from '../config';
 import { scrapeSahibinden } from '../scrapers/sahibinden';
 import { scrapeHepsiemlak } from '../scrapers/hepsiemlak';
 import { scrapeEmlakjet } from '../scrapers/emlakjet';
-import { detectPortal, extractListingId } from '../scrapers/common';
+import { detectPortal, extractListingId, createBrowser, scrapeWithRetry, normalizePriceText, randomDelay } from '../scrapers/common';
 
 /**
  * Competitor monitoring scheduled function
@@ -262,23 +262,294 @@ async function scrapeSearchResults(
   portal: 'sahibinden' | 'hepsiemlak' | 'emlakjet',
   searchUrl: string
 ): Promise<ListingPreview[]> {
-  // For now, this is a placeholder that returns empty array
-  // In production, this would use Playwright to scrape search results
-  // We're keeping it simple for the monitoring function - just check if URL is accessible
+  return scrapeWithRetry(async () => {
+    console.log(`Scraping search results from: ${searchUrl}`);
 
-  console.log(`Would scrape search results from: ${searchUrl}`);
+    let browser;
+    try {
+      // Create browser instance
+      const browserInstance = await createBrowser();
+      browser = browserInstance.browser;
+      const page = browserInstance.page;
 
-  // TODO: Implement actual search results scraping
-  // This would involve:
-  // 1. Launch browser with Playwright
-  // 2. Navigate to search URL
-  // 3. Extract listing cards from search results
-  // 4. For each card: extract title, price, location, photo, listing URL
-  // 5. Return array of ListingPreview objects
+      // Navigate to search URL with timeout
+      await page.goto(searchUrl, {
+        waitUntil: 'domcontentloaded',
+        timeout: 30000
+      });
 
-  // For MVP, return empty array - monitoring infrastructure is in place
-  // but actual scraping will be added after testing with real portals
-  return [];
+      // Add random delay to appear human-like
+      await randomDelay(1000, 2000);
+
+      // Extract listings based on portal
+      let listings: ListingPreview[] = [];
+
+      switch (portal) {
+        case 'sahibinden':
+          listings = await scrapeSahibindenSearchResults(page);
+          break;
+        case 'hepsiemlak':
+          listings = await scrapeHepsiemlakSearchResults(page);
+          break;
+        case 'emlakjet':
+          listings = await scrapeEmlakjetSearchResults(page);
+          break;
+      }
+
+      console.log(`Extracted ${listings.length} listings from ${portal}`);
+
+      // Limit to first 20 results to avoid overwhelming
+      return listings.slice(0, 20);
+    } catch (error) {
+      console.error(`Error scraping search results from ${portal}:`, error);
+      return [];
+    } finally {
+      // Always close browser
+      if (browser) {
+        await browser.close();
+      }
+    }
+  }, `scrapeSearchResults-${portal}`);
+}
+
+/**
+ * Scrape Sahibinden search results page
+ */
+async function scrapeSahibindenSearchResults(page: any): Promise<ListingPreview[]> {
+  try {
+    // Wait for search results to load
+    await page.waitForSelector('.searchResultsItem, [class*="listing-item"], .classified-list tbody tr', {
+      timeout: 10000
+    });
+
+    // Extract listing cards
+    const listings = await page.$$eval(
+      '.searchResultsItem, [class*="listing-item"], .classified-list tbody tr',
+      (cards: any[]) => {
+        return cards.map((card: any) => {
+          try {
+            // Extract title
+            const titleEl = card.querySelector('.classifiedTitle, [class*="title"] a');
+            const title = titleEl?.textContent?.trim() || '';
+
+            // Extract URL
+            const linkEl = card.querySelector('.classifiedTitle a, [class*="title"] a');
+            let sourceUrl = linkEl?.getAttribute('href') || '';
+            if (sourceUrl && !sourceUrl.startsWith('http')) {
+              sourceUrl = `https://www.sahibinden.com${sourceUrl}`;
+            }
+
+            // Extract price
+            const priceEl = card.querySelector('.price, [class*="price"]');
+            const priceText = priceEl?.textContent?.trim() || '';
+
+            // Extract location
+            const locationEl = card.querySelector('.searchResultsLocationValue, [class*="location"]');
+            const location = locationEl?.textContent?.trim() || '';
+
+            // Extract photo
+            const imgEl = card.querySelector('img');
+            let photoUrl = imgEl?.getAttribute('src') || imgEl?.getAttribute('data-src') || '';
+            // Filter out data:image URLs
+            if (photoUrl.startsWith('data:')) {
+              photoUrl = '';
+            }
+
+            return {
+              title,
+              sourceUrl,
+              priceText,
+              location,
+              photoUrl
+            };
+          } catch (err) {
+            return null;
+          }
+        }).filter((item: any) => item !== null);
+      }
+    );
+
+    // Process extracted data
+    return listings.map((listing: any) => {
+      const priceData = normalizePriceText(listing.priceText);
+      const sourceId = extractListingId(listing.sourceUrl, 'sahibinden');
+
+      return {
+        portal: 'sahibinden' as const,
+        title: listing.title,
+        sourceUrl: listing.sourceUrl,
+        sourceId,
+        price: priceData.value,
+        location: listing.location,
+        photoUrl: listing.photoUrl
+      };
+    }).filter((listing: ListingPreview) =>
+      listing.title && listing.sourceUrl
+    );
+  } catch (error) {
+    console.error('Error scraping Sahibinden search results:', error);
+    return [];
+  }
+}
+
+/**
+ * Scrape Hepsiemlak search results page
+ */
+async function scrapeHepsiemlakSearchResults(page: any): Promise<ListingPreview[]> {
+  try {
+    // Wait for search results to load
+    await page.waitForSelector('.listing-card, [class*="ListingCard"], .list-view-item', {
+      timeout: 10000
+    });
+
+    // Extract listing cards
+    const listings = await page.$$eval(
+      '.listing-card, [class*="ListingCard"], .list-view-item',
+      (cards: any[]) => {
+        return cards.map((card: any) => {
+          try {
+            // Extract title
+            const titleEl = card.querySelector('.listing-title, [class*="Title"]');
+            const title = titleEl?.textContent?.trim() || '';
+
+            // Extract URL
+            const linkEl = card.querySelector('a[href*="/"]');
+            let sourceUrl = linkEl?.getAttribute('href') || '';
+            if (sourceUrl && !sourceUrl.startsWith('http')) {
+              sourceUrl = `https://www.hepsiemlak.com${sourceUrl}`;
+            }
+
+            // Extract price
+            const priceEl = card.querySelector('.listing-price, [class*="Price"]');
+            const priceText = priceEl?.textContent?.trim() || '';
+
+            // Extract location
+            const locationEl = card.querySelector('.listing-location, [class*="Location"]');
+            const location = locationEl?.textContent?.trim() || '';
+
+            // Extract photo
+            const imgEl = card.querySelector('img');
+            let photoUrl = imgEl?.getAttribute('src') || imgEl?.getAttribute('data-src') || '';
+            // Filter out data:image URLs
+            if (photoUrl.startsWith('data:')) {
+              photoUrl = '';
+            }
+
+            return {
+              title,
+              sourceUrl,
+              priceText,
+              location,
+              photoUrl
+            };
+          } catch (err) {
+            return null;
+          }
+        }).filter((item: any) => item !== null);
+      }
+    );
+
+    // Process extracted data
+    return listings.map((listing: any) => {
+      const priceData = normalizePriceText(listing.priceText);
+      const sourceId = extractListingId(listing.sourceUrl, 'hepsiemlak');
+
+      return {
+        portal: 'hepsiemlak' as const,
+        title: listing.title,
+        sourceUrl: listing.sourceUrl,
+        sourceId,
+        price: priceData.value,
+        location: listing.location,
+        photoUrl: listing.photoUrl
+      };
+    }).filter((listing: ListingPreview) =>
+      listing.title && listing.sourceUrl
+    );
+  } catch (error) {
+    console.error('Error scraping Hepsiemlak search results:', error);
+    return [];
+  }
+}
+
+/**
+ * Scrape Emlakjet search results page
+ */
+async function scrapeEmlakjetSearchResults(page: any): Promise<ListingPreview[]> {
+  try {
+    // Wait for search results to load
+    await page.waitForSelector('.listing-card, [class*="estate-card"], .listing-item', {
+      timeout: 10000
+    });
+
+    // Extract listing cards
+    const listings = await page.$$eval(
+      '.listing-card, [class*="estate-card"], .listing-item',
+      (cards: any[]) => {
+        return cards.map((card: any) => {
+          try {
+            // Extract title
+            const titleEl = card.querySelector('[class*="title"], h3, h4');
+            const title = titleEl?.textContent?.trim() || '';
+
+            // Extract URL
+            const linkEl = card.querySelector('a');
+            let sourceUrl = linkEl?.getAttribute('href') || '';
+            if (sourceUrl && !sourceUrl.startsWith('http')) {
+              sourceUrl = `https://www.emlakjet.com${sourceUrl}`;
+            }
+
+            // Extract price
+            const priceEl = card.querySelector('[class*="price"]');
+            const priceText = priceEl?.textContent?.trim() || '';
+
+            // Extract location
+            const locationEl = card.querySelector('[class*="location"], [class*="address"]');
+            const location = locationEl?.textContent?.trim() || '';
+
+            // Extract photo
+            const imgEl = card.querySelector('img');
+            let photoUrl = imgEl?.getAttribute('src') || imgEl?.getAttribute('data-lazy') || '';
+            // Filter out data:image URLs
+            if (photoUrl.startsWith('data:')) {
+              photoUrl = '';
+            }
+
+            return {
+              title,
+              sourceUrl,
+              priceText,
+              location,
+              photoUrl
+            };
+          } catch (err) {
+            return null;
+          }
+        }).filter((item: any) => item !== null);
+      }
+    );
+
+    // Process extracted data
+    return listings.map((listing: any) => {
+      const priceData = normalizePriceText(listing.priceText);
+      const sourceId = extractListingId(listing.sourceUrl, 'emlakjet');
+
+      return {
+        portal: 'emlakjet' as const,
+        title: listing.title,
+        sourceUrl: listing.sourceUrl,
+        sourceId,
+        price: priceData.value,
+        location: listing.location,
+        photoUrl: listing.photoUrl
+      };
+    }).filter((listing: ListingPreview) =>
+      listing.title && listing.sourceUrl
+    );
+  } catch (error) {
+    console.error('Error scraping Emlakjet search results:', error);
+    return [];
+  }
 }
 
 /**
