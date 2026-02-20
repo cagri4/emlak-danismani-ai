@@ -1,0 +1,667 @@
+import type { IntentResult } from './structured-schemas'
+import type { Property, PropertyFormData } from '@/types/property'
+import type { Customer, CustomerFormData } from '@/types/customer'
+import { validateCommandEntities } from './command-parser'
+
+/**
+ * Command execution context - hooks and data access
+ */
+export interface CommandContext {
+  userId: string
+  // Property hooks
+  properties: Property[]
+  addProperty: (data: PropertyFormData) => Promise<{ success: boolean; id?: string; error?: string }>
+  updateProperty: (id: string, data: Partial<PropertyFormData>) => Promise<{ success: boolean; error?: string }>
+  getProperty: (id: string) => Promise<{ success: boolean; property?: Property; error?: string }>
+  // Customer hooks
+  customers: Customer[]
+  addCustomer: (data: CustomerFormData) => Promise<{ success: boolean; id?: string; error?: string }>
+  updateCustomer: (id: string, data: Partial<CustomerFormData>) => Promise<{ success: boolean; error?: string }>
+  getCustomer: (id: string) => Promise<{ success: boolean; customer?: Customer; error?: string }>
+  addInteraction: (customerId: string, interaction: any) => Promise<{ success: boolean; error?: string }>
+}
+
+/**
+ * Command execution result
+ */
+export interface CommandResult {
+  success: boolean
+  message: string
+  needsConfirmation?: boolean
+  confirmationData?: any
+  // Embedded data for chat display
+  propertyId?: string
+  customerId?: string
+  matches?: Array<{
+    propertyId: string
+    customerId: string
+    score: number
+    explanation: string
+  }>
+  error?: string
+}
+
+/**
+ * Handle parsed commands and execute appropriate actions
+ */
+export async function handleCommand(
+  intent: string,
+  entities: IntentResult['entities'],
+  context: CommandContext,
+  pendingConfirmation?: any
+): Promise<CommandResult> {
+  // Validate required entities
+  const validation = validateCommandEntities(intent, entities)
+  if (!validation.valid) {
+    return {
+      success: false,
+      message: `Bazı bilgiler eksik: ${validation.missing?.join(', ')}. Lütfen daha fazla detay verin.`,
+      error: 'Missing required entities'
+    }
+  }
+
+  switch (intent) {
+    case 'add_property':
+      return handleAddProperty(entities, context, pendingConfirmation)
+
+    case 'add_customer':
+      return handleAddCustomer(entities, context, pendingConfirmation)
+
+    case 'search_properties':
+      return handleSearchProperties(entities, context)
+
+    case 'search_customers':
+      return handleSearchCustomers(entities, context)
+
+    case 'update_status':
+      return handleUpdateStatus(entities, context, pendingConfirmation)
+
+    case 'add_note':
+      return handleAddNote(entities, context)
+
+    case 'request_matches':
+      return handleRequestMatches(entities, context)
+
+    case 'edit_description':
+      return handleEditDescription(entities, context, pendingConfirmation)
+
+    case 'confirm_action':
+      return handleConfirmAction(pendingConfirmation, context)
+
+    case 'cancel_action':
+      return handleCancelAction()
+
+    case 'general_chat':
+      return {
+        success: true,
+        message: 'Size nasıl yardımcı olabilirim? Mülk ekleyebilir, müşteri ekleyebilir, arama yapabilir veya eşleştirme isteyebilirsiniz.'
+      }
+
+    default:
+      return {
+        success: false,
+        message: 'Bu komutu anlayamadım. Lütfen farklı şekilde ifade eder misiniz?',
+        error: 'Unknown intent'
+      }
+  }
+}
+
+/**
+ * Handle add property command
+ */
+async function handleAddProperty(
+  entities: IntentResult['entities'],
+  context: CommandContext,
+  pendingConfirmation?: any
+): Promise<CommandResult> {
+  if (!entities) {
+    return { success: false, message: 'Mülk bilgileri eksik.', error: 'No entities' }
+  }
+
+  // If confirming, execute the action
+  if (pendingConfirmation?.action === 'add_property') {
+    const propertyData: PropertyFormData = pendingConfirmation.data
+    const result = await context.addProperty(propertyData)
+
+    if (result.success) {
+      return {
+        success: true,
+        message: 'Mülk başarıyla eklendi! 🏠',
+        propertyId: result.id
+      }
+    } else {
+      return {
+        success: false,
+        message: `Mülk eklenirken hata oluştu: ${result.error}`,
+        error: result.error
+      }
+    }
+  }
+
+  // Build property data
+  const propertyData: PropertyFormData = {
+    title: buildPropertyTitle(entities),
+    type: mapPropertyType(entities.propertyType || 'daire'),
+    listingType: 'satılık', // Default, can be inferred from context
+    status: 'aktif',
+    price: entities.price?.value || 0,
+    location: {
+      city: entities.location?.city || '',
+      district: entities.location?.district || '',
+      neighborhood: entities.location?.neighborhood
+    },
+    area: entities.area?.value || 0,
+    rooms: entities.rooms,
+    features: [],
+  }
+
+  // Ask for confirmation
+  return {
+    success: true,
+    message: buildPropertyConfirmation(propertyData),
+    needsConfirmation: true,
+    confirmationData: {
+      action: 'add_property',
+      data: propertyData
+    }
+  }
+}
+
+/**
+ * Handle add customer command
+ */
+async function handleAddCustomer(
+  entities: IntentResult['entities'],
+  context: CommandContext,
+  pendingConfirmation?: any
+): Promise<CommandResult> {
+  if (!entities?.customerName) {
+    return { success: false, message: 'Müşteri adı belirtilmedi.', error: 'No customer name' }
+  }
+
+  // If confirming, execute the action
+  if (pendingConfirmation?.action === 'add_customer') {
+    const customerData: CustomerFormData = pendingConfirmation.data
+    const result = await context.addCustomer(customerData)
+
+    if (result.success) {
+      return {
+        success: true,
+        message: `${customerData.name} başarıyla müşteri olarak eklendi! 👤`,
+        customerId: result.id
+      }
+    } else {
+      return {
+        success: false,
+        message: `Müşteri eklenirken hata oluştu: ${result.error}`,
+        error: result.error
+      }
+    }
+  }
+
+  // Build customer data
+  const customerData: CustomerFormData = {
+    name: entities.customerName,
+    phone: entities.customerPhone,
+    preferences: {
+      location: entities.location?.city ? [entities.location.city] : [],
+      budget: {
+        min: entities.budget?.min || 0,
+        max: entities.budget?.max || 0
+      },
+      propertyType: entities.propertyType ? [entities.propertyType] : [],
+      urgency: 'medium'
+    }
+  }
+
+  // Ask for confirmation
+  return {
+    success: true,
+    message: buildCustomerConfirmation(customerData),
+    needsConfirmation: true,
+    confirmationData: {
+      action: 'add_customer',
+      data: customerData
+    }
+  }
+}
+
+/**
+ * Handle search properties command
+ */
+async function handleSearchProperties(
+  entities: IntentResult['entities'],
+  context: CommandContext
+): Promise<CommandResult> {
+  // Filter properties based on search criteria
+  let results = [...context.properties]
+
+  if (entities?.location?.city) {
+    results = results.filter(p =>
+      p.location.city.toLowerCase().includes(entities.location!.city!.toLowerCase())
+    )
+  }
+
+  if (entities?.location?.district) {
+    results = results.filter(p =>
+      p.location.district.toLowerCase().includes(entities.location!.district!.toLowerCase())
+    )
+  }
+
+  if (entities?.propertyType) {
+    const normalizedType = mapPropertyType(entities.propertyType)
+    results = results.filter(p => p.type === normalizedType)
+  }
+
+  if (entities?.rooms) {
+    results = results.filter(p => p.rooms === entities.rooms)
+  }
+
+  if (entities?.price?.min) {
+    results = results.filter(p => p.price >= entities.price!.min!)
+  }
+
+  if (entities?.price?.max) {
+    results = results.filter(p => p.price <= entities.price!.max!)
+  }
+
+  if (entities?.area?.min) {
+    results = results.filter(p => p.area >= entities.area!.min!)
+  }
+
+  if (entities?.area?.max) {
+    results = results.filter(p => p.area <= entities.area!.max!)
+  }
+
+  if (results.length === 0) {
+    return {
+      success: true,
+      message: 'Bu kriterlere uygun mülk bulunamadı. Farklı kriterler denemek ister misiniz?'
+    }
+  }
+
+  if (results.length === 1) {
+    return {
+      success: true,
+      message: `1 mülk buldum:`,
+      propertyId: results[0].id
+    }
+  }
+
+  return {
+    success: true,
+    message: `${results.length} mülk buldum. İşte ilk ${Math.min(5, results.length)} tanesi:`,
+    matches: results.slice(0, 5).map((p, idx) => ({
+      propertyId: p.id,
+      customerId: '',
+      score: 100 - idx * 5,
+      explanation: `${p.type} - ${p.location.district}, ${p.location.city} - ${formatPrice(p.price)}`
+    }))
+  }
+}
+
+/**
+ * Handle search customers command
+ */
+async function handleSearchCustomers(
+  entities: IntentResult['entities'],
+  context: CommandContext
+): Promise<CommandResult> {
+  let results = [...context.customers]
+
+  if (entities?.customerReference) {
+    results = results.filter(c =>
+      c.name.toLowerCase().includes(entities.customerReference!.toLowerCase())
+    )
+  }
+
+  if (entities?.budget?.min || entities?.budget?.max) {
+    results = results.filter(c => {
+      const hasMinMatch = !entities.budget?.min || c.preferences.budget.min >= entities.budget.min
+      const hasMaxMatch = !entities.budget?.max || c.preferences.budget.max <= entities.budget.max
+      return hasMinMatch && hasMaxMatch
+    })
+  }
+
+  if (results.length === 0) {
+    return {
+      success: true,
+      message: 'Bu kriterlere uygun müşteri bulunamadı.'
+    }
+  }
+
+  return {
+    success: true,
+    message: `${results.length} müşteri buldum.`,
+    customerId: results[0].id
+  }
+}
+
+/**
+ * Handle update status command
+ */
+async function handleUpdateStatus(
+  entities: IntentResult['entities'],
+  context: CommandContext,
+  pendingConfirmation?: any
+): Promise<CommandResult> {
+  if (!entities?.propertyReference || !entities?.status) {
+    return {
+      success: false,
+      message: 'Mülk referansı veya durum bilgisi eksik.',
+      error: 'Missing data'
+    }
+  }
+
+  // Find matching properties
+  const matches = findPropertyByReference(entities.propertyReference, context.properties)
+
+  if (matches.length === 0) {
+    return {
+      success: true,
+      message: 'Bu referansa uygun mülk bulunamadı. Lütfen daha spesifik olun.'
+    }
+  }
+
+  if (matches.length > 1 && !pendingConfirmation) {
+    // Multiple matches - ask user to clarify
+    return {
+      success: true,
+      message: buildPropertySelectionMessage(matches),
+      needsConfirmation: true,
+      confirmationData: {
+        action: 'select_property',
+        matches: matches.map(p => p.id),
+        nextAction: 'update_status',
+        status: entities.status
+      }
+    }
+  }
+
+  // Execute status update
+  const propertyId = pendingConfirmation?.selectedProperty || matches[0].id
+  const newStatus = mapStatus(entities.status)
+
+  const result = await context.updateProperty(propertyId, { status: newStatus })
+
+  if (result.success) {
+    return {
+      success: true,
+      message: `Mülk durumu "${newStatus}" olarak güncellendi.`,
+      propertyId
+    }
+  } else {
+    return {
+      success: false,
+      message: `Durum güncellenirken hata oluştu: ${result.error}`,
+      error: result.error
+    }
+  }
+}
+
+/**
+ * Handle add note command
+ */
+async function handleAddNote(
+  entities: IntentResult['entities'],
+  context: CommandContext
+): Promise<CommandResult> {
+  if (!entities?.noteContent) {
+    return { success: false, message: 'Not içeriği belirtilmedi.', error: 'No note content' }
+  }
+
+  if (!entities?.customerReference) {
+    return { success: false, message: 'Hangi müşteriye not ekleyeceğinizi belirtin.', error: 'No customer' }
+  }
+
+  // Find customer
+  const customer = context.customers.find(c =>
+    c.name.toLowerCase().includes(entities.customerReference!.toLowerCase())
+  )
+
+  if (!customer) {
+    return { success: true, message: 'Müşteri bulunamadı.' }
+  }
+
+  // Add interaction as note
+  const result = await context.addInteraction(customer.id, {
+    type: 'note',
+    content: entities.noteContent
+  })
+
+  if (result.success) {
+    return {
+      success: true,
+      message: `Not ${customer.name} için eklendi.`,
+      customerId: customer.id
+    }
+  } else {
+    return {
+      success: false,
+      message: `Not eklenirken hata oluştu: ${result.error}`,
+      error: result.error
+    }
+  }
+}
+
+/**
+ * Handle request matches command
+ */
+async function handleRequestMatches(
+  entities: IntentResult['entities'],
+  context: CommandContext
+): Promise<CommandResult> {
+  if (!entities?.customerReference) {
+    return { success: false, message: 'Hangi müşteri için eşleştirme yapacağınızı belirtin.', error: 'No customer' }
+  }
+
+  // Find customer
+  const customer = context.customers.find(c =>
+    c.name.toLowerCase().includes(entities.customerReference!.toLowerCase())
+  )
+
+  if (!customer) {
+    return { success: true, message: 'Müşteri bulunamadı.' }
+  }
+
+  // Simple matching based on customer preferences
+  const matches = context.properties.filter(p => {
+    // Check budget
+    if (p.price < customer.preferences.budget.min || p.price > customer.preferences.budget.max) {
+      return false
+    }
+
+    // Check location
+    if (customer.preferences.location.length > 0) {
+      const matchesLocation = customer.preferences.location.some(loc =>
+        p.location.city.toLowerCase().includes(loc.toLowerCase()) ||
+        p.location.district.toLowerCase().includes(loc.toLowerCase())
+      )
+      if (!matchesLocation) return false
+    }
+
+    // Check property type
+    if (customer.preferences.propertyType.length > 0) {
+      const matchesType = customer.preferences.propertyType.some(type =>
+        p.type.toLowerCase() === type.toLowerCase()
+      )
+      if (!matchesType) return false
+    }
+
+    return true
+  })
+
+  if (matches.length === 0) {
+    return {
+      success: true,
+      message: `${customer.name} için uygun mülk bulunamadı.`
+    }
+  }
+
+  return {
+    success: true,
+    message: `${customer.name} için ${matches.length} uygun mülk buldum:`,
+    matches: matches.slice(0, 5).map((p, idx) => ({
+      propertyId: p.id,
+      customerId: customer.id,
+      score: 90 - idx * 10,
+      explanation: `${p.type} - ${p.location.district} - ${formatPrice(p.price)}`
+    }))
+  }
+}
+
+/**
+ * Handle edit description command
+ */
+async function handleEditDescription(
+  _entities: IntentResult['entities'],
+  _context: CommandContext,
+  _pendingConfirmation?: any
+): Promise<CommandResult> {
+  // This will be implemented in later tasks with AI description generation
+  return {
+    success: true,
+    message: 'İlan düzenleme özelliği yakında eklenecek.'
+  }
+}
+
+/**
+ * Handle confirm action command
+ */
+async function handleConfirmAction(
+  pendingConfirmation: any,
+  _context: CommandContext
+): Promise<CommandResult> {
+  if (!pendingConfirmation) {
+    return {
+      success: false,
+      message: 'Onaylanacak bir işlem yok.',
+      error: 'No pending confirmation'
+    }
+  }
+
+  // Execute based on pending action
+  // This is handled by the main handler by passing pendingConfirmation
+  return {
+    success: true,
+    message: 'İşlem onaylandı.'
+  }
+}
+
+/**
+ * Handle cancel action command
+ */
+async function handleCancelAction(): Promise<CommandResult> {
+  return {
+    success: true,
+    message: 'İşlem iptal edildi.'
+  }
+}
+
+// Helper functions
+
+function buildPropertyTitle(entities: IntentResult['entities']): string {
+  const parts: string[] = []
+
+  if (entities?.rooms) parts.push(entities.rooms)
+  if (entities?.propertyType) parts.push(entities.propertyType)
+  if (entities?.location?.district) parts.push(entities.location.district)
+  if (entities?.location?.city) parts.push(entities.location.city)
+
+  return parts.join(' ') || 'Yeni Mülk'
+}
+
+function buildPropertyConfirmation(data: PropertyFormData): string {
+  return `Şu mülkü ekleyeyim mi?
+
+📍 ${data.title}
+💰 ${formatPrice(data.price)}
+📏 ${data.area > 0 ? data.area + ' m²' : 'Belirtilmedi'}
+${data.rooms ? '🏠 ' + data.rooms : ''}
+
+"Evet" diyerek onaylayın veya "hayır" diyerek iptal edin.`
+}
+
+function buildCustomerConfirmation(data: CustomerFormData): string {
+  const budgetStr = data.preferences.budget.max > 0
+    ? `${formatPrice(data.preferences.budget.min)} - ${formatPrice(data.preferences.budget.max)}`
+    : 'Belirtilmedi'
+
+  return `Şu müşteriyi ekleyeyim mi?
+
+👤 ${data.name}
+${data.phone ? '📞 ' + data.phone : ''}
+💰 Bütçe: ${budgetStr}
+
+"Evet" diyerek onaylayın veya "hayır" diyerek iptal edin.`
+}
+
+function buildPropertySelectionMessage(properties: Property[]): string {
+  let message = 'Birden fazla mülk buldum:\n\n'
+
+  properties.slice(0, 5).forEach((p, idx) => {
+    message += `${idx + 1}. ${p.title} - ${formatPrice(p.price)}\n`
+  })
+
+  message += '\nHangisini seçiyorsunuz? (1, 2, 3...)'
+  return message
+}
+
+function findPropertyByReference(reference: string, properties: Property[]): Property[] {
+  const ref = reference.toLowerCase()
+
+  return properties.filter(p => {
+    // Match by title
+    if (p.title.toLowerCase().includes(ref)) return true
+
+    // Match by location
+    if (p.location.city.toLowerCase().includes(ref)) return true
+    if (p.location.district.toLowerCase().includes(ref)) return true
+    if (p.location.neighborhood?.toLowerCase().includes(ref)) return true
+
+    // Match by type
+    if (p.type.toLowerCase().includes(ref)) return true
+
+    return false
+  })
+}
+
+function mapPropertyType(type: string): any {
+  const typeMap: Record<string, string> = {
+    'daire': 'daire',
+    'villa': 'villa',
+    'arsa': 'arsa',
+    'işyeri': 'işyeri',
+    'müstakil': 'müstakil',
+    'residence': 'rezidans',
+    'rezidans': 'rezidans'
+  }
+
+  return typeMap[type.toLowerCase()] || 'daire'
+}
+
+function mapStatus(status: string): any {
+  const statusMap: Record<string, string> = {
+    'active': 'aktif',
+    'aktif': 'aktif',
+    'pending': 'opsiyonlu',
+    'opsiyonlu': 'opsiyonlu',
+    'sold': 'satıldı',
+    'satıldı': 'satıldı',
+    'satildi': 'satıldı',
+    'rented': 'kiralandı',
+    'kiralandi': 'kiralandı',
+    'kiralandı': 'kiralandı'
+  }
+
+  return statusMap[status.toLowerCase()] || 'aktif'
+}
+
+function formatPrice(price: number): string {
+  if (price >= 1000000) {
+    return `${(price / 1000000).toFixed(1)}M TL`
+  } else if (price >= 1000) {
+    return `${(price / 1000).toFixed(0)}K TL`
+  }
+  return `${price.toLocaleString('tr-TR')} TL`
+}
