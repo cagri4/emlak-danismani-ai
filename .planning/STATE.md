@@ -10,29 +10,29 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 ## Current Position
 
 Phase: 2 of 7 (AI Interface & Matching)
-Plan: 2 of 5 in current phase
+Plan: 4 of 5 in current phase
 Status: In Progress
-Last activity: 2026-02-20 — Completed plan 02-01: Customer Management Foundation
+Last activity: 2026-02-20 — Completed plan 02-04: Property-Customer Matching Engine
 
-Progress: [████░░░░░░] 15%
+Progress: [█████░░░░░] 18%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
-- Average duration: 10 min
-- Total execution time: 0.9 hours
+- Total plans completed: 6
+- Average duration: 9 min
+- Total execution time: 1.0 hours
 
 **By Phase:**
 
 | Phase | Plans | Total  | Avg/Plan |
 |-------|-------|--------|----------|
 | 01    | 3     | 35 min | 12 min   |
-| 02    | 2     | 17 min | 9 min    |
+| 02    | 3     | 24 min | 8 min    |
 
 **Recent Trend:**
-- Last 5 plans: 01-02 (8 min), 01-03 (10 min), 02-02 (8 min), 02-01 (9 min)
-- Trend: Stable
+- Last 5 plans: 01-03 (10 min), 02-02 (8 min), 02-01 (9 min), 02-04 (7 min)
+- Trend: Improving
 
 *Updated after each plan completion*
 
@@ -69,6 +69,11 @@ Recent decisions affecting current work:
 - Multi-select for customer locations and property type preferences (02-01)
 - Three-level urgency indicator with color coding (02-01)
 - Inline note-adding on customer detail page (02-01)
+- Multi-factor scoring: location 30%, budget 30%, type 20%, rooms 20% (02-04)
+- History penalty for past rejections (up to -20 points) (02-04)
+- Template-based explanations for high matches, detailed for partial matches (02-04)
+- Conversational Turkish explanations with 'ama' pattern for gaps (02-04)
+- Store match outcomes in users/{userId}/match_outcomes collection (02-04)
 
 ### Pending Todos
 
@@ -80,6 +85,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-20T00:18:56Z
-Stopped at: Completed 02-01-PLAN.md - Customer Management Foundation
-Resume file: .planning/phases/02-ai-interface-matching/02-01-SUMMARY.md
+Last session: 2026-02-20T00:30:35Z
+Stopped at: Completed 02-04-PLAN.md - Property-Customer Matching Engine
+Resume file: .planning/phases/02-ai-interface-matching/02-04-SUMMARY.md

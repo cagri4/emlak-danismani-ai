@@ -44,9 +44,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Eşleştirme (ESLE)
 
-- [ ] **ESLE-01**: Kullanıcı "Mehmet için mülk bul" diyebilmeli
-- [ ] **ESLE-02**: Sistem konum, bütçe, tip bazlı eşleşme yapmalı
-- [ ] **ESLE-03**: Sistem eşleşme yüzdesi ve nedenlerini göstermeli
+- [x] **ESLE-01**: Kullanıcı "Mehmet için mülk bul" diyebilmeli
+- [x] **ESLE-02**: Sistem konum, bütçe, tip bazlı eşleşme yapmalı
+- [x] **ESLE-03**: Sistem eşleşme yüzdesi ve nedenlerini göstermeli
 - [ ] **ESLE-04**: Yeni mülk eklendiğinde uygun müşterilere otomatik bildirim gitmeli
 - [ ] **ESLE-05**: Yeni müşteri eklendiğinde uygun mülkler önerilmeli
 - [ ] **ESLE-06**: AI piyasa verilerine göre fiyat önerisi yapabilmeli
@@ -146,9 +146,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AIUI-05 | Phase 2 | Complete (02-02) |
 | AIUI-06 | Phase 2 | Complete (02-02) |
 | AIUI-08 | Phase 2 | Pending |
-| ESLE-01 | Phase 2 | Pending |
-| ESLE-02 | Phase 2 | Pending |
-| ESLE-03 | Phase 2 | Pending |
+| ESLE-01 | Phase 2 | Complete |
+| ESLE-02 | Phase 2 | Complete |
+| ESLE-03 | Phase 2 | Complete |
 | MULK-05 | Phase 3 | Pending |
 | MULK-06 | Phase 3 | Pending |
 | PORT-01 | Phase 3 | Pending |
