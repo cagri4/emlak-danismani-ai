@@ -8,7 +8,6 @@ import {
   getDocs,
   getDoc,
   query,
-  where,
   orderBy as firestoreOrderBy,
   limit as firestoreLimit,
   serverTimestamp,
