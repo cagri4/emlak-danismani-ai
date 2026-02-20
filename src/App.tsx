@@ -15,6 +15,9 @@ import Properties from '@/pages/Properties'
 import PropertyAdd from '@/pages/PropertyAdd'
 import PropertyEdit from '@/pages/PropertyEdit'
 import PropertyDetail from '@/pages/PropertyDetail'
+import Customers from '@/pages/Customers'
+import CustomerAdd from '@/pages/CustomerAdd'
+import CustomerDetail from '@/pages/CustomerDetail'
 
 function ChatComponents() {
   const { user } = useAuth()
@@ -89,6 +92,38 @@ function App() {
               element={
                 <ProtectedRoute>
                   <PropertyEdit />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/customers"
+              element={
+                <ProtectedRoute>
+                  <Customers />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/customers/new"
+              element={
+                <ProtectedRoute>
+                  <CustomerAdd />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/customers/:id"
+              element={
+                <ProtectedRoute>
+                  <CustomerDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/customers/:id/edit"
+              element={
+                <ProtectedRoute>
+                  <CustomerAdd />
                 </ProtectedRoute>
               }
             />

@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import { Home, Building2, PlusCircle, Settings } from 'lucide-react'
+import { Home, Building2, PlusCircle, Users, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface NavItem {
@@ -12,6 +12,7 @@ const navItems: NavItem[] = [
   { name: 'Dashboard', path: '/dashboard', icon: Home },
   { name: 'Mülkler', path: '/properties', icon: Building2 },
   { name: 'Yeni Mülk Ekle', path: '/properties/new', icon: PlusCircle },
+  { name: 'Müşteriler', path: '/customers', icon: Users },
   { name: 'Ayarlar', path: '/settings', icon: Settings },
 ]
 
@@ -24,7 +25,8 @@ export default function Sidebar() {
         {navItems.map((item) => {
           const Icon = item.icon
           const isActive = location.pathname === item.path ||
-            (item.path === '/properties' && location.pathname.startsWith('/properties') && location.pathname !== '/properties/new')
+            (item.path === '/properties' && location.pathname.startsWith('/properties') && location.pathname !== '/properties/new') ||
+            (item.path === '/customers' && location.pathname.startsWith('/customers') && location.pathname !== '/customers/new')
 
           return (
             <Link
