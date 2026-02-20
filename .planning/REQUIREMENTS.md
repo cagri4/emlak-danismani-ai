@@ -54,10 +54,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Portal Entegrasyon (PORT)
 
-- [ ] **PORT-01**: Kullanıcı sahibinden.com'dan mülk içe aktarabilmeli
-- [ ] **PORT-02**: Kullanıcı hepsiemlak'tan mülk içe aktarabilmeli
-- [ ] **PORT-03**: Kullanıcı emlakjet'ten mülk içe aktarabilmeli
-- [ ] **PORT-04**: Sistem içe aktarılan mülk detaylarını otomatik parse etmeli
+- [x] **PORT-01**: Kullanıcı sahibinden.com'dan mülk içe aktarabilmeli
+- [x] **PORT-02**: Kullanıcı hepsiemlak'tan mülk içe aktarabilmeli
+- [x] **PORT-03**: Kullanıcı emlakjet'ten mülk içe aktarabilmeli
+- [x] **PORT-04**: Sistem içe aktarılan mülk detaylarını otomatik parse etmeli
 - [ ] **PORT-05**: Kullanıcı sistemden sahibinden.com'a ilan yükleyebilmeli
 - [ ] **PORT-06**: Kullanıcı sistemden hepsiemlak'a ilan yükleyebilmeli
 - [ ] **PORT-07**: Kullanıcı sistemden emlakjet'e ilan yükleyebilmeli
@@ -151,10 +151,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ESLE-03 | Phase 2 | Complete |
 | MULK-05 | Phase 3 | Complete |
 | MULK-06 | Phase 3 | Pending |
-| PORT-01 | Phase 3 | Pending |
-| PORT-02 | Phase 3 | Pending |
-| PORT-03 | Phase 3 | Pending |
-| PORT-04 | Phase 3 | Pending |
+| PORT-01 | Phase 3 | Complete |
+| PORT-02 | Phase 3 | Complete |
+| PORT-03 | Phase 3 | Complete |
+| PORT-04 | Phase 3 | Complete |
 | PORT-09 | Phase 3 | Pending |
 | PORT-10 | Phase 3 | Pending |
 | MUST-05 | Phase 3 | Pending |
