@@ -72,11 +72,11 @@ Plans:
 **Plans**: 5 plans in 2 waves
 
 Plans:
-- [ ] 03-01-PLAN.md — Cloud Functions setup, image processor, upload infrastructure (Wave 1)
-- [ ] 03-02-PLAN.md — Photo upload UI: drag-drop, progress, reordering, cover selection (Wave 2)
-- [ ] 03-03-PLAN.md — Portal scrapers: sahibinden, hepsiemlak, emlakjet with chat integration (Wave 1)
-- [ ] 03-04-PLAN.md — Competitor monitoring: scheduled function, notifications, settings (Wave 2)
-- [ ] 03-05-PLAN.md — Lead scoring: time-decay algorithm, badges, dashboard card (Wave 2)
+- [x] 03-01-PLAN.md — Cloud Functions setup, image processor, upload infrastructure (Wave 1) ✅ **COMPLETED** (11 min, 3 tasks, 10 files)
+- [x] 03-02-PLAN.md — Photo upload UI: drag-drop, progress, reordering, cover selection (Wave 2) ✅ **COMPLETED** (15 min, 3 tasks, 7 files)
+- [x] 03-03-PLAN.md — Portal scrapers: sahibinden, hepsiemlak, emlakjet with chat integration (Wave 1) ✅ **COMPLETED**
+- [x] 03-04-PLAN.md — Competitor monitoring: scheduled function, notifications, settings (Wave 2) ✅ **COMPLETED** (12 min, 3 tasks, 9 files)
+- [x] 03-05-PLAN.md — Lead scoring: time-decay algorithm, badges, dashboard card (Wave 2) ✅ **COMPLETED** (8 min, 3 tasks, 10 files)
 
 ### Phase 4: Media Enhancement & Voice
 **Goal**: Users can enhance property photos with AI and give voice commands in Turkish

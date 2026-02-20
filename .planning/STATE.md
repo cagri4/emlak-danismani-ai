@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Emlakçının zamanını geri ver — AI manuel işleri yapar, emlakçı satışa odaklanır
-**Current focus:** Phase 3 — Background Processing & Scraping (2 of 5 plans complete)
+**Current focus:** Phase 3 — Background Processing & Scraping (4 of 5 plans complete)
 
 ## Current Position
 
 Phase: 3 of 7 (Background Processing & Scraping)
-Plan: 2 of 5 in current phase
+Plan: 4 of 5 in current phase
 Status: In Progress
-Last activity: 2026-02-20 — Completed 03-05: Lead Scoring & Temperature
+Last activity: 2026-02-20 — Completed 03-02: Photo Upload UI
 
 Progress: [████████░░] 33%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
-- Average duration: 10 min
-- Total execution time: 1.7 hours
+- Total plans completed: 11
+- Average duration: 11 min
+- Total execution time: 2.0 hours
 
 **By Phase:**
 
@@ -29,16 +29,17 @@ Progress: [████████░░] 33%
 |-------|-------|--------|----------|
 | 01    | 3     | 35 min | 12 min   |
 | 02    | 5     | 52 min | 10 min   |
-| 03    | 2     | 19 min | 10 min   |
+| 03    | 3     | 34 min | 11 min   |
 
 **Recent Trend:**
-- Last 5 plans: 02-05 (15 min), 03-01 (11 min), 03-05 (8 min)
+- Last 5 plans: 03-01 (11 min), 03-05 (8 min), 03-04 (12 min), 03-02 (15 min)
 - Trend: Stable
 
 *Updated after each plan completion*
 | Phase 03-background-processing-scraping P03 | 19 | 3 tasks | 10 files |
 | Phase 03 P05 | 8 | 3 tasks | 10 files |
 | Phase 03-background-processing-scraping P04 | 12 | 3 tasks | 9 files |
+| Phase 03-background-processing-scraping P02 | 921 | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -98,6 +99,10 @@ Recent decisions affecting current work:
 - Boost adds fixed +20 bonus for important customers (03-05)
 - Score weights: interactions (2pts), likes (5pts), rejects (-1pt) (03-05)
 - Automatic recalculation on every interaction (03-05)
+- react-dropzone for drag-drop upload (03-02)
+- Native HTML5 drag-and-drop for photo reordering (03-02)
+- Star icon pattern for cover photo selection (03-02)
+- Header upload indicator with count (03-02)
 
 ### Pending Todos
 
@@ -110,6 +115,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-20
-Stopped at: Completed 03-05: Lead Scoring & Temperature
-Resume file: .planning/phases/03-background-processing-scraping/03-05-SUMMARY.md
-Next action: Continue Phase 3 with 03-02 (Portal Scraper Infrastructure) or 03-04 (Notification System)
+Stopped at: Completed 03-02: Photo Upload UI
+Resume file: .planning/phases/03-background-processing-scraping/03-02-SUMMARY.md
+Next action: Continue Phase 3 with 03-03 (Portal Scraper Infrastructure)
