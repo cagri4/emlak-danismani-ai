@@ -260,10 +260,12 @@ function buildSearchUrl(
  */
 async function scrapeSearchResults(
   portal: 'sahibinden' | 'hepsiemlak' | 'emlakjet',
-  searchUrl: string
+  searchUrl: string,
+  maxResults: number = 10
 ): Promise<ListingPreview[]> {
   return scrapeWithRetry(async () => {
-    console.log(`Scraping search results from: ${searchUrl}`);
+    console.log(`[${portal}] Starting scrape from: ${searchUrl}`);
+    console.log(`[${portal}] Max results: ${maxResults}`);
 
     let browser;
     try {
@@ -278,8 +280,21 @@ async function scrapeSearchResults(
         timeout: 30000
       });
 
+      console.log(`[${portal}] Page loaded successfully`);
+
       // Add random delay to appear human-like
       await randomDelay(1000, 2000);
+
+      // Check for "no results" message (common Turkish patterns)
+      const noResultsText = await page.textContent('body');
+      if (noResultsText && (
+        noResultsText.includes('sonuç bulunamadı') ||
+        noResultsText.includes('ilan bulunamadı') ||
+        noResultsText.includes('sonuç yok')
+      )) {
+        console.log(`[${portal}] No results found on page`);
+        return [];
+      }
 
       // Extract listings based on portal
       let listings: ListingPreview[] = [];
@@ -296,17 +311,47 @@ async function scrapeSearchResults(
           break;
       }
 
-      console.log(`Extracted ${listings.length} listings from ${portal}`);
+      console.log(`[${portal}] Found ${listings.length} listing cards on page`);
 
-      // Limit to first 20 results to avoid overwhelming
-      return listings.slice(0, 20);
+      // Filter out invalid listings
+      const validListings = listings.filter(listing => {
+        // Skip if no title or URL
+        if (!listing.title || !listing.title.trim()) return false;
+        if (!listing.sourceUrl || !listing.sourceUrl.trim()) return false;
+
+        return true;
+      });
+
+      const skipped = listings.length - validListings.length;
+      if (skipped > 0) {
+        console.log(`[${portal}] Skipped ${skipped} listings with missing title/URL`);
+      }
+
+      console.log(`[${portal}] Extracted ${validListings.length} valid listings`);
+
+      // Limit to maxResults
+      const limitedListings = validListings.slice(0, maxResults);
+
+      if (validListings.length > maxResults) {
+        console.log(`[${portal}] Limited from ${validListings.length} to ${maxResults} listings`);
+      }
+
+      return limitedListings;
     } catch (error) {
-      console.error(`Error scraping search results from ${portal}:`, error);
+      console.error(`[${portal}] Error scraping search results:`, error);
+
+      // Check if page loaded but selectors didn't match
+      if (error instanceof Error && error.message.includes('timeout')) {
+        console.warn(`[${portal}] Selector timeout - portal HTML structure may have changed`);
+        console.warn(`[${portal}] URL: ${searchUrl}`);
+      }
+
       return [];
     } finally {
       // Always close browser
       if (browser) {
         await browser.close();
+        console.log(`[${portal}] Browser closed`);
       }
     }
   }, `scrapeSearchResults-${portal}`);
