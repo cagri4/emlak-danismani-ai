@@ -13,7 +13,7 @@ This roadmap delivers an AI-first real estate CRM for Turkish agents in 7 phases
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation & Compliance** - Auth, basic property CRUD, KVKK compliance, basic AI text generation ✅ **COMPLETE**
-- [ ] **Phase 2: AI Interface & Matching** - Natural language commands, customer management, property-customer matching
+- [x] **Phase 2: AI Interface & Matching** - Natural language commands, customer management, property-customer matching ✅ **COMPLETE**
 - [ ] **Phase 3: Background Processing & Scraping** - Photo upload, portal import, competitor monitoring, async job processing
 - [ ] **Phase 4: Media Enhancement & Voice** - AI photo editing, voice commands (Turkce)
 - [ ] **Phase 5: Telegram Bot & Publishing** - Telegram interface, portal publishing, advanced matching features
@@ -55,9 +55,9 @@ Plans:
 Plans:
 - [x] 02-01-PLAN.md — Customer types, Firestore hooks, customer CRUD pages (Wave 1) ✅ **COMPLETED** (9 min, 3 tasks, 10 files)
 - [x] 02-02-PLAN.md — Chat UI shell: floating button, modal, messages, input, suggestion chips (Wave 1) ✅ **COMPLETED** (8 min, 3 tasks, 10 files)
-- [ ] 02-03-PLAN.md — AI command parser with Claude structured outputs, command handlers (Wave 2)
-- [ ] 02-04-PLAN.md — Matching engine: scoring algorithm, feedback tracking, explanations (Wave 2)
-- [ ] 02-05-PLAN.md — Integration: wire matching to chat, voice input, file attachments, verification (Wave 3)
+- [x] 02-03-PLAN.md — AI command parser with Claude structured outputs, command handlers (Wave 2) ✅ **COMPLETED** (13 min)
+- [x] 02-04-PLAN.md — Matching engine: scoring algorithm, feedback tracking, explanations (Wave 2) ✅ **COMPLETED** (7 min)
+- [x] 02-05-PLAN.md — Integration: wire matching to chat, voice input, file attachments, verification (Wave 3) ✅ **COMPLETED** (15 min, bug fixes included)
 
 ### Phase 3: Background Processing & Scraping
 **Goal**: Users can import properties from major Turkish portals and upload photos asynchronously
@@ -69,12 +69,14 @@ Plans:
   3. System automatically monitors competitor listings and notifies user of new relevant properties
   4. Photo upload processes in background without blocking the interface
   5. AI automatically scores leads as hot/cold based on interaction history
-**Plans**: TBD
+**Plans**: 5 plans in 2 waves
 
 Plans:
-- [ ] 03-01: TBD
-- [ ] 03-02: TBD
-- [ ] 03-03: TBD
+- [ ] 03-01-PLAN.md — Cloud Functions setup, image processor, upload infrastructure (Wave 1)
+- [ ] 03-02-PLAN.md — Photo upload UI: drag-drop, progress, reordering, cover selection (Wave 2)
+- [ ] 03-03-PLAN.md — Portal scrapers: sahibinden, hepsiemlak, emlakjet with chat integration (Wave 1)
+- [ ] 03-04-PLAN.md — Competitor monitoring: scheduled function, notifications, settings (Wave 2)
+- [ ] 03-05-PLAN.md — Lead scoring: time-decay algorithm, badges, dashboard card (Wave 2)
 
 ### Phase 4: Media Enhancement & Voice
 **Goal**: Users can enhance property photos with AI and give voice commands in Turkish
@@ -151,8 +153,8 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Compliance | 3/3 | Complete | 2026-02-19 |
-| 2. AI Interface & Matching | 1/5 | In Progress | - |
-| 3. Background Processing & Scraping | 0/3 | Not started | - |
+| 2. AI Interface & Matching | 5/5 | Complete | 2026-02-20 |
+| 3. Background Processing & Scraping | 0/5 | Not started | - |
 | 4. Media Enhancement & Voice | 0/2 | Not started | - |
 | 5. Telegram Bot & Publishing | 0/3 | Not started | - |
 | 6. Mobile PWA & Sharing | 0/3 | Not started | - |
