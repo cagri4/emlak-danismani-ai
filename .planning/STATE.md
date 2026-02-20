@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Emlakçının zamanını geri ver — AI manuel işleri yapar, emlakçı satışa odaklanır
-**Current focus:** Phase 2 Complete ✅ — Ready for Phase 3: Background Processing & Scraping
+**Current focus:** Phase 3 — Background Processing & Scraping (1 of 5 plans complete)
 
 ## Current Position
 
-Phase: 2 of 7 (AI Interface & Matching)
-Plan: 5 of 5 in current phase
-Status: Complete ✅
-Last activity: 2026-02-20 — Completed Phase 2 with bug fixes (KVKK redirect, conversation persistence, voice input, property search)
+Phase: 3 of 7 (Background Processing & Scraping)
+Plan: 1 of 5 in current phase
+Status: In Progress
+Last activity: 2026-02-20 — Completed 03-01: Cloud Functions & Upload Infrastructure
 
-Progress: [███████░░░] 29%
+Progress: [████████░░] 33%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
+- Total plans completed: 9
 - Average duration: 11 min
-- Total execution time: 1.5 hours
+- Total execution time: 1.6 hours
 
 **By Phase:**
 
@@ -29,10 +29,11 @@ Progress: [███████░░░] 29%
 |-------|-------|--------|----------|
 | 01    | 3     | 35 min | 12 min   |
 | 02    | 5     | 52 min | 10 min   |
+| 03    | 1     | 11 min | 11 min   |
 
 **Recent Trend:**
-- Last 5 plans: 02-03 (13 min), 02-04 (7 min), 02-05 (15 min)
-- Trend: Stable (02-05 longer due to human verification and bug fixes)
+- Last 5 plans: 02-04 (7 min), 02-05 (15 min), 03-01 (11 min)
+- Trend: Stable
 
 *Updated after each plan completion*
 
@@ -79,6 +80,11 @@ Recent decisions affecting current work:
 - Template-based explanations for high matches, detailed for partial matches (02-04)
 - Conversational Turkish explanations with 'ama' pattern for gaps (02-04)
 - Store match outcomes in users/{userId}/match_outcomes collection (02-04)
+- Europe-west1 region for all Cloud Functions (KVKK compliance) (03-01)
+- Sharp for image processing (native performance) (03-01)
+- 1GiB memory for image processor (prevents timeouts on large images) (03-01)
+- Compress original in place (save storage costs) (03-01)
+- Zustand for upload state (persists across navigation) (03-01)
 
 ### Pending Todos
 
@@ -91,6 +97,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-20
-Stopped at: Completed Phase 2 - AI Interface & Matching (all 5 plans, bug fixes verified)
-Resume file: .planning/phases/02-ai-interface-matching/02-05-SUMMARY.md
-Next action: /gsd:plan-phase 3 (Background Processing & Scraping)
+Stopped at: Completed 03-01: Cloud Functions & Upload Infrastructure
+Resume file: .planning/phases/03-background-processing-scraping/03-01-SUMMARY.md
+Next action: Continue Phase 3 with 03-02 (Portal Scraper Infrastructure)
