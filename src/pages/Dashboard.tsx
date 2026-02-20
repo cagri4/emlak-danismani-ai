@@ -1,10 +1,13 @@
 import { Link } from 'react-router-dom'
 import { useDashboardMetrics } from '@/hooks/useDashboardMetrics'
 import { useProperties } from '@/hooks/useProperties'
+import { useCustomers } from '@/hooks/useCustomers'
+import { useLeadScores } from '@/hooks/useLeadScore'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import PropertyGrid from '@/components/property/PropertyGrid'
+import HotLeadsCard from '@/components/dashboard/HotLeadsCard'
 import { Building2, CheckCircle2, XCircle, Home, ArrowRight } from 'lucide-react'
 
 export default function Dashboard() {
@@ -13,6 +16,18 @@ export default function Dashboard() {
     limit: 6,
     orderBy: 'createdAt',
     orderDirection: 'desc',
+  })
+  const { customers } = useCustomers()
+  const leadScores = useLeadScores(customers)
+
+  // Prepare hot leads data
+  const hotLeadsData = customers.map(customer => {
+    const scoreData = leadScores.get(customer.id)
+    return {
+      customer,
+      score: scoreData?.score ?? 0,
+      temperature: scoreData?.temperature ?? 'cold',
+    }
   })
 
   const statCards = [
@@ -82,6 +97,13 @@ export default function Dashboard() {
             )
           })}
         </div>
+
+        {/* Hot Leads Card */}
+        {customers.length > 0 && (
+          <div>
+            <HotLeadsCard customers={hotLeadsData} />
+          </div>
+        )}
 
         {/* Recent Properties */}
         <div>

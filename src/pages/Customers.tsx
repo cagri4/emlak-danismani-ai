@@ -1,13 +1,54 @@
+import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCustomers } from '@/hooks/useCustomers'
+import { useLeadScores } from '@/hooks/useLeadScore'
 import { Button } from '@/components/ui/button'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import CustomerCard from '@/components/customer/CustomerCard'
-import { Plus, Users } from 'lucide-react'
+import { Plus, Users, ArrowUpDown } from 'lucide-react'
+import { Customer } from '@/types/customer'
 
 export default function Customers() {
   const navigate = useNavigate()
   const { customers, loading, error } = useCustomers()
+  const [sortBy, setSortBy] = useState<'name' | 'leadScore' | 'lastInteraction'>('leadScore')
+  const [filterTemperature, setFilterTemperature] = useState<'all' | 'hot' | 'warm' | 'cold'>('all')
+
+  // Calculate lead scores for all customers
+  const leadScores = useLeadScores(customers)
+
+  // Sort and filter customers
+  const filteredAndSortedCustomers = useMemo(() => {
+    let result = [...customers]
+
+    // Filter by temperature
+    if (filterTemperature !== 'all') {
+      result = result.filter(customer => {
+        const scoreData = leadScores.get(customer.id)
+        return scoreData?.temperature === filterTemperature
+      })
+    }
+
+    // Sort
+    result.sort((a, b) => {
+      if (sortBy === 'leadScore') {
+        const scoreA = leadScores.get(a.id)?.score ?? 0
+        const scoreB = leadScores.get(b.id)?.score ?? 0
+        return scoreB - scoreA // Descending
+      } else if (sortBy === 'lastInteraction') {
+        const dateA = a.lastInteraction instanceof Date ? a.lastInteraction : a.lastInteraction?.toDate()
+        const dateB = b.lastInteraction instanceof Date ? b.lastInteraction : b.lastInteraction?.toDate()
+        if (!dateA) return 1
+        if (!dateB) return -1
+        return dateB.getTime() - dateA.getTime()
+      } else {
+        // Sort by name
+        return a.name.localeCompare(b.name, 'tr')
+      }
+    })
+
+    return result
+  }, [customers, leadScores, sortBy, filterTemperature])
 
   if (loading) {
     return (
@@ -65,11 +106,80 @@ export default function Customers() {
             </Button>
           </div>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {customers.map((customer) => (
-              <CustomerCard key={customer.id} customer={customer} />
-            ))}
-          </div>
+          <>
+            {/* Sort and Filter Controls */}
+            <div className="flex items-center gap-4 flex-wrap">
+              <div className="flex items-center gap-2">
+                <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm font-medium">Sıralama:</span>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as any)}
+                  className="text-sm border rounded px-3 py-1.5 bg-white"
+                >
+                  <option value="leadScore">Adaylık Puanı</option>
+                  <option value="lastInteraction">Son Etkileşim</option>
+                  <option value="name">İsim</option>
+                </select>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">Filtre:</span>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setFilterTemperature('all')}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-full border ${
+                      filterTemperature === 'all'
+                        ? 'bg-gray-200 text-gray-900 border-gray-300'
+                        : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                    }`}
+                  >
+                    Tümü
+                  </button>
+                  <button
+                    onClick={() => setFilterTemperature('hot')}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-full border ${
+                      filterTemperature === 'hot'
+                        ? 'bg-red-100 text-red-800 border-red-200'
+                        : 'bg-white text-gray-600 border-gray-200 hover:bg-red-50'
+                    }`}
+                  >
+                    Sıcak
+                  </button>
+                  <button
+                    onClick={() => setFilterTemperature('warm')}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-full border ${
+                      filterTemperature === 'warm'
+                        ? 'bg-amber-100 text-amber-800 border-amber-200'
+                        : 'bg-white text-gray-600 border-gray-200 hover:bg-amber-50'
+                    }`}
+                  >
+                    Ilık
+                  </button>
+                  <button
+                    onClick={() => setFilterTemperature('cold')}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-full border ${
+                      filterTemperature === 'cold'
+                        ? 'bg-blue-100 text-blue-800 border-blue-200'
+                        : 'bg-white text-gray-600 border-gray-200 hover:bg-blue-50'
+                    }`}
+                  >
+                    Soğuk
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {filteredAndSortedCustomers.map((customer) => (
+                <CustomerCard
+                  key={customer.id}
+                  customer={customer}
+                  leadScore={leadScores.get(customer.id)}
+                />
+              ))}
+            </div>
+          </>
         )}
       </div>
     </DashboardLayout>

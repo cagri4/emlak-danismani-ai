@@ -1,11 +1,14 @@
 import { Link } from 'react-router-dom'
-import { User, Phone, Mail, MapPin, DollarSign, Calendar, MessageSquare } from 'lucide-react'
+import { User, Phone, Mail, MapPin, DollarSign, Calendar, MessageSquare, Star } from 'lucide-react'
 import { Customer } from '@/types/customer'
 import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
+import LeadTemperatureBadge from '@/components/customers/LeadTemperatureBadge'
+import { useLeadScore } from '@/hooks/useLeadScore'
 
 interface CustomerCardProps {
   customer: Customer
+  leadScore?: { score: number; temperature: 'hot' | 'warm' | 'cold' }
 }
 
 const urgencyColors = {
@@ -20,7 +23,9 @@ const urgencyLabels = {
   high: 'Yüksek',
 }
 
-export default function CustomerCard({ customer }: CustomerCardProps) {
+export default function CustomerCard({ customer, leadScore }: CustomerCardProps) {
+  const { toggleBoost } = useLeadScore(customer.id)
+
   const budgetText = customer.preferences.budget
     ? `${customer.preferences.budget.min.toLocaleString('tr-TR')} - ${customer.preferences.budget.max.toLocaleString('tr-TR')} ₺`
     : 'Belirtilmemiş'
@@ -30,18 +35,43 @@ export default function CustomerCard({ customer }: CustomerCardProps) {
       (customer.preferences.location.length > 2 ? ` +${customer.preferences.location.length - 2}` : '')
     : 'Belirtilmemiş'
 
+  const handleBoostToggle = async (e: React.MouseEvent) => {
+    e.preventDefault() // Prevent navigation
+    try {
+      await toggleBoost()
+    } catch (err) {
+      console.error('Failed to toggle boost:', err)
+    }
+  }
+
   return (
     <Link to={`/customers/${customer.id}`}>
       <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer">
         <div className="p-5 space-y-4">
           {/* Header with Name and Urgency */}
           <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-1">
               <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
                 <User className="h-6 w-6 text-blue-600" />
               </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">{customer.name}</h3>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-lg font-semibold text-gray-900 truncate">{customer.name}</h3>
+                  {leadScore && <LeadTemperatureBadge temperature={leadScore.temperature} showLabel={false} />}
+                  <button
+                    onClick={handleBoostToggle}
+                    className="ml-auto p-1 hover:bg-gray-100 rounded transition-colors"
+                    title={customer.isBoosted ? 'Öncelikten çıkar' : 'Öncelikli yap'}
+                  >
+                    <Star
+                      className={`h-4 w-4 ${
+                        customer.isBoosted
+                          ? 'fill-amber-400 text-amber-400'
+                          : 'text-gray-400'
+                      }`}
+                    />
+                  </button>
+                </div>
                 {customer.interactionCount > 0 && (
                   <div className="flex items-center gap-1 text-sm text-gray-500">
                     <MessageSquare className="h-3 w-3" />

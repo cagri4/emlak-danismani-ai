@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useCustomers } from '@/hooks/useCustomers'
+import { useLeadScore } from '@/hooks/useLeadScore'
 import { Customer, Interaction } from '@/types/customer'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -50,6 +51,7 @@ export default function CustomerDetail() {
   const { toast } = useToast()
   const { id } = useParams<{ id: string }>()
   const { getCustomer, deleteCustomer, addInteraction, getInteractions } = useCustomers({ useRealtime: false })
+  const { recalculate: recalculateLeadScore } = useLeadScore(id)
   const [customer, setCustomer] = useState<Customer | null>(null)
   const [interactions, setInteractions] = useState<Interaction[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -141,6 +143,14 @@ export default function CustomerDetail() {
       const customerResult = await getCustomer(id)
       if (customerResult.success && customerResult.customer) {
         setCustomer(customerResult.customer)
+      }
+
+      // Recalculate lead score after new interaction
+      try {
+        await recalculateLeadScore()
+      } catch (err) {
+        console.error('Failed to recalculate lead score:', err)
+        // Don't show error to user - this is background operation
       }
     } else {
       toast({
