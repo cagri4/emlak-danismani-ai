@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { Mic, MicOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useVoiceInput } from '@/hooks/useVoiceInput'
@@ -16,12 +16,22 @@ export function VoiceButton({ onTranscript }: VoiceButtonProps) {
   const { isListening, transcript, isSupported, error, startListening, stopListening } =
     useVoiceInput('tr-TR')
 
-  // Pass transcript to parent when ready
+  // Track last processed transcript to prevent infinite loops
+  const lastProcessedRef = useRef<string>('')
+  const onTranscriptRef = useRef(onTranscript)
+
+  // Keep callback ref updated
   useEffect(() => {
-    if (transcript) {
-      onTranscript(transcript)
+    onTranscriptRef.current = onTranscript
+  }, [onTranscript])
+
+  // Pass transcript to parent when ready - only once per unique transcript
+  useEffect(() => {
+    if (transcript && transcript !== lastProcessedRef.current) {
+      lastProcessedRef.current = transcript
+      onTranscriptRef.current(transcript)
     }
-  }, [transcript, onTranscript])
+  }, [transcript])
 
   // Show error if any
   useEffect(() => {

@@ -123,7 +123,7 @@ async function handleAddProperty(
 
   // If confirming, execute the action
   if (pendingConfirmation?.action === 'add_property') {
-    const propertyData: PropertyFormData = pendingConfirmation.data
+    const propertyData: PropertyFormData = removeUndefined(pendingConfirmation.data)
     const result = await context.addProperty(propertyData)
 
     if (result.success) {
@@ -158,14 +158,15 @@ async function handleAddProperty(
     features: [],
   }
 
-  // Ask for confirmation
+  // Ask for confirmation - clean undefined values before storing
+  const cleanedPropertyData = removeUndefined(propertyData)
   return {
     success: true,
-    message: buildPropertyConfirmation(propertyData),
+    message: buildPropertyConfirmation(cleanedPropertyData),
     needsConfirmation: true,
     confirmationData: {
       action: 'add_property',
-      data: propertyData
+      data: cleanedPropertyData
     }
   }
 }
@@ -184,7 +185,7 @@ async function handleAddCustomer(
 
   // If confirming, execute the action
   if (pendingConfirmation?.action === 'add_customer') {
-    const customerData: CustomerFormData = pendingConfirmation.data
+    const customerData: CustomerFormData = removeUndefined(pendingConfirmation.data)
     const result = await context.addCustomer(customerData)
 
     if (result.success) {
@@ -217,14 +218,15 @@ async function handleAddCustomer(
     }
   }
 
-  // Ask for confirmation
+  // Ask for confirmation - clean undefined values before storing
+  const cleanedCustomerData = removeUndefined(customerData)
   return {
     success: true,
-    message: buildCustomerConfirmation(customerData),
+    message: buildCustomerConfirmation(cleanedCustomerData),
     needsConfirmation: true,
     confirmationData: {
       action: 'add_customer',
-      data: customerData
+      data: cleanedCustomerData
     }
   }
 }
@@ -239,15 +241,22 @@ async function handleSearchProperties(
   // Filter properties based on search criteria
   let results = [...context.properties]
 
+  // Location search: check city, district, and neighborhood for flexibility
+  // User might say "Bodrum" which could be city or district
   if (entities?.location?.city) {
+    const searchTerm = entities.location.city.toLowerCase()
     results = results.filter(p =>
-      p.location.city.toLowerCase().includes(entities.location!.city!.toLowerCase())
+      p.location.city.toLowerCase().includes(searchTerm) ||
+      p.location.district.toLowerCase().includes(searchTerm) ||
+      (p.location.neighborhood?.toLowerCase().includes(searchTerm) ?? false)
     )
   }
 
   if (entities?.location?.district) {
+    const searchTerm = entities.location.district.toLowerCase()
     results = results.filter(p =>
-      p.location.district.toLowerCase().includes(entities.location!.district!.toLowerCase())
+      p.location.district.toLowerCase().includes(searchTerm) ||
+      (p.location.neighborhood?.toLowerCase().includes(searchTerm) ?? false)
     )
   }
 
@@ -661,18 +670,26 @@ function buildPropertySelectionMessage(properties: Property[]): string {
 
 function findPropertyByReference(reference: string, properties: Property[]): Property[] {
   const ref = reference.toLowerCase()
+  // Split reference into words for more flexible matching
+  const refWords = ref.split(/\s+/).filter(w => w.length > 2)
 
   return properties.filter(p => {
-    // Match by title
-    if (p.title.toLowerCase().includes(ref)) return true
+    const searchableText = [
+      p.title,
+      p.location.city,
+      p.location.district,
+      p.location.neighborhood || '',
+      p.type,
+      p.rooms || ''
+    ].join(' ').toLowerCase()
 
-    // Match by location
-    if (p.location.city.toLowerCase().includes(ref)) return true
-    if (p.location.district.toLowerCase().includes(ref)) return true
-    if (p.location.neighborhood?.toLowerCase().includes(ref)) return true
+    // Match if reference is contained in searchable text
+    if (searchableText.includes(ref)) return true
 
-    // Match by type
-    if (p.type.toLowerCase().includes(ref)) return true
+    // Match if all significant words from reference are found
+    if (refWords.length > 0 && refWords.every(word => searchableText.includes(word))) {
+      return true
+    }
 
     return false
   })
@@ -716,4 +733,20 @@ function formatPrice(price: number): string {
     return `${(price / 1000).toFixed(0)}K TL`
   }
   return `${price.toLocaleString('tr-TR')} TL`
+}
+
+/**
+ * Remove undefined values from an object (Firestore doesn't accept undefined)
+ */
+function removeUndefined<T extends Record<string, any>>(obj: T): T {
+  const result: Record<string, any> = {}
+  for (const [key, value] of Object.entries(obj)) {
+    if (value === undefined) continue
+    if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+      result[key] = removeUndefined(value)
+    } else {
+      result[key] = value
+    }
+  }
+  return result as T
 }

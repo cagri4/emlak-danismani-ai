@@ -30,15 +30,26 @@ export async function saveMessage(
       'messages'
     )
 
-    const docRef = await addDoc(messagesRef, {
+    // Build message data, only including defined fields (Firestore rejects undefined)
+    const messageData: Record<string, any> = {
       role: message.role,
       content: message.content,
       status: message.status,
-      embeddedProperty: message.embeddedProperty,
-      embeddedCustomer: message.embeddedCustomer,
-      embeddedMatches: message.embeddedMatches,
       timestamp: serverTimestamp(),
-    })
+    }
+
+    // Only add optional fields if they have values
+    if (message.embeddedProperty) {
+      messageData.embeddedProperty = message.embeddedProperty
+    }
+    if (message.embeddedCustomer) {
+      messageData.embeddedCustomer = message.embeddedCustomer
+    }
+    if (message.embeddedMatches && message.embeddedMatches.length > 0) {
+      messageData.embeddedMatches = message.embeddedMatches
+    }
+
+    const docRef = await addDoc(messagesRef, messageData)
 
     return { success: true, id: docRef.id }
   } catch (error: any) {
