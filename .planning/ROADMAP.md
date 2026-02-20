@@ -53,7 +53,7 @@ Plans:
 **Plans**: 5 plans in 3 waves
 
 Plans:
-- [ ] 02-01-PLAN.md — Customer types, Firestore hooks, customer CRUD pages (Wave 1)
+- [x] 02-01-PLAN.md — Customer types, Firestore hooks, customer CRUD pages (Wave 1) ✅ **COMPLETED** (9 min, 3 tasks, 10 files)
 - [x] 02-02-PLAN.md — Chat UI shell: floating button, modal, messages, input, suggestion chips (Wave 1) ✅ **COMPLETED** (8 min, 3 tasks, 10 files)
 - [ ] 02-03-PLAN.md — AI command parser with Claude structured outputs, command handlers (Wave 2)
 - [ ] 02-04-PLAN.md — Matching engine: scoring algorithm, feedback tracking, explanations (Wave 2)
