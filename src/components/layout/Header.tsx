@@ -3,10 +3,11 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { useAuthActions } from '@/hooks/useAuth'
 import { useNavigate } from 'react-router-dom'
-import { Menu, X, ChevronDown } from 'lucide-react'
+import { Menu, X, ChevronDown, Loader2 } from 'lucide-react'
 import NotificationBell from '@/components/notifications/NotificationBell'
 import NotificationDropdown from '@/components/notifications/NotificationDropdown'
 import { useNotifications } from '@/hooks/useNotifications'
+import { useUploadStore } from '@/stores/uploadStore'
 
 export default function Header() {
   const { user, userProfile } = useAuth()
@@ -18,6 +19,7 @@ export default function Header() {
   const notificationRef = useRef<HTMLDivElement>(null)
 
   const { notifications, markAsRead, markAllAsRead, deleteNotification } = useNotifications()
+  const { hasActiveUploads, uploads } = useUploadStore()
 
   // Close notifications dropdown on outside click
   useEffect(() => {
@@ -54,6 +56,17 @@ export default function Header() {
 
           {/* Desktop User Menu */}
           <div className="hidden md:flex items-center gap-4">
+            {/* Upload Indicator */}
+            {hasActiveUploads() && (
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
+                <span>
+                  {uploads.filter((u) => u.status === 'uploading' || u.status === 'pending').length}{' '}
+                  fotoğraf yükleniyor
+                </span>
+              </div>
+            )}
+
             {/* Notification Bell */}
             <div className="relative" ref={notificationRef}>
               <NotificationBell onClick={() => setNotificationsOpen(!notificationsOpen)} />

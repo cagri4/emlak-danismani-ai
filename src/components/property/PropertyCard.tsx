@@ -20,7 +20,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
         <div className="relative h-48 bg-gray-100">
           {hasPhoto ? (
             <img
-              src={property.photos![0]}
+              src={property.photos![0].thumbnailUrl || property.photos![0].url}
               alt={property.title}
               className="w-full h-full object-cover"
             />

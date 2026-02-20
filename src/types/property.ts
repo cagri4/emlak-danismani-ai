@@ -1,3 +1,5 @@
+import { PropertyPhoto } from './photo'
+
 export type PropertyType = 'daire' | 'villa' | 'arsa' | 'işyeri' | 'müstakil' | 'rezidans'
 
 export type PropertyStatus = 'aktif' | 'opsiyonlu' | 'satıldı' | 'kiralandı'
@@ -27,7 +29,7 @@ export interface Property {
   description?: string
   aiDescription?: string
   imageUrl?: string // Optional - Phase 3 will add uploads
-  photos?: string[] // Optional - Phase 3 will add uploads
+  photos?: PropertyPhoto[] // Optional - Phase 3 will add uploads
   createdAt: Date | { toDate: () => Date } // Can be Firestore Timestamp or Date
   updatedAt: Date | { toDate: () => Date }
   userId: string

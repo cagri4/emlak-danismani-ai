@@ -2,19 +2,30 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useProperties } from '@/hooks/useProperties'
 import { Property, PropertyStatus } from '@/types/property'
+import { PropertyPhoto } from '@/types/photo'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select } from '@/components/ui/select'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import AIDescriptionGenerator from '@/components/property/AIDescriptionGenerator'
-import { ArrowLeft, Edit, Trash2, MapPin, Home, AlertCircle, Pencil } from 'lucide-react'
+import { PhotoUploader } from '@/components/photos/PhotoUploader'
+import { PhotoGrid } from '@/components/photos/PhotoGrid'
+import { UploadProgressIndicator } from '@/components/photos/UploadProgressIndicator'
+import { usePhotoUpload } from '@/hooks/usePhotoUpload'
+import { ArrowLeft, Edit, Trash2, MapPin, Home, AlertCircle, Pencil, Image } from 'lucide-react'
 import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
+import { doc, updateDoc, arrayRemove } from 'firebase/firestore'
+import { deleteObject, ref as storageRef } from 'firebase/storage'
+import { db, storage } from '@/lib/firebase'
+import { useAuth } from '@/contexts/AuthContext'
 
 export default function PropertyDetail() {
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
+  const { user } = useAuth()
   const { getProperty, deleteProperty, updateStatus, updateProperty } = useProperties({ useRealtime: false })
+  const { uploads } = usePhotoUpload(id || '')
   const [property, setProperty] = useState<Property | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -83,6 +94,86 @@ export default function PropertyDetail() {
       setProperty({ ...property, aiDescription: description })
     } else {
       throw new Error(result.error || 'AI açıklaması kaydedilemedi')
+    }
+  }
+
+  const handleReorderPhotos = async (reorderedPhotos: PropertyPhoto[]) => {
+    if (!id || !user) return
+
+    try {
+      const propertyRef = doc(db, `users/${user.uid}/properties`, id)
+      await updateDoc(propertyRef, {
+        photos: reorderedPhotos,
+      })
+      setProperty({ ...property!, photos: reorderedPhotos })
+    } catch (err) {
+      console.error('Error reordering photos:', err)
+      alert('Fotoğraflar yeniden sıralanamadı')
+    }
+  }
+
+  const handleSetCover = async (photoId: string) => {
+    if (!id || !user || !property?.photos) return
+
+    try {
+      const updatedPhotos = property.photos.map((photo) => ({
+        ...photo,
+        isCover: photo.id === photoId,
+      }))
+
+      const propertyRef = doc(db, `users/${user.uid}/properties`, id)
+      await updateDoc(propertyRef, {
+        photos: updatedPhotos,
+      })
+      setProperty({ ...property, photos: updatedPhotos })
+    } catch (err) {
+      console.error('Error setting cover photo:', err)
+      alert('Kapak fotoğrafı ayarlanamadı')
+    }
+  }
+
+  const handleDeletePhoto = async (photoId: string) => {
+    if (!id || !user || !property?.photos) return
+
+    try {
+      const photoToDelete = property.photos.find((p) => p.id === photoId)
+      if (!photoToDelete) return
+
+      // Delete from Firestore
+      const propertyRef = doc(db, `users/${user.uid}/properties`, id)
+      await updateDoc(propertyRef, {
+        photos: arrayRemove(photoToDelete),
+      })
+
+      // Delete from Storage
+      try {
+        const photoRef = storageRef(storage, photoToDelete.url)
+        await deleteObject(photoRef)
+
+        if (photoToDelete.thumbnailUrl) {
+          const thumbRef = storageRef(storage, photoToDelete.thumbnailUrl)
+          await deleteObject(thumbRef)
+        }
+      } catch (storageErr) {
+        console.error('Error deleting from storage:', storageErr)
+      }
+
+      setProperty({
+        ...property,
+        photos: property.photos.filter((p) => p.id !== photoId),
+      })
+    } catch (err) {
+      console.error('Error deleting photo:', err)
+      alert('Fotoğraf silinemedi')
+    }
+  }
+
+  const handleUploadComplete = async () => {
+    // Refresh property to get updated photos
+    if (!id) return
+    const result = await getProperty(id)
+    if (result.success && result.property) {
+      setProperty(result.property)
     }
   }
 
@@ -353,6 +444,32 @@ export default function PropertyDetail() {
             />
           )}
         </div>
+
+        {/* Photos Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Image className="h-5 w-5" />
+              Fotoğraflar
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Upload area */}
+            {id && <PhotoUploader propertyId={id} onUploadComplete={handleUploadComplete} />}
+
+            {/* Upload progress (only when uploads active) */}
+            {uploads.length > 0 && <UploadProgressIndicator uploads={uploads} />}
+
+            {/* Photo grid */}
+            <PhotoGrid
+              photos={property.photos || []}
+              onReorder={handleReorderPhotos}
+              onSetCover={handleSetCover}
+              onDelete={handleDeletePhoto}
+              isEditable={true}
+            />
+          </CardContent>
+        </Card>
 
         {/* Metadata */}
         <Card>
