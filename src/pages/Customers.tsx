@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import CustomerCard from '@/components/customer/CustomerCard'
 import { Plus, Users, ArrowUpDown } from 'lucide-react'
-import { Customer } from '@/types/customer'
 
 export default function Customers() {
   const navigate = useNavigate()
