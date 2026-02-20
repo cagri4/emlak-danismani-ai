@@ -38,6 +38,7 @@ Progress: [████████░░] 33%
 *Updated after each plan completion*
 | Phase 03-background-processing-scraping P03 | 19 | 3 tasks | 10 files |
 | Phase 03 P05 | 8 | 3 tasks | 10 files |
+| Phase 03-background-processing-scraping P04 | 12 | 3 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -87,6 +88,11 @@ Recent decisions affecting current work:
 - 1GiB memory for image processor (prevents timeouts on large images) (03-01)
 - Compress original in place (save storage costs) (03-01)
 - Zustand for upload state (persists across navigation) (03-01)
+- Schedule: 9 AM and 9 PM Turkey time for competitor monitoring (03-04)
+- Monitor both manual criteria AND customer preferences automatically (03-04)
+- Real-time notification updates using Firestore onSnapshot (03-04)
+- Notification badge shows '9+' for counts > 9 (03-04)
+- One-click import directly from notification dropdown (03-04)
 - Exponential decay after 14 days for lead scoring (exp(-0.05 * days)) (03-05)
 - Temperature thresholds: hot (30+), warm (15-30), cold (<15) (03-05)
 - Boost adds fixed +20 bonus for important customers (03-05)

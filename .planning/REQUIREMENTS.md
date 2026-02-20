@@ -62,8 +62,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **PORT-06**: Kullanıcı sistemden hepsiemlak'a ilan yükleyebilmeli
 - [ ] **PORT-07**: Kullanıcı sistemden emlakjet'e ilan yükleyebilmeli
 - [ ] **PORT-08**: Sistem fotoğrafları portal gereksinimlerine göre otomatik boyutlandırmalı
-- [ ] **PORT-09**: Sistem rakip ilanları otomatik izleyebilmeli (scraping)
-- [ ] **PORT-10**: Sistem yeni rakip ilanlarını bildirebilmeli
+- [x] **PORT-09**: Sistem rakip ilanları otomatik izleyebilmeli (scraping)
+- [x] **PORT-10**: Sistem yeni rakip ilanlarını bildirebilmeli
 
 ### Mobil (MOBL)
 
@@ -155,8 +155,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PORT-02 | Phase 3 | Complete |
 | PORT-03 | Phase 3 | Complete |
 | PORT-04 | Phase 3 | Complete |
-| PORT-09 | Phase 3 | Pending |
-| PORT-10 | Phase 3 | Pending |
+| PORT-09 | Phase 3 | Complete |
+| PORT-10 | Phase 3 | Complete |
 | MUST-05 | Phase 3 | Complete |
 | MULK-07 | Phase 4 | Pending |
 | MULK-08 | Phase 4 | Pending |
