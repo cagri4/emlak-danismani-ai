@@ -54,7 +54,7 @@ Plans:
 
 Plans:
 - [ ] 02-01-PLAN.md — Customer types, Firestore hooks, customer CRUD pages (Wave 1)
-- [ ] 02-02-PLAN.md — Chat UI shell: floating button, modal, messages, input, suggestion chips (Wave 1)
+- [x] 02-02-PLAN.md — Chat UI shell: floating button, modal, messages, input, suggestion chips (Wave 1) ✅ **COMPLETED** (8 min, 3 tasks, 10 files)
 - [ ] 02-03-PLAN.md — AI command parser with Claude structured outputs, command handlers (Wave 2)
 - [ ] 02-04-PLAN.md — Matching engine: scoring algorithm, feedback tracking, explanations (Wave 2)
 - [ ] 02-05-PLAN.md — Integration: wire matching to chat, voice input, file attachments, verification (Wave 3)
@@ -151,7 +151,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Compliance | 3/3 | Complete | 2026-02-19 |
-| 2. AI Interface & Matching | 0/5 | Planning complete | - |
+| 2. AI Interface & Matching | 1/5 | In Progress | - |
 | 3. Background Processing & Scraping | 0/3 | Not started | - |
 | 4. Media Enhancement & Voice | 0/2 | Not started | - |
 | 5. Telegram Bot & Publishing | 0/3 | Not started | - |

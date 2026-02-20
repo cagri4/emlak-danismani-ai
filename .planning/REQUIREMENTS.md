@@ -35,8 +35,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **AIUI-02**: Kullanıcı doğal dille müşteri ekleyebilmeli
 - [ ] **AIUI-03**: Kullanıcı doğal dille arama yapabilmeli ("Bodrum'da 10-20M arası villalar")
 - [ ] **AIUI-04**: Kullanıcı doğal dille durum güncelleyebilmeli ("Çankaya daireyi satıldı yap")
-- [ ] **AIUI-05**: AI Türkçe doğal dil anlayabilmeli
-- [ ] **AIUI-06**: AI konuşma bağlamını koruyabilmeli (çok adımlı komutlar)
+- [x] **AIUI-05**: AI Türkçe doğal dil anlayabilmeli
+- [x] **AIUI-06**: AI konuşma bağlamını koruyabilmeli (çok adımlı komutlar)
 - [x] **AIUI-07**: AI mülk özelliklerinden ilan metni yazabilmeli
 - [ ] **AIUI-08**: Kullanıcı ilan metnini düzenleyebilmeli
 - [ ] **AIUI-09**: Kullanıcı sesli komut verebilmeli (Türkçe)
@@ -143,8 +143,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AIUI-02 | Phase 2 | Pending |
 | AIUI-03 | Phase 2 | Pending |
 | AIUI-04 | Phase 2 | Pending |
-| AIUI-05 | Phase 2 | Pending |
-| AIUI-06 | Phase 2 | Pending |
+| AIUI-05 | Phase 2 | Complete (02-02) |
+| AIUI-06 | Phase 2 | Complete (02-02) |
 | AIUI-08 | Phase 2 | Pending |
 | ESLE-01 | Phase 2 | Pending |
 | ESLE-02 | Phase 2 | Pending |

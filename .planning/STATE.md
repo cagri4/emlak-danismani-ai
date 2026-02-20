@@ -5,32 +5,33 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Emlakçının zamanını geri ver — AI manuel işleri yapar, emlakçı satışa odaklanır
-**Current focus:** Phase 1: Foundation & Compliance
+**Current focus:** Phase 2: AI Interface & Matching
 
 ## Current Position
 
-Phase: 1 of 7 (Foundation & Compliance)
-Plan: 3 of 3 in current phase
-Status: Complete
-Last activity: 2026-02-19 — Completed plan 01-03: Dashboard, Property Cards & AI Descriptions
+Phase: 2 of 7 (AI Interface & Matching)
+Plan: 2 of 5 in current phase
+Status: In Progress
+Last activity: 2026-02-20 — Completed plan 02-02: Chat UI Shell
 
-Progress: [███░░░░░░░] 9%
+Progress: [████░░░░░░] 12%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: 12 min
-- Total execution time: 0.6 hours
+- Total plans completed: 4
+- Average duration: 11 min
+- Total execution time: 1.3 hours
 
 **By Phase:**
 
 | Phase | Plans | Total  | Avg/Plan |
 |-------|-------|--------|----------|
 | 01    | 3     | 35 min | 12 min   |
+| 02    | 1     | 8 min  | 8 min    |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (17 min), 01-02 (8 min), 01-03 (10 min)
+- Last 5 plans: 01-01 (17 min), 01-02 (8 min), 01-03 (10 min), 02-02 (8 min)
 - Trend: Accelerating
 
 *Updated after each plan completion*
@@ -59,6 +60,9 @@ Recent decisions affecting current work:
 - Client-side price filtering to avoid composite index complexity (01-03)
 - Claude Sonnet 4.6 with prompt caching for 90% cost savings (01-03)
 - 3 AI description variants with user selection pattern (01-03)
+- Fixed suggestion chips for chat interface (02-02)
+- Chat modal persists across route changes via context (02-02)
+- Chat only visible when user is authenticated (02-02)
 
 ### Pending Todos
 
@@ -70,6 +74,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-19T14:37:06Z
-Stopped at: Completed 01-03-PLAN.md - Dashboard, Property Cards & AI Descriptions (Phase 1 Complete)
-Resume file: .planning/phases/01-foundation-compliance/01-03-SUMMARY.md
+Last session: 2026-02-20T00:17:02Z
+Stopped at: Completed 02-02-PLAN.md - Chat UI Shell
+Resume file: .planning/phases/02-ai-interface-matching/02-02-SUMMARY.md
