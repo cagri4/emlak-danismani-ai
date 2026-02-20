@@ -1,9 +1,12 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { useAuthActions } from '@/hooks/useAuth'
 import { useNavigate } from 'react-router-dom'
 import { Menu, X, ChevronDown } from 'lucide-react'
+import NotificationBell from '@/components/notifications/NotificationBell'
+import NotificationDropdown from '@/components/notifications/NotificationDropdown'
+import { useNotifications } from '@/hooks/useNotifications'
 
 export default function Header() {
   const { user, userProfile } = useAuth()
@@ -11,6 +14,27 @@ export default function Header() {
   const navigate = useNavigate()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const [notificationsOpen, setNotificationsOpen] = useState(false)
+  const notificationRef = useRef<HTMLDivElement>(null)
+
+  const { notifications, markAsRead, markAllAsRead, deleteNotification } = useNotifications()
+
+  // Close notifications dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+        setNotificationsOpen(false)
+      }
+    }
+
+    if (notificationsOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [notificationsOpen])
 
   const handleSignOut = async () => {
     await signOut()
@@ -30,6 +54,21 @@ export default function Header() {
 
           {/* Desktop User Menu */}
           <div className="hidden md:flex items-center gap-4">
+            {/* Notification Bell */}
+            <div className="relative" ref={notificationRef}>
+              <NotificationBell onClick={() => setNotificationsOpen(!notificationsOpen)} />
+
+              {notificationsOpen && (
+                <NotificationDropdown
+                  notifications={notifications}
+                  onMarkAsRead={markAsRead}
+                  onMarkAllAsRead={markAllAsRead}
+                  onDelete={deleteNotification}
+                  onClose={() => setNotificationsOpen(false)}
+                />
+              )}
+            </div>
+
             <div className="relative">
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
