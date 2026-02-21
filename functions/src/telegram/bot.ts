@@ -4,6 +4,7 @@ import { REGION } from '../config';
 import { handleStart } from './commands/start';
 import { handleHelp } from './commands/help';
 import { handleSearch } from './commands/search';
+import { handleStatus } from './commands/status';
 
 // Validate bot token at module load
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
@@ -19,6 +20,7 @@ export const bot = new Bot(BOT_TOKEN);
 bot.command('start', handleStart);
 bot.command('help', handleHelp);
 bot.command('ara', handleSearch);
+bot.command('durum', handleStatus);
 
 // Default handler for unknown messages
 bot.on('message', async (ctx) => {
