@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useChatContext } from './ChatProvider';
 import { VoiceButton } from './VoiceButton';
 import { AttachmentButton } from './AttachmentButton';
+import { useToast } from '@/components/ui/toast';
 
 interface ChatInputProps {
   suggestionText?: string | null;
@@ -20,6 +21,7 @@ export function ChatInput({ suggestionText, onSuggestionUsed }: ChatInputProps) 
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const { sendMessage, isLoading } = useChatContext();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const { toast } = useToast();
 
   // Handle suggestion text from chips
   useEffect(() => {
@@ -41,6 +43,11 @@ export function ChatInput({ suggestionText, onSuggestionUsed }: ChatInputProps) 
 
   const handleVoiceTranscript = (text: string) => {
     setInput(prev => (prev ? prev + ' ' + text : text));
+    textareaRef.current?.focus();
+    toast({
+      title: 'Sesli komut tanındı',
+      description: 'Mesajı gönderebilir veya düzenleyebilirsiniz',
+    });
   };
 
   const handleUpload = (url: string, filename: string) => {
