@@ -111,15 +111,18 @@ Plans:
   6. New property triggers automatic notification to matching customers
   7. New customer sees suggested matching properties immediately
   8. User can view AI-generated price suggestion and valuation report for properties
-**Plans**: 6 plans in 2 waves
+**Plans**: 9 plans in 2 waves
 
 Plans:
-- [ ] 05-01-PLAN.md — Telegram bot foundation with grammY, webhook setup, /start and /help commands (Wave 1)
-- [ ] 05-02-PLAN.md — Telegram search (/ara) and status update (/durum) commands with Claude AI (Wave 2)
-- [ ] 05-03-PLAN.md — Firestore triggers for automatic matching notifications (Wave 1)
-- [ ] 05-04-PLAN.md — Portal photo resizer and publishing infrastructure (Wave 1)
-- [ ] 05-05-PLAN.md — Portal publishers for sahibinden, hepsiemlak, emlakjet with Playwright (Wave 2)
-- [ ] 05-06-PLAN.md — AI price suggestions and valuation reports with Claude (Wave 1)
+- [x] 05-01-PLAN.md — Telegram bot foundation with grammY, webhook setup, /start and /help commands (Wave 1) ✅ **COMPLETED**
+- [x] 05-02-PLAN.md — Telegram search (/ara) and status update (/durum) commands with Claude AI (Wave 2) ✅ **COMPLETED**
+- [x] 05-03-PLAN.md — Firestore triggers for automatic matching notifications (Wave 1) ✅ **COMPLETED**
+- [x] 05-04-PLAN.md — Portal photo resizer and publishing infrastructure (Wave 1) ✅ **COMPLETED**
+- [x] 05-05-PLAN.md — Portal publishers for sahibinden, hepsiemlak, emlakjet with Playwright (Wave 2) ✅ **COMPLETED**
+- [x] 05-06-PLAN.md — AI price suggestions and valuation reports with Claude (Wave 1) ✅ **COMPLETED**
+- [ ] 05-07-PLAN.md — Gap closure: Wire Telegram notifications to matching triggers (Wave 1)
+- [ ] 05-08-PLAN.md — Gap closure: Complete portal publisher implementations (Wave 1)
+- [ ] 05-09-PLAN.md — Gap closure: Integrate ValuationCard in PropertyDetail (Wave 1)
 
 ### Phase 6: Mobile PWA & Sharing
 **Goal**: Users can access the system as a mobile app with offline support and share properties via WhatsApp
@@ -163,6 +166,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 2. AI Interface & Matching | 5/5 | Complete | 2026-02-20 |
 | 3. Background Processing & Scraping | 6/6 | Complete | 2026-02-20 |
 | 4. Media Enhancement & Voice | 5/5 | Complete | 2026-02-21 |
-| 5. Telegram Bot & Publishing | 0/6 | Planned | - |
+| 5. Telegram Bot & Publishing | 6/9 | Gap Closure | - |
 | 6. Mobile PWA & Sharing | 0/3 | Not started | - |
 | 7. Email & Advanced Features | 0/1 | Not started | - |
