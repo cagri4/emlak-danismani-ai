@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Emlakçının zamanını geri ver — AI manuel işleri yapar, emlakçı satışa odaklanır
-**Current focus:** Phase 5 — Telegram Bot & Publishing (5 of 6 plans complete)
+**Current focus:** Phase 5 — Telegram Bot & Publishing (4 of 6 plans complete)
 
 ## Current Position
 
 Phase: 5 of 7 (Telegram Bot & Publishing)
-Plan: 5 of 6 in current phase
+Plan: 4 of 6 in current phase
 Status: In Progress
-Last activity: 2026-02-21 — Completed 05-01: Telegram Bot Foundation
+Last activity: 2026-02-21 — Completed 05-02: Telegram Bot Commands
 
 Progress: [█████████░] 61%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 20
-- Average duration: 10 min
-- Total execution time: 3.4 hours
+- Total plans completed: 21
+- Average duration: 9 min
+- Total execution time: 3.5 hours
 
 **By Phase:**
 
@@ -31,13 +31,14 @@ Progress: [█████████░] 61%
 | 02    | 5     | 52 min | 10 min   |
 | 03    | 4     | 40 min | 10 min   |
 | 04    | 5     | 52 min | 10 min   |
-| 05    | 3     | 25 min | 8 min    |
+| 05    | 4     | 32 min | 8 min    |
 
 **Recent Trend:**
-- Last 5 plans: 04-03 (6 min), 04-05 (7 min), 05-03 (8 min), 05-04 (8 min), 05-01 (9 min)
+- Last 5 plans: 04-05 (7 min), 05-03 (8 min), 05-04 (8 min), 05-01 (9 min), 05-02 (7 min)
 - Trend: Stable
 
 *Updated after each plan completion*
+| Phase 05 P02 | 7 | 3 tasks | 5 files |
 | Phase 03 P05 | 8 | 3 tasks | 10 files |
 | Phase 03-background-processing-scraping P04 | 12 | 3 tasks | 9 files |
 | Phase 03-background-processing-scraping P02 | 921 | 3 tasks | 7 files |
@@ -52,6 +53,7 @@ Progress: [█████████░] 61%
 | Phase 05 P04 | 8 | 3 tasks | 4 files |
 | Phase 05 P06 | 8 | 3 tasks | 6 files |
 | Phase 05 P01 | 9 | 3 tasks | 7 files |
+| Phase 05 P02 | 7 | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -147,6 +149,9 @@ Recent decisions affecting current work:
 - [Phase 05-06]: Claude Sonnet 4 for accurate Turkish market analysis
 - [Phase 05-06]: Two-function approach (quick price vs full report)
 - [Phase 05-06]: Progressive disclosure UI pattern (price first, then full report)
+- [Phase 05]: Claude Sonnet 4 for Turkish NLP query parsing in /ara command
+- [Phase 05-02]: Fuzzy matching with 60% threshold for property identification
+- [Phase 05-02]: Placeholder userId from Telegram chat ID for testing before user linking
 
 ### Pending Todos
 
@@ -159,6 +164,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 05-01: Telegram Bot Foundation
-Resume file: .planning/phases/05-telegram-bot-publishing/05-01-SUMMARY.md
-Next action: Continue Phase 5 - proceed to remaining plans (05-02, 05-05)
+Stopped at: Completed 05-02: Telegram Bot Commands
+Resume file: .planning/phases/05-telegram-bot-publishing/05-02-SUMMARY.md
+Next action: Continue Phase 5 - proceed to remaining plan (05-05)
