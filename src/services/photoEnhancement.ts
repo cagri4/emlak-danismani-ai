@@ -12,6 +12,8 @@ interface EnhancePhotoParams {
     saturation?: number;
     sharpen?: boolean;
     clahe?: boolean;
+    skyReplace?: boolean;
+    perspectiveCorrect?: boolean;
   };
 }
 
@@ -19,6 +21,8 @@ interface EnhancePhotoResult {
   success: boolean;
   enhancedUrl?: string;
   error?: string;
+  processingTime?: number;
+  cloudinaryUsed?: boolean;
 }
 
 /**
@@ -55,4 +59,7 @@ export const ENHANCEMENT_PRESETS = {
   bright: { brightness: 1.2, saturation: 1.0, sharpen: true },
   vibrant: { brightness: 1.05, saturation: 1.2, sharpen: true },
   dark_room: { brightness: 1.15, saturation: 1.1, sharpen: true, clahe: true },
+  sky_replace: { skyReplace: true },
+  perspective: { perspectiveCorrect: true },
+  full_ai: { brightness: 1.1, saturation: 1.1, sharpen: true, skyReplace: true, perspectiveCorrect: true },
 } as const;
