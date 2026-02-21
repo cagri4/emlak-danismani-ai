@@ -17,8 +17,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **MULK-06**: Kullanıcı fotoğrafları sürükle-bırak ile sıralayabilmeli
 - [x] **MULK-07**: Kullanıcı fotoğrafları kırpabilmeli
 - [x] **MULK-08**: AI fotoğrafları otomatik iyileştirebilmeli (HDR, parlaklık, kontrast)
-- [ ] **MULK-09**: AI gökyüzünü değiştirebilmeli (bulutlu → mavi)
-- [ ] **MULK-10**: AI perspektif düzeltmesi yapabilmeli
+- [x] **MULK-09**: AI gökyüzünü değiştirebilmeli (bulutlu → mavi)
+- [x] **MULK-10**: AI perspektif düzeltmesi yapabilmeli
 
 ### Müşteri Yönetimi (MUST)
 
@@ -160,8 +160,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MUST-05 | Phase 3 | Complete |
 | MULK-07 | Phase 4 | Complete |
 | MULK-08 | Phase 4 | Complete |
-| MULK-09 | Phase 4 | Pending |
-| MULK-10 | Phase 4 | Pending |
+| MULK-09 | Phase 4 | Complete |
+| MULK-10 | Phase 4 | Complete |
 | AIUI-09 | Phase 4 | Complete |
 | AIUI-10 | Phase 4 | Complete |
 | ILET-03 | Phase 5 | Pending |
