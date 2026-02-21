@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Emlakçının zamanını geri ver — AI manuel işleri yapar, emlakçı satışa odaklanır
-**Current focus:** Phase 5 — Telegram Bot & Publishing (3 of 6 plans complete)
+**Current focus:** Phase 5 — Telegram Bot & Publishing (4 of 6 plans complete)
 
 ## Current Position
 
 Phase: 5 of 7 (Telegram Bot & Publishing)
-Plan: 3 of 6 in current phase
+Plan: 4 of 6 in current phase
 Status: In Progress
-Last activity: 2026-02-21 — Completed 05-03: Firestore Matching Triggers
+Last activity: 2026-02-21 — Completed 05-04: Photo Resizing Infrastructure
 
-Progress: [████████░░] 55%
+Progress: [████████░░] 58%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 18
+- Total plans completed: 19
 - Average duration: 10 min
-- Total execution time: 3.1 hours
+- Total execution time: 3.2 hours
 
 **By Phase:**
 
@@ -31,10 +31,10 @@ Progress: [████████░░] 55%
 | 02    | 5     | 52 min | 10 min   |
 | 03    | 4     | 40 min | 10 min   |
 | 04    | 5     | 52 min | 10 min   |
-| 05    | 1     | 8 min  | 8 min    |
+| 05    | 2     | 16 min | 8 min    |
 
 **Recent Trend:**
-- Last 5 plans: 04-01 (15 min), 04-02 (17 min), 04-03 (6 min), 04-05 (7 min), 05-03 (8 min)
+- Last 5 plans: 04-02 (17 min), 04-03 (6 min), 04-05 (7 min), 05-03 (8 min), 05-04 (8 min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -49,6 +49,8 @@ Progress: [████████░░] 55%
 | Phase 04 P03 | 6 | 3 tasks | 5 files |
 | Phase 04-media-enhancement-voice P05 | 7 | 3 tasks | 2 files |
 | Phase 05 P03 | 8 | 3 tasks | 4 files |
+| Phase 05 P04 | 8 | 3 tasks | 4 files |
+| Phase 05 P06 | 8 | 3 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -135,6 +137,10 @@ Recent decisions affecting current work:
 - [Phase 05]: Duplicate scoring logic in Cloud Functions for isolation (avoid importing client code)
 - [Phase 05]: 60% score threshold for matching notifications (balances relevance with discovery)
 - [Phase 05]: Top 5 matches limit to prevent notification spam
+- [Phase 05-04]: Portal specs based on research: sahibinden 800x600, hepsiemlak/emlakjet 1024x768
+- [Phase 05-04]: Quality reduction loop (85 -> 60) prevents oversized photos
+- [Phase 05-04]: Concurrency limit of 3 for parallel processing
+- [Phase 05-04]: Progressive JPEG with mozjpeg optimization for best compression
 
 ### Pending Todos
 
@@ -147,6 +153,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 05-03: Firestore Matching Triggers
-Resume file: .planning/phases/05-telegram-bot-publishing/05-03-SUMMARY.md
-Next action: Continue Phase 5 - proceed to 05-04
+Stopped at: Completed 05-04: Photo Resizing Infrastructure
+Resume file: .planning/phases/05-telegram-bot-publishing/05-04-SUMMARY.md
+Next action: Continue Phase 5 - proceed to 05-05
