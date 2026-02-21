@@ -13,5 +13,9 @@ export { monitorCompetitors } from './schedulers/competitorMonitor';
 // Export voice transcription function
 export { transcribeVoice } from './voice/transcribeVoice';
 
+// Export AI valuation functions
+export { generatePriceSuggestion } from './ai/pricePredictor';
+export { generateValuationReport } from './ai/valuationReport';
+
 // Future exports:
 // - Email notification functions
