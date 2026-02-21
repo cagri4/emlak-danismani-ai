@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Foundation & Compliance** - Auth, basic property CRUD, KVKK compliance, basic AI text generation ✅ **COMPLETE**
 - [x] **Phase 2: AI Interface & Matching** - Natural language commands, customer management, property-customer matching ✅ **COMPLETE**
 - [x] **Phase 3: Background Processing & Scraping** - Photo upload, portal import, competitor monitoring, async job processing ✅ **COMPLETE**
-- [ ] **Phase 4: Media Enhancement & Voice** - AI photo editing, voice commands (Turkce)
+- [x] **Phase 4: Media Enhancement & Voice** - AI photo editing, voice commands (Turkce) ✅ **COMPLETE**
 - [ ] **Phase 5: Telegram Bot & Publishing** - Telegram interface, portal publishing, advanced matching features
 - [ ] **Phase 6: Mobile PWA & Sharing** - Progressive Web App, WhatsApp sharing, offline support
 - [ ] **Phase 7: Email & Advanced Features** - Email communication, customer filtering, lead scoring polish
@@ -89,13 +89,14 @@ Plans:
   3. AI can replace cloudy skies with blue skies in property photos
   4. AI corrects perspective distortion in photos
   5. User can speak commands in Turkish and see them executed (e.g., "Yeni mulk ekle")
-**Plans**: 4 plans in 2 waves
+**Plans**: 5 plans in 2 waves ✅ **COMPLETE**
 
 Plans:
-- [ ] 04-01-PLAN.md — Photo cropping with react-easy-crop, image utilities, PropertyEdit integration (Wave 1)
-- [ ] 04-02-PLAN.md — Sharp-based photo enhancement Cloud Function, client service, enhance button (Wave 1)
-- [ ] 04-03-PLAN.md — Cloudinary AI for sky replacement and perspective correction (Wave 2)
-- [ ] 04-04-PLAN.md — Turkish voice commands with OpenAI Whisper API, recording UI (Wave 1)
+- [x] 04-01-PLAN.md — Photo cropping with react-easy-crop, image utilities, PropertyEdit integration (Wave 1) ✅ **COMPLETED** (15 min, 3 tasks, 7 files)
+- [x] 04-02-PLAN.md — Sharp-based photo enhancement Cloud Function, client service, enhance button (Wave 1) ✅ **COMPLETED** (17 min, 3 tasks, 7 files)
+- [x] 04-03-PLAN.md — Cloudinary AI for sky replacement and perspective correction (Wave 2) ✅ **COMPLETED** (6 min, 3 tasks, 5 files)
+- [x] 04-04-PLAN.md — Turkish voice commands with OpenAI Whisper API, recording UI (Wave 1) ✅ **COMPLETED** (7 min, 3 tasks, 10 files)
+- [x] 04-05-PLAN.md — Wire AdvancedPhotoEditor to UI (Wave 2) ✅ **COMPLETED** (7 min, 3 tasks, 2 files)
 
 ### Phase 5: Telegram Bot & Publishing
 **Goal**: Users can access the system via Telegram and publish listings to Turkish portals
@@ -110,12 +111,15 @@ Plans:
   6. New property triggers automatic notification to matching customers
   7. New customer sees suggested matching properties immediately
   8. User can view AI-generated price suggestion and valuation report for properties
-**Plans**: TBD
+**Plans**: 6 plans in 2 waves
 
 Plans:
-- [ ] 05-01: TBD
-- [ ] 05-02: TBD
-- [ ] 05-03: TBD
+- [ ] 05-01-PLAN.md — Telegram bot foundation with grammY, webhook setup, /start and /help commands (Wave 1)
+- [ ] 05-02-PLAN.md — Telegram search (/ara) and status update (/durum) commands with Claude AI (Wave 2)
+- [ ] 05-03-PLAN.md — Firestore triggers for automatic matching notifications (Wave 1)
+- [ ] 05-04-PLAN.md — Portal photo resizer and publishing infrastructure (Wave 1)
+- [ ] 05-05-PLAN.md — Portal publishers for sahibinden, hepsiemlak, emlakjet with Playwright (Wave 2)
+- [ ] 05-06-PLAN.md — AI price suggestions and valuation reports with Claude (Wave 1)
 
 ### Phase 6: Mobile PWA & Sharing
 **Goal**: Users can access the system as a mobile app with offline support and share properties via WhatsApp
@@ -158,7 +162,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 1. Foundation & Compliance | 3/3 | Complete | 2026-02-19 |
 | 2. AI Interface & Matching | 5/5 | Complete | 2026-02-20 |
 | 3. Background Processing & Scraping | 6/6 | Complete | 2026-02-20 |
-| 4. Media Enhancement & Voice | 0/4 | Planned | - |
-| 5. Telegram Bot & Publishing | 0/3 | Not started | - |
+| 4. Media Enhancement & Voice | 5/5 | Complete | 2026-02-21 |
+| 5. Telegram Bot & Publishing | 0/6 | Planned | - |
 | 6. Mobile PWA & Sharing | 0/3 | Not started | - |
 | 7. Email & Advanced Features | 0/1 | Not started | - |
