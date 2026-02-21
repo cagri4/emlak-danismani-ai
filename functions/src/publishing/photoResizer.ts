@@ -1,4 +1,5 @@
 import sharp from 'sharp';
+import { getStorage } from 'firebase-admin/storage';
 import { getPortalSpecs, PortalType } from './common';
 
 interface ResizedPhoto {
@@ -6,6 +7,64 @@ interface ResizedPhoto {
   size: number;
   width: number;
   height: number;
+}
+
+/**
+ * Download photo from Firebase Storage or external URL
+ */
+async function downloadPhoto(url: string): Promise<Buffer | null> {
+  try {
+    // Check if it's a Firebase Storage URL
+    if (url.includes('firebasestorage.googleapis.com') || url.includes('storage.googleapis.com')) {
+      // Extract path from URL
+      const urlObj = new URL(url);
+      const pathMatch = urlObj.pathname.match(/\/o\/(.+?)(\?|$)/);
+      if (pathMatch) {
+        const filePath = decodeURIComponent(pathMatch[1]);
+        const storage = getStorage();
+        const file = storage.bucket().file(filePath);
+        const [buffer] = await file.download();
+        return buffer;
+      }
+    }
+
+    // Fall back to HTTP fetch for external URLs
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.error(`HTTP error fetching ${url}: ${response.status}`);
+      return null;
+    }
+    return Buffer.from(await response.arrayBuffer());
+  } catch (error) {
+    console.error(`Error downloading photo ${url}:`, error);
+    return null;
+  }
+}
+
+/**
+ * Process photos in parallel with concurrency limit
+ */
+async function processWithConcurrency<T, R>(
+  items: T[],
+  processor: (item: T) => Promise<R | null>,
+  concurrency: number = 3
+): Promise<R[]> {
+  const results: R[] = [];
+
+  for (let i = 0; i < items.length; i += concurrency) {
+    const batch = items.slice(i, i + concurrency);
+    const batchResults = await Promise.all(
+      batch.map(item => processor(item))
+    );
+    // Filter out null results
+    for (const result of batchResults) {
+      if (result !== null) {
+        results.push(result);
+      }
+    }
+  }
+
+  return results;
 }
 
 /**
@@ -67,27 +126,28 @@ export async function generatePortalPhotos(
   photoUrls: string[],
   portal: PortalType
 ): Promise<ResizedPhoto[]> {
-  const results: ResizedPhoto[] = [];
+  console.log(`Processing ${photoUrls.length} photos for ${portal}`);
 
-  for (const url of photoUrls) {
+  // Process photos with concurrency limit
+  const processor = async (url: string): Promise<ResizedPhoto | null> => {
     try {
       // Download photo
-      const response = await fetch(url);
-      if (!response.ok) {
-        console.error(`Failed to fetch photo: ${url}`);
-        continue;
+      const sourceBuffer = await downloadPhoto(url);
+      if (!sourceBuffer) {
+        return null;
       }
-      const sourceBuffer = Buffer.from(await response.arrayBuffer());
 
       // Resize for portal
       const resized = await resizeForPortal(sourceBuffer, portal);
-      results.push(resized);
+      console.log(`Resized photo: ${resized.width}x${resized.height}, ${(resized.size / 1024).toFixed(1)}KB`);
+      return resized;
     } catch (error) {
       console.error(`Error processing photo ${url}:`, error);
+      return null;
     }
-  }
+  };
 
-  return results;
+  return processWithConcurrency(photoUrls, processor, 3);
 }
 
 /**
