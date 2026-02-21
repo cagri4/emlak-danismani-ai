@@ -1,0 +1,200 @@
+import * as functions from 'firebase-functions/v2/https';
+import * as admin from 'firebase-admin';
+import sharp from 'sharp';
+import * as path from 'path';
+import * as fs from 'fs';
+import * as os from 'os';
+import { REGION } from '../config';
+
+interface EnhanceRequest {
+  photoUrl: string;
+  propertyId: string;
+  photoIndex: number;
+  userId: string;
+  options?: {
+    brightness?: number;  // 0.9-1.2, default 1.1
+    saturation?: number;  // 0.9-1.2, default 1.1
+    sharpen?: boolean;    // default true
+    clahe?: boolean;      // adaptive histogram equalization for dark photos
+  };
+}
+
+interface EnhanceResponse {
+  success: boolean;
+  enhancedUrl?: string;
+  error?: string;
+}
+
+/**
+ * Cloud Function to enhance property photos using Sharp.
+ *
+ * Features:
+ * - Auto-contrast with normalise()
+ * - Brightness and saturation boost
+ * - Mild sharpening
+ * - Optional CLAHE for dark photos
+ * - EXIF auto-rotation
+ *
+ * Per KVKK compliance: All processing in europe-west1 region
+ */
+export const enhancePropertyPhoto = functions.onCall<EnhanceRequest, Promise<EnhanceResponse>>(
+  {
+    region: REGION,
+    memory: '1GiB',
+    timeoutSeconds: 120,
+    cpu: 2,
+  },
+  async (request) => {
+    const { photoUrl, propertyId, photoIndex, options } = request.data;
+
+    // Validate authentication
+    if (!request.auth) {
+      throw new functions.HttpsError('unauthenticated', 'Kullanıcı girişi gerekli');
+    }
+
+    const userId = request.auth.uid;
+
+    // Validate required fields
+    if (!photoUrl || !propertyId) {
+      throw new functions.HttpsError('invalid-argument', 'photoUrl ve propertyId gerekli');
+    }
+
+    // Check if photo is already enhanced
+    if (photoUrl.includes('_enhanced')) {
+      return {
+        success: false,
+        error: 'Fotoğraf zaten iyileştirilmiş',
+      };
+    }
+
+    // Default options
+    const brightness = options?.brightness ?? 1.1;
+    const saturation = options?.saturation ?? 1.1;
+    const sharpen = options?.sharpen ?? true;
+    const clahe = options?.clahe ?? false;
+
+    // Validate option ranges
+    if (brightness < 0.9 || brightness > 1.2) {
+      throw new functions.HttpsError('invalid-argument', 'brightness 0.9-1.2 arasında olmalı');
+    }
+    if (saturation < 0.9 || saturation > 1.2) {
+      throw new functions.HttpsError('invalid-argument', 'saturation 0.9-1.2 arasında olmalı');
+    }
+
+    const bucket = admin.storage().bucket();
+    let tempFilePath: string | null = null;
+    let tempEnhancedPath: string | null = null;
+
+    try {
+      console.log(`Enhancing photo: ${photoUrl}`);
+
+      // Extract Storage path from URL
+      const urlParts = photoUrl.split('/o/')[1];
+      if (!urlParts) {
+        throw new functions.HttpsError('invalid-argument', 'Geçersiz fotoğraf URL formatı');
+      }
+      const storagePath = decodeURIComponent(urlParts.split('?')[0]);
+
+      // Download original image to temp file
+      tempFilePath = path.join(os.tmpdir(), `original-${Date.now()}.jpg`);
+      await bucket.file(storagePath).download({ destination: tempFilePath });
+
+      console.log(`Downloaded to: ${tempFilePath}`);
+
+      // Build Sharp pipeline
+      let pipeline = sharp(tempFilePath)
+        .rotate() // Auto-rotate based on EXIF (MUST be first)
+        .normalise(); // Stretch luminance (auto-contrast)
+
+      // Apply brightness and saturation modulation
+      if (brightness !== 1.0 || saturation !== 1.0) {
+        pipeline = pipeline.modulate({
+          brightness,
+          saturation,
+        });
+      }
+
+      // Apply CLAHE for dark photos (adaptive histogram equalization)
+      if (clahe) {
+        pipeline = pipeline.clahe({
+          width: 8,
+          height: 8,
+          maxSlope: 3,
+        });
+      }
+
+      // Apply sharpening
+      if (sharpen) {
+        pipeline = pipeline.sharpen({
+          sigma: 1.0,
+        });
+      }
+
+      // Output as high-quality JPEG
+      tempEnhancedPath = path.join(os.tmpdir(), `enhanced-${Date.now()}.jpg`);
+      await pipeline
+        .jpeg({
+          quality: 85,
+          progressive: true,
+        })
+        .toFile(tempEnhancedPath);
+
+      console.log(`Enhanced photo saved to: ${tempEnhancedPath}`);
+
+      // Generate enhanced file path
+      const storageDir = path.dirname(storagePath);
+      const fileName = path.basename(storagePath, path.extname(storagePath));
+      const enhancedStoragePath = `${storageDir}/${fileName}_enhanced.jpg`;
+
+      // Upload enhanced photo to Storage
+      await bucket.upload(tempEnhancedPath, {
+        destination: enhancedStoragePath,
+        metadata: {
+          contentType: 'image/jpeg',
+          metadata: {
+            userId,
+            propertyId,
+            photoIndex: photoIndex.toString(),
+            enhancedAt: new Date().toISOString(),
+            enhancementOptions: JSON.stringify(options || {}),
+          },
+        },
+      });
+
+      console.log(`Uploaded enhanced photo to: ${enhancedStoragePath}`);
+
+      // Get signed URL for enhanced photo
+      const [enhancedUrl] = await bucket.file(enhancedStoragePath).getSignedUrl({
+        action: 'read',
+        expires: '03-01-2500', // Far future expiry
+      });
+
+      console.log(`Enhancement complete: ${enhancedUrl}`);
+
+      return {
+        success: true,
+        enhancedUrl,
+      };
+    } catch (error) {
+      console.error('Error enhancing photo:', error);
+
+      // Return user-friendly error message
+      if (error instanceof functions.HttpsError) {
+        throw error;
+      }
+
+      throw new functions.HttpsError(
+        'internal',
+        'Fotoğraf iyileştirme sırasında hata oluştu'
+      );
+    } finally {
+      // Clean up temp files
+      if (tempFilePath && fs.existsSync(tempFilePath)) {
+        fs.unlinkSync(tempFilePath);
+      }
+      if (tempEnhancedPath && fs.existsSync(tempEnhancedPath)) {
+        fs.unlinkSync(tempEnhancedPath);
+      }
+    }
+  }
+);

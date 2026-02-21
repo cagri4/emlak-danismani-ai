@@ -51,7 +51,7 @@ export const processPropertyPhoto = onObjectFinalized(
 
       // Get original file size
       const [metadata] = await bucket.file(filePath).getMetadata();
-      const originalSize = metadata.size;
+      const originalSize = Number(metadata.size || 0);
       console.log(`Original size: ${(originalSize / 1024).toFixed(2)} KB`);
 
       // Extract file parts
@@ -82,7 +82,7 @@ export const processPropertyPhoto = onObjectFinalized(
       });
 
       const [thumbMetadata] = await bucket.file(thumbnailPath).getMetadata();
-      const thumbSize = thumbMetadata.size;
+      const thumbSize = Number(thumbMetadata.size || 0);
       console.log(`Thumbnail created: ${thumbnailPath} (${(thumbSize / 1024).toFixed(2)} KB)`);
 
       // Compress original
@@ -101,7 +101,7 @@ export const processPropertyPhoto = onObjectFinalized(
       });
 
       const [compressedMetadata] = await bucket.file(filePath).getMetadata();
-      const compressedSize = compressedMetadata.size;
+      const compressedSize = Number(compressedMetadata.size || 0);
       console.log(`Original compressed: ${filePath} (${(compressedSize / 1024).toFixed(2)} KB, ${((1 - compressedSize / originalSize) * 100).toFixed(1)}% reduction)`);
 
       console.log(`Successfully processed: ${filePath}`);
