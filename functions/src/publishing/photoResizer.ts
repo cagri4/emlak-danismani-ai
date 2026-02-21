@@ -56,10 +56,10 @@ async function processWithConcurrency<T, R>(
     const batchResults = await Promise.all(
       batch.map(item => processor(item))
     );
-    // Filter out null results
+    // Filter out null results and add to results array
     for (const result of batchResults) {
       if (result !== null) {
-        results.push(result);
+        results.push(result as R);
       }
     }
   }
