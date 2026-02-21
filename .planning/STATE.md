@@ -11,17 +11,17 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 
 Phase: 4 of 7 (Media Enhancement & Voice)
 Plan: 2 of 4 in current phase
-Status: In Progress
-Last activity: 2026-02-21 — Completed 04-01: Photo Cropping
+Status: Complete
+Last activity: 2026-02-21 — Completed 04-02: AI Photo Enhancement
 
-Progress: [████████░░] 44%
+Progress: [████████░░] 47%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 14
-- Average duration: 10 min
-- Total execution time: 2.5 hours
+- Total plans completed: 15
+- Average duration: 11 min
+- Total execution time: 2.8 hours
 
 **By Phase:**
 
@@ -30,10 +30,10 @@ Progress: [████████░░] 44%
 | 01    | 3     | 35 min | 12 min   |
 | 02    | 5     | 52 min | 10 min   |
 | 03    | 4     | 40 min | 10 min   |
-| 04    | 2     | 22 min | 11 min   |
+| 04    | 3     | 39 min | 13 min   |
 
 **Recent Trend:**
-- Last 5 plans: 03-02 (15 min), 03-03 (19 min), 03-06 (6 min), 04-04 (7 min), 04-01 (15 min)
+- Last 5 plans: 03-03 (19 min), 03-06 (6 min), 04-04 (7 min), 04-01 (15 min), 04-02 (17 min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -43,6 +43,7 @@ Progress: [████████░░] 44%
 | Phase 03 P06 | 6 | 2 tasks | 1 files |
 | Phase 04 P04 | 7 | 3 tasks | 10 files |
 | Phase 04 P01 | 15 | 3 tasks | 7 files |
+| Phase 04 P02 | 17 | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -117,6 +118,11 @@ Recent decisions affecting current work:
 - Overwrite original photo in Storage (save storage costs, simpler UX) (04-01)
 - Cache-buster query param to force browser refresh after crop (04-01)
 - JPEG output at 0.95 quality for good balance of quality/size (04-01)
+- Auto enhancement preset used by default (brightness 1.1, saturation 1.1) (04-02)
+- Enhanced photos marked with _enhanced suffix in filename (04-02)
+- Sharp pipeline: rotate → normalise → modulate → sharpen (04-02)
+- 1GiB memory allocation for enhancement Cloud Function (handles large images) (04-02)
+- Toast notifications via sonner for user feedback (04-02)
 
 ### Pending Todos
 
@@ -129,6 +135,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 04-01: Photo Cropping
-Resume file: .planning/phases/04-media-enhancement-voice/04-01-SUMMARY.md
-Next action: Continue Phase 4 with next plan (04-02 or 04-03)
+Stopped at: Completed 04-02: AI Photo Enhancement
+Resume file: .planning/phases/04-media-enhancement-voice/04-02-SUMMARY.md
+Next action: Continue Phase 4 with next plan (04-03)
