@@ -89,11 +89,13 @@ Plans:
   3. AI can replace cloudy skies with blue skies in property photos
   4. AI corrects perspective distortion in photos
   5. User can speak commands in Turkish and see them executed (e.g., "Yeni mulk ekle")
-**Plans**: TBD
+**Plans**: 4 plans in 2 waves
 
 Plans:
-- [ ] 04-01: TBD
-- [ ] 04-02: TBD
+- [ ] 04-01-PLAN.md — Photo cropping with react-easy-crop, image utilities, PropertyEdit integration (Wave 1)
+- [ ] 04-02-PLAN.md — Sharp-based photo enhancement Cloud Function, client service, enhance button (Wave 1)
+- [ ] 04-03-PLAN.md — Cloudinary AI for sky replacement and perspective correction (Wave 2)
+- [ ] 04-04-PLAN.md — Turkish voice commands with OpenAI Whisper API, recording UI (Wave 1)
 
 ### Phase 5: Telegram Bot & Publishing
 **Goal**: Users can access the system via Telegram and publish listings to Turkish portals
@@ -155,8 +157,8 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 |-------|----------------|--------|-----------|
 | 1. Foundation & Compliance | 3/3 | Complete | 2026-02-19 |
 | 2. AI Interface & Matching | 5/5 | Complete | 2026-02-20 |
-| 3. Background Processing & Scraping | 5/6 | Gap closure needed | - |
-| 4. Media Enhancement & Voice | 0/2 | Not started | - |
+| 3. Background Processing & Scraping | 6/6 | Complete | 2026-02-20 |
+| 4. Media Enhancement & Voice | 0/4 | Planned | - |
 | 5. Telegram Bot & Publishing | 0/3 | Not started | - |
 | 6. Mobile PWA & Sharing | 0/3 | Not started | - |
 | 7. Email & Advanced Features | 0/1 | Not started | - |

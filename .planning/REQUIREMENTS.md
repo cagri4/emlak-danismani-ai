@@ -39,8 +39,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **AIUI-06**: AI konuşma bağlamını koruyabilmeli (çok adımlı komutlar)
 - [x] **AIUI-07**: AI mülk özelliklerinden ilan metni yazabilmeli
 - [x] **AIUI-08**: Kullanıcı ilan metnini düzenleyebilmeli
-- [ ] **AIUI-09**: Kullanıcı sesli komut verebilmeli (Türkçe)
-- [ ] **AIUI-10**: AI sesli komutu metne çevirip işleyebilmeli
+- [x] **AIUI-09**: Kullanıcı sesli komut verebilmeli (Türkçe)
+- [x] **AIUI-10**: AI sesli komutu metne çevirip işleyebilmeli
 
 ### Eşleştirme (ESLE)
 
@@ -162,8 +162,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MULK-08 | Phase 4 | Pending |
 | MULK-09 | Phase 4 | Pending |
 | MULK-10 | Phase 4 | Pending |
-| AIUI-09 | Phase 4 | Pending |
-| AIUI-10 | Phase 4 | Pending |
+| AIUI-09 | Phase 4 | Complete |
+| AIUI-10 | Phase 4 | Complete |
 | ILET-03 | Phase 5 | Pending |
 | ILET-04 | Phase 5 | Pending |
 | ILET-05 | Phase 5 | Pending |
