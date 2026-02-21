@@ -27,6 +27,7 @@ export interface Customer {
   name: string
   phone?: string
   email?: string
+  telegramChatId?: number  // Telegram chat ID for notifications
   preferences: CustomerPreferences
   interactionCount: number  // Denormalized for quick display
   lastInteraction?: Date | { toDate: () => Date }

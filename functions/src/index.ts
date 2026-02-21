@@ -17,5 +17,12 @@ export { transcribeVoice } from './voice/transcribeVoice';
 export { generatePriceSuggestion } from './ai/pricePredictor';
 export { generateValuationReport } from './ai/valuationReport';
 
+// Export matching triggers
+export { notifyMatchingCustomers } from './triggers/onPropertyCreated';
+export { suggestMatchingProperties } from './triggers/onCustomerCreated';
+
+// Export Telegram bot webhook
+export { telegramWebhook } from './telegram/bot';
+
 // Future exports:
 // - Email notification functions
