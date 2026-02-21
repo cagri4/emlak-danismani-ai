@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Emlakçının zamanını geri ver — AI manuel işleri yapar, emlakçı satışa odaklanır
-**Current focus:** Phase 4 — Media Enhancement & Voice (5 of 5 plans complete)
+**Current focus:** Phase 5 — Telegram Bot & Publishing (3 of 6 plans complete)
 
 ## Current Position
 
-Phase: 4 of 7 (Media Enhancement & Voice)
-Plan: 5 of 5 in current phase
-Status: Complete
-Last activity: 2026-02-21 — Completed 04-05: Wire AdvancedPhotoEditor to UI
+Phase: 5 of 7 (Telegram Bot & Publishing)
+Plan: 3 of 6 in current phase
+Status: In Progress
+Last activity: 2026-02-21 — Completed 05-03: Firestore Matching Triggers
 
-Progress: [████████░░] 52%
+Progress: [████████░░] 55%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 17
+- Total plans completed: 18
 - Average duration: 10 min
-- Total execution time: 3.0 hours
+- Total execution time: 3.1 hours
 
 **By Phase:**
 
@@ -31,9 +31,10 @@ Progress: [████████░░] 52%
 | 02    | 5     | 52 min | 10 min   |
 | 03    | 4     | 40 min | 10 min   |
 | 04    | 5     | 52 min | 10 min   |
+| 05    | 1     | 8 min  | 8 min    |
 
 **Recent Trend:**
-- Last 5 plans: 04-04 (7 min), 04-01 (15 min), 04-02 (17 min), 04-03 (6 min), 04-05 (7 min)
+- Last 5 plans: 04-01 (15 min), 04-02 (17 min), 04-03 (6 min), 04-05 (7 min), 05-03 (8 min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -47,6 +48,7 @@ Progress: [████████░░] 52%
 | Phase 04 P03 | 6 | 3 tasks | 5 files |
 | Phase 04 P03 | 6 | 3 tasks | 5 files |
 | Phase 04-media-enhancement-voice P05 | 7 | 3 tasks | 2 files |
+| Phase 05 P03 | 8 | 3 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -130,6 +132,9 @@ Recent decisions affecting current work:
 - [Phase 04-03]: Download Cloudinary images back to Firebase Storage for consistent ownership (04-03)
 - [Phase 04-05]: Gradient button styling (purple-to-pink) for Advanced Edit button to distinguish AI features
 - [Phase 04-05]: Follow PhotoEditor integration pattern for AdvancedPhotoEditor modal consistency
+- [Phase 05]: Duplicate scoring logic in Cloud Functions for isolation (avoid importing client code)
+- [Phase 05]: 60% score threshold for matching notifications (balances relevance with discovery)
+- [Phase 05]: Top 5 matches limit to prevent notification spam
 
 ### Pending Todos
 
@@ -142,6 +147,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 04-05: Wire AdvancedPhotoEditor to UI
-Resume file: .planning/phases/04-media-enhancement-voice/04-05-SUMMARY.md
-Next action: Phase 4 complete - proceed to Phase 5
+Stopped at: Completed 05-03: Firestore Matching Triggers
+Resume file: .planning/phases/05-telegram-bot-publishing/05-03-SUMMARY.md
+Next action: Continue Phase 5 - proceed to 05-04
