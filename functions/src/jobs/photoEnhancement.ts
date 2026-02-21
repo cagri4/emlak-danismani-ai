@@ -5,6 +5,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as os from 'os';
 import { REGION } from '../config';
+import { initCloudinary, replaceSky, correctPerspective, isCloudinaryConfigured } from '../services/cloudinaryService';
 
 interface EnhanceRequest {
   photoUrl: string;
@@ -16,6 +17,9 @@ interface EnhanceRequest {
     saturation?: number;  // 0.9-1.2, default 1.1
     sharpen?: boolean;    // default true
     clahe?: boolean;      // adaptive histogram equalization for dark photos
+    // New advanced options
+    skyReplace?: boolean;    // Requires Cloudinary
+    perspectiveCorrect?: boolean;  // Requires Cloudinary
   };
 }
 
@@ -23,6 +27,8 @@ interface EnhanceResponse {
   success: boolean;
   enhancedUrl?: string;
   error?: string;
+  processingTime?: number;
+  cloudinaryUsed?: boolean;
 }
 
 /**
@@ -86,6 +92,8 @@ export const enhancePropertyPhoto = functions.onCall<EnhanceRequest, Promise<Enh
     let tempEnhancedPath: string | null = null;
 
     try {
+      const startTime = Date.now();
+      let cloudinaryUsed = false;
       console.log(`Enhancing photo: ${photoUrl}`);
 
       // Extract Storage path from URL
@@ -95,9 +103,60 @@ export const enhancePropertyPhoto = functions.onCall<EnhanceRequest, Promise<Enh
       }
       const storagePath = decodeURIComponent(urlParts.split('?')[0]);
 
-      // Download original image to temp file
+      // Handle Cloudinary advanced features if requested
+      let imageUrl = photoUrl;
+      if (options?.skyReplace || options?.perspectiveCorrect) {
+        if (!isCloudinaryConfigured()) {
+          throw new functions.HttpsError(
+            'failed-precondition',
+            'Cloudinary yapılandırılmamış. Gelişmiş özellikleri etkinleştirmek için yöneticiye başvurun.'
+          );
+        }
+
+        initCloudinary();
+        cloudinaryUsed = true;
+
+        if (options.skyReplace) {
+          console.log('Applying sky replacement...');
+          const skyResult = await replaceSky(imageUrl);
+          if (!skyResult.success) {
+            throw new functions.HttpsError('internal', skyResult.error || 'Gökyüzü değiştirme başarısız oldu');
+          }
+          imageUrl = skyResult.url!;
+        }
+
+        if (options.perspectiveCorrect) {
+          console.log('Applying perspective correction...');
+          const perspectiveResult = await correctPerspective(imageUrl);
+          if (!perspectiveResult.success) {
+            throw new functions.HttpsError('internal', perspectiveResult.error || 'Perspektif düzeltme başarısız oldu');
+          }
+          imageUrl = perspectiveResult.url!;
+        }
+      }
+
+      // Download image to temp file (either original or Cloudinary-processed)
       tempFilePath = path.join(os.tmpdir(), `original-${Date.now()}.jpg`);
-      await bucket.file(storagePath).download({ destination: tempFilePath });
+
+      if (cloudinaryUsed) {
+        // Download from Cloudinary URL
+        const https = await import('https');
+        const file = fs.createWriteStream(tempFilePath);
+        await new Promise<void>((resolve, reject) => {
+          https.get(imageUrl, (response) => {
+            response.pipe(file);
+            file.on('finish', () => {
+              file.close();
+              resolve();
+            });
+          }).on('error', (err) => {
+            fs.unlink(tempFilePath!, () => reject(err));
+          });
+        });
+      } else {
+        // Download from Firebase Storage
+        await bucket.file(storagePath).download({ destination: tempFilePath });
+      }
 
       console.log(`Downloaded to: ${tempFilePath}`);
 
@@ -171,9 +230,13 @@ export const enhancePropertyPhoto = functions.onCall<EnhanceRequest, Promise<Enh
 
       console.log(`Enhancement complete: ${enhancedUrl}`);
 
+      const processingTime = Date.now() - startTime;
+
       return {
         success: true,
         enhancedUrl,
+        processingTime,
+        cloudinaryUsed,
       };
     } catch (error) {
       console.error('Error enhancing photo:', error);
