@@ -3,6 +3,7 @@ import { onRequest } from 'firebase-functions/v2/https';
 import { REGION } from '../config';
 import { handleStart } from './commands/start';
 import { handleHelp } from './commands/help';
+import { handleSearch } from './commands/search';
 
 // Validate bot token at module load
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
@@ -17,6 +18,7 @@ export const bot = new Bot(BOT_TOKEN);
 // Register command handlers
 bot.command('start', handleStart);
 bot.command('help', handleHelp);
+bot.command('ara', handleSearch);
 
 // Default handler for unknown messages
 bot.on('message', async (ctx) => {
@@ -27,7 +29,7 @@ bot.on('message', async (ctx) => {
 export const telegramWebhook = onRequest(
   {
     region: REGION,
-    secrets: ['TELEGRAM_BOT_TOKEN'],
+    secrets: ['TELEGRAM_BOT_TOKEN', 'ANTHROPIC_API_KEY'],
   },
   webhookCallback(bot, 'https')
 );
