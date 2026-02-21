@@ -11,6 +11,7 @@ import AIDescriptionGenerator from '@/components/property/AIDescriptionGenerator
 import { PhotoUploader } from '@/components/photos/PhotoUploader'
 import { PhotoGrid } from '@/components/photos/PhotoGrid'
 import { PhotoEditor } from '@/components/photos/PhotoEditor'
+import { AdvancedPhotoEditor } from '@/components/photos/AdvancedPhotoEditor'
 import { UploadProgressIndicator } from '@/components/photos/UploadProgressIndicator'
 import { usePhotoUpload } from '@/hooks/usePhotoUpload'
 import { ArrowLeft, Edit, Trash2, MapPin, Home, AlertCircle, Pencil, Image } from 'lucide-react'
@@ -34,6 +35,7 @@ export default function PropertyDetail() {
   const [isDeleting, setIsDeleting] = useState(false)
   const [editingDescription, setEditingDescription] = useState(false)
   const [editingPhoto, setEditingPhoto] = useState<PropertyPhoto | null>(null)
+  const [advancedEditingPhoto, setAdvancedEditingPhoto] = useState<PropertyPhoto | null>(null)
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -202,6 +204,10 @@ export default function PropertyDetail() {
     setEditingPhoto(photo)
   }
 
+  const handleAdvancedEdit = (photo: PropertyPhoto) => {
+    setAdvancedEditingPhoto(photo)
+  }
+
   const handleSaveCroppedPhoto = async (croppedBlob: Blob) => {
     if (!id || !user || !editingPhoto || !property?.photos) return
 
@@ -234,6 +240,30 @@ export default function PropertyDetail() {
     } catch (err) {
       console.error('Error saving cropped photo:', err)
       throw new Error('Fotoğraf kaydedilemedi')
+    }
+  }
+
+  const handleSaveAdvancedEdit = async (enhancedUrl: string) => {
+    if (!id || !user || !advancedEditingPhoto || !property?.photos) return
+
+    try {
+      // Update photo URL in Firestore with enhanced version
+      const updatedPhotos = property.photos.map((photo) =>
+        photo.id === advancedEditingPhoto.id
+          ? { ...photo, url: enhancedUrl }
+          : photo
+      )
+
+      const propertyRef = doc(db, `users/${user.uid}/properties`, id)
+      await updateDoc(propertyRef, {
+        photos: updatedPhotos,
+      })
+
+      setProperty({ ...property, photos: updatedPhotos })
+      setAdvancedEditingPhoto(null)
+    } catch (err) {
+      console.error('Error saving advanced edit:', err)
+      alert('Fotoğraf kaydedilemedi')
     }
   }
 
@@ -527,6 +557,7 @@ export default function PropertyDetail() {
               onSetCover={handleSetCover}
               onDelete={handleDeletePhoto}
               onEdit={handleEditPhoto}
+              onAdvancedEdit={handleAdvancedEdit}
               onPhotoEnhanced={handlePhotoEnhanced}
               propertyId={id}
               isEditable={true}
@@ -575,6 +606,18 @@ export default function PropertyDetail() {
           onClose={() => setEditingPhoto(null)}
           imageUrl={editingPhoto.url}
           onSave={handleSaveCroppedPhoto}
+        />
+      )}
+
+      {/* Advanced Photo Editor Modal */}
+      {advancedEditingPhoto && (
+        <AdvancedPhotoEditor
+          isOpen={!!advancedEditingPhoto}
+          onClose={() => setAdvancedEditingPhoto(null)}
+          imageUrl={advancedEditingPhoto.url}
+          propertyId={id!}
+          photoIndex={advancedEditingPhoto.order}
+          onSave={handleSaveAdvancedEdit}
         />
       )}
     </div>
