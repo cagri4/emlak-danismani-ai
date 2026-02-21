@@ -13,6 +13,7 @@ import { PhotoGrid } from '@/components/photos/PhotoGrid'
 import { PhotoEditor } from '@/components/photos/PhotoEditor'
 import { AdvancedPhotoEditor } from '@/components/photos/AdvancedPhotoEditor'
 import { UploadProgressIndicator } from '@/components/photos/UploadProgressIndicator'
+import { ValuationCard } from '@/components/property/ValuationCard'
 import { usePhotoUpload } from '@/hooks/usePhotoUpload'
 import { ArrowLeft, Edit, Trash2, MapPin, Home, AlertCircle, Pencil, Image } from 'lucide-react'
 import { format } from 'date-fns'
@@ -534,6 +535,13 @@ export default function PropertyDetail() {
             />
           )}
         </div>
+
+        {/* AI Valuation Section */}
+        {id && (
+          <div className="space-y-6">
+            <ValuationCard propertyId={id} />
+          </div>
+        )}
 
         {/* Photos Section */}
         <Card>
