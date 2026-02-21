@@ -15,7 +15,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **MULK-04**: Kullanıcı mülk durumunu değiştirebilmeli (müsait/opsiyonlu/satıldı/kiralandı)
 - [x] **MULK-05**: Kullanıcı mülke 10-20 fotoğraf yükleyebilmeli (toplu)
 - [x] **MULK-06**: Kullanıcı fotoğrafları sürükle-bırak ile sıralayabilmeli
-- [ ] **MULK-07**: Kullanıcı fotoğrafları kırpabilmeli
+- [x] **MULK-07**: Kullanıcı fotoğrafları kırpabilmeli
 - [ ] **MULK-08**: AI fotoğrafları otomatik iyileştirebilmeli (HDR, parlaklık, kontrast)
 - [ ] **MULK-09**: AI gökyüzünü değiştirebilmeli (bulutlu → mavi)
 - [ ] **MULK-10**: AI perspektif düzeltmesi yapabilmeli
@@ -158,7 +158,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PORT-09 | Phase 3 | Complete |
 | PORT-10 | Phase 3 | Complete |
 | MUST-05 | Phase 3 | Complete |
-| MULK-07 | Phase 4 | Pending |
+| MULK-07 | Phase 4 | Complete |
 | MULK-08 | Phase 4 | Pending |
 | MULK-09 | Phase 4 | Pending |
 | MULK-10 | Phase 4 | Pending |

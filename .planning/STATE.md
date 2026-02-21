@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Emlakçının zamanını geri ver — AI manuel işleri yapar, emlakçı satışa odaklanır
-**Current focus:** Phase 4 — Media Enhancement & Voice (1 of 4 plans complete)
+**Current focus:** Phase 4 — Media Enhancement & Voice (2 of 4 plans complete)
 
 ## Current Position
 
 Phase: 4 of 7 (Media Enhancement & Voice)
-Plan: 1 of 4 in current phase
+Plan: 2 of 4 in current phase
 Status: In Progress
-Last activity: 2026-02-21 — Completed 04-04: Voice Command Input
+Last activity: 2026-02-21 — Completed 04-01: Photo Cropping
 
-Progress: [████████░░] 41%
+Progress: [████████░░] 44%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 13
+- Total plans completed: 14
 - Average duration: 10 min
-- Total execution time: 2.2 hours
+- Total execution time: 2.5 hours
 
 **By Phase:**
 
@@ -30,19 +30,19 @@ Progress: [████████░░] 41%
 | 01    | 3     | 35 min | 12 min   |
 | 02    | 5     | 52 min | 10 min   |
 | 03    | 4     | 40 min | 10 min   |
-| 04    | 1     | 7 min  | 7 min    |
+| 04    | 2     | 22 min | 11 min   |
 
 **Recent Trend:**
-- Last 5 plans: 03-04 (12 min), 03-02 (15 min), 03-03 (19 min), 03-06 (6 min), 04-04 (7 min)
+- Last 5 plans: 03-02 (15 min), 03-03 (19 min), 03-06 (6 min), 04-04 (7 min), 04-01 (15 min)
 - Trend: Stable
 
 *Updated after each plan completion*
-| Phase 03-background-processing-scraping P03 | 19 | 3 tasks | 10 files |
 | Phase 03 P05 | 8 | 3 tasks | 10 files |
 | Phase 03-background-processing-scraping P04 | 12 | 3 tasks | 9 files |
 | Phase 03-background-processing-scraping P02 | 921 | 3 tasks | 7 files |
 | Phase 03 P06 | 6 | 2 tasks | 1 files |
 | Phase 04 P04 | 7 | 3 tasks | 10 files |
+| Phase 04 P01 | 15 | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -112,6 +112,11 @@ Recent decisions affecting current work:
 - 60-second recording limit (Whisper API maximum) (04-04)
 - Transcribed text appears in input field for user confirmation before sending (04-04)
 - europe-west1 region for Cloud Function (KVKK compliance) (04-04)
+- react-easy-crop for interactive photo cropping (mobile-friendly with pinch-to-zoom) (04-01)
+- Canvas API for client-side crop extraction (no server processing needed) (04-01)
+- Overwrite original photo in Storage (save storage costs, simpler UX) (04-01)
+- Cache-buster query param to force browser refresh after crop (04-01)
+- JPEG output at 0.95 quality for good balance of quality/size (04-01)
 
 ### Pending Todos
 
@@ -124,6 +129,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 04-04: Voice Command Input
-Resume file: .planning/phases/04-media-enhancement-voice/04-04-SUMMARY.md
-Next action: Continue Phase 4 with next plan (04-01, 04-02, or 04-03)
+Stopped at: Completed 04-01: Photo Cropping
+Resume file: .planning/phases/04-media-enhancement-voice/04-01-SUMMARY.md
+Next action: Continue Phase 4 with next plan (04-02 or 04-03)
