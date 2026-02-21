@@ -58,9 +58,9 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **PORT-02**: Kullanıcı hepsiemlak'tan mülk içe aktarabilmeli
 - [x] **PORT-03**: Kullanıcı emlakjet'ten mülk içe aktarabilmeli
 - [x] **PORT-04**: Sistem içe aktarılan mülk detaylarını otomatik parse etmeli
-- [ ] **PORT-05**: Kullanıcı sistemden sahibinden.com'a ilan yükleyebilmeli
-- [ ] **PORT-06**: Kullanıcı sistemden hepsiemlak'a ilan yükleyebilmeli
-- [ ] **PORT-07**: Kullanıcı sistemden emlakjet'e ilan yükleyebilmeli
+- [x] **PORT-05**: Kullanıcı sistemden sahibinden.com'a ilan yükleyebilmeli
+- [x] **PORT-06**: Kullanıcı sistemden hepsiemlak'a ilan yükleyebilmeli
+- [x] **PORT-07**: Kullanıcı sistemden emlakjet'e ilan yükleyebilmeli
 - [x] **PORT-08**: Sistem fotoğrafları portal gereksinimlerine göre otomatik boyutlandırmalı
 - [x] **PORT-09**: Sistem rakip ilanları otomatik izleyebilmeli (scraping)
 - [x] **PORT-10**: Sistem yeni rakip ilanlarını bildirebilmeli
@@ -167,9 +167,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ILET-03 | Phase 5 | Complete |
 | ILET-04 | Phase 5 | Complete |
 | ILET-05 | Phase 5 | Complete |
-| PORT-05 | Phase 5 | Pending |
-| PORT-06 | Phase 5 | Pending |
-| PORT-07 | Phase 5 | Pending |
+| PORT-05 | Phase 5 | Complete |
+| PORT-06 | Phase 5 | Complete |
+| PORT-07 | Phase 5 | Complete |
 | PORT-08 | Phase 5 | Complete |
 | ESLE-04 | Phase 5 | Complete |
 | ESLE-05 | Phase 5 | Complete |
