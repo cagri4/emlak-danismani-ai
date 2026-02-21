@@ -1,5 +1,6 @@
 import { onDocumentCreated } from 'firebase-functions/v2/firestore';
 import { getFirestore } from 'firebase-admin/firestore';
+import { sendTelegramNotification } from '../telegram/notifications';
 
 /**
  * Simplified scoring function for Cloud Functions
@@ -23,6 +24,7 @@ interface Customer {
   name: string;
   preferences: CustomerPreferences;
   suggestionsSent?: boolean;
+  telegramChatId?: number;
 }
 
 interface Property {
@@ -133,6 +135,26 @@ export const suggestMatchingProperties = onDocumentCreated(
           read: false,
           createdAt: new Date()
         });
+
+      // Send Telegram notification if customer has telegramChatId
+      if (customer.telegramChatId) {
+        const propertyList = topMatches.map((m, idx) =>
+          `${idx + 1}. <b>${m.property.title}</b> - ${m.property.price.toLocaleString('tr-TR')} TL (Eşleşme: %${m.score})`
+        ).join('\n');
+
+        const telegramMessage = `👋 <b>Hoş geldiniz!</b>\n\n` +
+          `Sizin için <b>${topMatches.length} mülk önerisi</b> bulundu:\n\n` +
+          propertyList;
+
+        // Fire and forget - don't await to avoid blocking trigger
+        sendTelegramNotification(
+          customer.telegramChatId,
+          telegramMessage,
+          { parseMode: 'HTML' }
+        ).catch((error) => {
+          console.error(`Failed to send Telegram notification for customer ${customerId}:`, error);
+        });
+      }
     }
 
     // Mark as processed
