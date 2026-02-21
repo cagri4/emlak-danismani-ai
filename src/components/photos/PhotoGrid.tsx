@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Star, Trash2, GripVertical, Pencil } from 'lucide-react';
+import { Star, Trash2, GripVertical, Pencil, Wand2 } from 'lucide-react';
 import { PropertyPhoto } from '../../types/photo';
 import { PhotoEnhanceButton } from './PhotoEnhanceButton';
 
@@ -9,6 +9,7 @@ interface PhotoGridProps {
   onSetCover: (photoId: string) => void;
   onDelete: (photoId: string) => void;
   onEdit?: (photo: PropertyPhoto) => void;
+  onAdvancedEdit?: (photo: PropertyPhoto) => void;
   onPhotoEnhanced?: (photoIndex: number, newUrl: string) => void;
   propertyId?: string;
   isEditable?: boolean;
@@ -32,6 +33,7 @@ export function PhotoGrid({
   onSetCover,
   onDelete,
   onEdit,
+  onAdvancedEdit,
   onPhotoEnhanced,
   propertyId,
   isEditable = false,
@@ -156,6 +158,17 @@ export function PhotoGrid({
                       title="Fotoğrafı kırp"
                     >
                       <Pencil className="h-5 w-5 text-gray-600" />
+                    </button>
+                  )}
+
+                  {/* Advanced Edit icon */}
+                  {onAdvancedEdit && (
+                    <button
+                      onClick={() => onAdvancedEdit(photo)}
+                      className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full hover:from-purple-600 hover:to-pink-600 transition-colors"
+                      title="Gelişmiş düzenleyici (Gökyüzü değiştir, Perspektif düzelt)"
+                    >
+                      <Wand2 className="h-5 w-5 text-white" />
                     </button>
                   )}
 
