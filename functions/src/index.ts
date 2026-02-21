@@ -24,5 +24,8 @@ export { suggestMatchingProperties } from './triggers/onCustomerCreated';
 // Export Telegram bot webhook
 export { telegramWebhook } from './telegram/bot';
 
+// Export publishing functions
+export { publishProperty } from './publishing/publishProperty';
+
 // Future exports:
 // - Email notification functions
