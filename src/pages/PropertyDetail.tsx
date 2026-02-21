@@ -10,13 +10,14 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import AIDescriptionGenerator from '@/components/property/AIDescriptionGenerator'
 import { PhotoUploader } from '@/components/photos/PhotoUploader'
 import { PhotoGrid } from '@/components/photos/PhotoGrid'
+import { PhotoEditor } from '@/components/photos/PhotoEditor'
 import { UploadProgressIndicator } from '@/components/photos/UploadProgressIndicator'
 import { usePhotoUpload } from '@/hooks/usePhotoUpload'
 import { ArrowLeft, Edit, Trash2, MapPin, Home, AlertCircle, Pencil, Image } from 'lucide-react'
 import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
 import { doc, updateDoc, arrayRemove } from 'firebase/firestore'
-import { deleteObject, ref as storageRef } from 'firebase/storage'
+import { deleteObject, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { db, storage } from '@/lib/firebase'
 import { useAuth } from '@/contexts/AuthContext'
 
@@ -32,6 +33,7 @@ export default function PropertyDetail() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [editingDescription, setEditingDescription] = useState(false)
+  const [editingPhoto, setEditingPhoto] = useState<PropertyPhoto | null>(null)
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -168,12 +170,70 @@ export default function PropertyDetail() {
     }
   }
 
+  const handlePhotoEnhanced = async (photoIndex: number, newUrl: string) => {
+    if (!id || !user || !property?.photos) return
+
+    try {
+      const updatedPhotos = property.photos.map((photo) =>
+        photo.order === photoIndex ? { ...photo, url: newUrl } : photo
+      )
+
+      const propertyRef = doc(db, `users/${user.uid}/properties`, id)
+      await updateDoc(propertyRef, {
+        photos: updatedPhotos,
+      })
+      setProperty({ ...property, photos: updatedPhotos })
+    } catch (err) {
+      console.error('Error updating enhanced photo:', err)
+      alert('Fotoğraf güncellenemedi')
+    }
+  }
+
   const handleUploadComplete = async () => {
     // Refresh property to get updated photos
     if (!id) return
     const result = await getProperty(id)
     if (result.success && result.property) {
       setProperty(result.property)
+    }
+  }
+
+  const handleEditPhoto = (photo: PropertyPhoto) => {
+    setEditingPhoto(photo)
+  }
+
+  const handleSaveCroppedPhoto = async (croppedBlob: Blob) => {
+    if (!id || !user || !editingPhoto || !property?.photos) return
+
+    try {
+      // Upload cropped blob to same path (overwrite)
+      const photoRef = storageRef(storage, `users/${user.uid}/properties/${id}/photos/${editingPhoto.id}.jpg`)
+      await uploadBytes(photoRef, croppedBlob)
+
+      // Get new download URL with cache-buster
+      const newUrl = await getDownloadURL(photoRef)
+      const cacheBustedUrl = `${newUrl}&t=${Date.now()}`
+
+      // Update photo URL in Firestore
+      const updatedPhotos = property.photos.map((photo) =>
+        photo.id === editingPhoto.id
+          ? { ...photo, url: cacheBustedUrl }
+          : photo
+      )
+
+      const propertyRef = doc(db, `users/${user.uid}/properties`, id)
+      await updateDoc(propertyRef, {
+        photos: updatedPhotos,
+      })
+
+      setProperty({ ...property, photos: updatedPhotos })
+      setEditingPhoto(null)
+
+      // Show success message
+      console.log('Fotoğraf başarıyla kırpıldı')
+    } catch (err) {
+      console.error('Error saving cropped photo:', err)
+      throw new Error('Fotoğraf kaydedilemedi')
     }
   }
 
@@ -466,6 +526,9 @@ export default function PropertyDetail() {
               onReorder={handleReorderPhotos}
               onSetCover={handleSetCover}
               onDelete={handleDeletePhoto}
+              onEdit={handleEditPhoto}
+              onPhotoEnhanced={handlePhotoEnhanced}
+              propertyId={id}
               isEditable={true}
             />
           </CardContent>
@@ -504,6 +567,16 @@ export default function PropertyDetail() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Photo Editor Modal */}
+      {editingPhoto && (
+        <PhotoEditor
+          isOpen={!!editingPhoto}
+          onClose={() => setEditingPhoto(null)}
+          imageUrl={editingPhoto.url}
+          onSave={handleSaveCroppedPhoto}
+        />
+      )}
     </div>
   )
 }

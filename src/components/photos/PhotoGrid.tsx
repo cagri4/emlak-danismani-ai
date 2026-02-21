@@ -1,12 +1,16 @@
 import { useState } from 'react';
-import { Star, Trash2, GripVertical } from 'lucide-react';
+import { Star, Trash2, GripVertical, Pencil } from 'lucide-react';
 import { PropertyPhoto } from '../../types/photo';
+import { PhotoEnhanceButton } from './PhotoEnhanceButton';
 
 interface PhotoGridProps {
   photos: PropertyPhoto[];
   onReorder: (photos: PropertyPhoto[]) => void;
   onSetCover: (photoId: string) => void;
   onDelete: (photoId: string) => void;
+  onEdit?: (photo: PropertyPhoto) => void;
+  onPhotoEnhanced?: (photoIndex: number, newUrl: string) => void;
+  propertyId?: string;
   isEditable?: boolean;
 }
 
@@ -17,6 +21,7 @@ interface PhotoGridProps {
  * - Responsive grid layout (2/3/4 columns)
  * - Drag-drop reordering with native HTML5 drag events
  * - Star icon to set cover photo (only one cover at a time)
+ * - Edit icon to crop photo
  * - Delete photo with trash icon
  * - Cover badge on current cover photo
  * - Hover overlay for actions (when editable)
@@ -26,6 +31,9 @@ export function PhotoGrid({
   onReorder,
   onSetCover,
   onDelete,
+  onEdit,
+  onPhotoEnhanced,
+  propertyId,
   isEditable = false,
 }: PhotoGridProps) {
   const [draggedId, setDraggedId] = useState<string | null>(null);
@@ -139,6 +147,27 @@ export function PhotoGrid({
                       }`}
                     />
                   </button>
+
+                  {/* Edit icon to crop photo */}
+                  {onEdit && (
+                    <button
+                      onClick={() => onEdit(photo)}
+                      className="p-2 bg-white rounded-full hover:bg-gray-100 transition-colors"
+                      title="Fotoğrafı kırp"
+                    >
+                      <Pencil className="h-5 w-5 text-gray-600" />
+                    </button>
+                  )}
+
+                  {/* Enhance button */}
+                  {propertyId && onPhotoEnhanced && (
+                    <PhotoEnhanceButton
+                      photoUrl={photo.url}
+                      propertyId={propertyId}
+                      photoIndex={photo.order}
+                      onEnhanced={(newUrl) => onPhotoEnhanced(photo.order, newUrl)}
+                    />
+                  )}
 
                   {/* Trash icon to delete */}
                   <button
