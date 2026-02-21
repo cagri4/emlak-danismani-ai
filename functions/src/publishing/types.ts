@@ -22,8 +22,11 @@ export interface ListingData {
   price: number;
   currency: 'TRY' | 'USD' | 'EUR';
   propertyType: string;
+  listingType?: 'satilik' | 'kiralik';  // Sale or rent
   rooms?: string;
   area?: number;
+  floor?: number;
+  buildingAge?: number;
   location: {
     city: string;
     district?: string;
