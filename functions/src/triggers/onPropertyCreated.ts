@@ -1,5 +1,6 @@
 import { onDocumentCreated } from 'firebase-functions/v2/firestore';
 import { getFirestore } from 'firebase-admin/firestore';
+import { sendTelegramNotification } from '../telegram/notifications';
 
 /**
  * Simplified scoring function for Cloud Functions
@@ -22,6 +23,7 @@ interface CustomerPreferences {
 interface Customer {
   name: string;
   preferences: CustomerPreferences;
+  telegramChatId?: number;
 }
 
 interface Property {
@@ -129,6 +131,24 @@ export const notifyMatchingCustomers = onDocumentCreated(
           read: false,
           createdAt: new Date()
         });
+
+      // Send Telegram notification if customer has telegramChatId
+      if (match.customer.telegramChatId) {
+        const telegramMessage = `🏠 <b>Yeni Mülk Eşleşmesi!</b>\n\n` +
+          `<b>${property.title}</b>\n` +
+          `📍 ${property.location.city}${property.location.district ? ' - ' + property.location.district : ''}\n` +
+          `💰 ${property.price.toLocaleString('tr-TR')} TL\n` +
+          `📊 Eşleşme: %${match.score}`;
+
+        // Fire and forget - don't await to avoid blocking trigger
+        sendTelegramNotification(
+          match.customer.telegramChatId,
+          telegramMessage,
+          { parseMode: 'HTML' }
+        ).catch((error) => {
+          console.error(`Failed to send Telegram notification for customer ${match.customerId}:`, error);
+        });
+      }
     }
 
     // Mark as processed (idempotency)
