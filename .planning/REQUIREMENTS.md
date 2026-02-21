@@ -49,8 +49,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **ESLE-03**: Sistem eşleşme yüzdesi ve nedenlerini göstermeli
 - [x] **ESLE-04**: Yeni mülk eklendiğinde uygun müşterilere otomatik bildirim gitmeli
 - [x] **ESLE-05**: Yeni müşteri eklendiğinde uygun mülkler önerilmeli
-- [ ] **ESLE-06**: AI piyasa verilerine göre fiyat önerisi yapabilmeli
-- [ ] **ESLE-07**: Kullanıcı değerleme raporunu görebilmeli
+- [x] **ESLE-06**: AI piyasa verilerine göre fiyat önerisi yapabilmeli
+- [x] **ESLE-07**: Kullanıcı değerleme raporunu görebilmeli
 
 ### Portal Entegrasyon (PORT)
 
@@ -81,7 +81,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **ILET-02**: Paylaşılan kartta fotoğraf, detaylar ve iletişim linki olmalı
 - [ ] **ILET-03**: Telegram bot üzerinden mülk arayabilmeli
 - [ ] **ILET-04**: Telegram bot üzerinden durum güncelleyebilmeli
-- [ ] **ILET-05**: Telegram'dan bildirim alabilmeli
+- [x] **ILET-05**: Telegram'dan bildirim alabilmeli
 - [ ] **ILET-06**: Sistem üzerinden e-posta gönderebilmeli
 - [ ] **ILET-07**: Gönderilen e-postaların durumunu takip edebilmeli
 
@@ -166,15 +166,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AIUI-10 | Phase 4 | Complete |
 | ILET-03 | Phase 5 | Pending |
 | ILET-04 | Phase 5 | Pending |
-| ILET-05 | Phase 5 | Pending |
+| ILET-05 | Phase 5 | Complete |
 | PORT-05 | Phase 5 | Pending |
 | PORT-06 | Phase 5 | Pending |
 | PORT-07 | Phase 5 | Pending |
 | PORT-08 | Phase 5 | Complete |
 | ESLE-04 | Phase 5 | Complete |
 | ESLE-05 | Phase 5 | Complete |
-| ESLE-06 | Phase 5 | Pending |
-| ESLE-07 | Phase 5 | Pending |
+| ESLE-06 | Phase 5 | Complete |
+| ESLE-07 | Phase 5 | Complete |
 | MOBL-01 | Phase 6 | Pending |
 | MOBL-02 | Phase 6 | Pending |
 | MOBL-03 | Phase 6 | Pending |
