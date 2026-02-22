@@ -1,5 +1,6 @@
 import { onDocumentCreated } from 'firebase-functions/v2/firestore';
 import { getFirestore } from 'firebase-admin/firestore';
+import { getMessaging } from 'firebase-admin/messaging';
 import { sendTelegramNotification } from '../telegram/notifications';
 
 /**
@@ -78,6 +79,85 @@ function scorePropertyForCustomer(customer: Customer, property: Property): numbe
 }
 
 /**
+ * Send FCM push notification to all user's registered devices
+ * Fire-and-forget pattern - errors logged but don't block trigger
+ */
+async function sendFCMNotification(
+  userId: string,
+  payload: {
+    title: string;
+    body: string;
+    propertyId: string;
+    customerId: string;
+    type: string;
+  }
+): Promise<void> {
+  try {
+    const db = getFirestore();
+    const messaging = getMessaging();
+
+    // Get all FCM tokens for this user
+    const tokensSnap = await db
+      .collection('users')
+      .doc(userId)
+      .collection('fcmTokens')
+      .get();
+
+    if (tokensSnap.empty) {
+      console.log(`No FCM tokens found for user ${userId}`);
+      return;
+    }
+
+    // Send to all tokens (fire-and-forget)
+    const sendPromises = tokensSnap.docs.map(async (tokenDoc) => {
+      const tokenData = tokenDoc.data();
+      const token = tokenData.token;
+
+      try {
+        await messaging.send({
+          token,
+          notification: {
+            title: payload.title,
+            body: payload.body,
+          },
+          data: {
+            type: payload.type,
+            propertyId: payload.propertyId,
+            customerId: payload.customerId,
+            url: `/properties/${payload.propertyId}`,
+          },
+          webpush: {
+            fcmOptions: {
+              link: `/properties/${payload.propertyId}`,
+            },
+          },
+        });
+
+        console.log(`FCM sent to token ${token.substring(0, 20)}...`);
+      } catch (error: any) {
+        console.error(`Error sending FCM to token ${token.substring(0, 20)}...:`, error);
+
+        // Clean up invalid tokens
+        if (
+          error.code === 'messaging/invalid-registration-token' ||
+          error.code === 'messaging/registration-token-not-registered'
+        ) {
+          console.log(`Removing invalid token ${token.substring(0, 20)}...`);
+          await tokenDoc.ref.delete();
+        }
+      }
+    });
+
+    // Don't await - fire and forget
+    Promise.all(sendPromises).catch((error) => {
+      console.error('Error in FCM batch send:', error);
+    });
+  } catch (error) {
+    console.error('Error in sendFCMNotification:', error);
+  }
+}
+
+/**
  * Firestore trigger: Notify matching customers when a new property is created
  */
 export const notifyMatchingCustomers = onDocumentCreated(
@@ -131,6 +211,15 @@ export const notifyMatchingCustomers = onDocumentCreated(
           read: false,
           createdAt: new Date()
         });
+
+      // Send FCM push notifications to user's devices
+      await sendFCMNotification(userId, {
+        title: `Yeni Mülk: ${property.title}`,
+        body: `${match.customer.name} için %${match.score} eşleşen mülk eklendi`,
+        propertyId,
+        customerId: match.customerId,
+        type: 'property_match'
+      });
 
       // Send Telegram notification if customer has telegramChatId
       if (match.customer.telegramChatId) {
