@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: AI Interface & Matching** - Natural language commands, customer management, property-customer matching ✅ **COMPLETE**
 - [x] **Phase 3: Background Processing & Scraping** - Photo upload, portal import, competitor monitoring, async job processing ✅ **COMPLETE**
 - [x] **Phase 4: Media Enhancement & Voice** - AI photo editing, voice commands (Turkce) ✅ **COMPLETE**
-- [ ] **Phase 5: Telegram Bot & Publishing** - Telegram interface, portal publishing, advanced matching features
+- [x] **Phase 5: Telegram Bot & Publishing** - Telegram interface, portal publishing, advanced matching features ✅ **COMPLETE**
 - [ ] **Phase 6: Mobile PWA & Sharing** - Progressive Web App, WhatsApp sharing, offline support
 - [ ] **Phase 7: Email & Advanced Features** - Email communication, customer filtering, lead scoring polish
 
@@ -111,7 +111,7 @@ Plans:
   6. New property triggers automatic notification to matching customers
   7. New customer sees suggested matching properties immediately
   8. User can view AI-generated price suggestion and valuation report for properties
-**Plans**: 9 plans in 2 waves
+**Plans**: 9 plans in 2 waves ✅ **COMPLETE**
 
 Plans:
 - [x] 05-01-PLAN.md — Telegram bot foundation with grammY, webhook setup, /start and /help commands (Wave 1) ✅ **COMPLETED**
@@ -135,12 +135,14 @@ Plans:
   4. User can take photo with phone camera and upload directly to property
   5. User receives push notifications for new matches and updates
   6. User can share property card to WhatsApp with photos, details, and contact link
-**Plans**: TBD
+**Plans**: 5 plans in 3 waves
 
 Plans:
-- [ ] 06-01: TBD
-- [ ] 06-02: TBD
-- [ ] 06-03: TBD
+- [ ] 06-01-PLAN.md — PWA foundation: vite-plugin-pwa, manifest, service worker, install prompt (Wave 1)
+- [ ] 06-02-PLAN.md — Offline persistence: Firestore persistentLocalCache, offline banner, IndexedDB store (Wave 2)
+- [ ] 06-03-PLAN.md — Camera capture: getUserMedia, compression, PhotoUploader integration (Wave 2)
+- [ ] 06-04-PLAN.md — Push notifications: FCM setup, permission prompt, Cloud Function integration (Wave 2)
+- [ ] 06-05-PLAN.md — WhatsApp sharing: share utilities, public share page, OG meta tags, ShareButton (Wave 3)
 
 ### Phase 7: Email & Advanced Features
 **Goal**: Users can send email communications and filter customers effectively
@@ -166,6 +168,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 2. AI Interface & Matching | 5/5 | Complete | 2026-02-20 |
 | 3. Background Processing & Scraping | 6/6 | Complete | 2026-02-20 |
 | 4. Media Enhancement & Voice | 5/5 | Complete | 2026-02-21 |
-| 5. Telegram Bot & Publishing | 6/9 | Gap Closure | - |
-| 6. Mobile PWA & Sharing | 0/3 | Not started | - |
+| 5. Telegram Bot & Publishing | 9/9 | Complete | 2026-02-22 |
+| 6. Mobile PWA & Sharing | 0/5 | Planning | - |
 | 7. Email & Advanced Features | 0/1 | Not started | - |
