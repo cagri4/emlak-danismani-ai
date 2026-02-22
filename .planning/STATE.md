@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Emlakçının zamanını geri ver — AI manuel işleri yapar, emlakçı satışa odaklanır
-**Current focus:** Phase 5 — Telegram Bot & Publishing (8 of 9 plans complete)
+**Current focus:** Phase 6 — Mobile PWA & Sharing (1 of 5 plans complete)
 
 ## Current Position
 
-Phase: 5 of 7 (Telegram Bot & Publishing)
-Plan: 8 of 9 in current phase
+Phase: 6 of 7 (Mobile PWA & Sharing)
+Plan: 1 of 5 in current phase
 Status: In Progress
-Last activity: 2026-02-21 — Completed 05-09: ValuationCard Integration (Gap Closure)
+Last activity: 2026-02-22 — Completed 06-01: PWA Foundation Setup
 
-Progress: [█████████░] 66%
+Progress: [█████████░] 68%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 22
+- Total plans completed: 23
 - Average duration: 7 min
-- Total execution time: 3.5 hours
+- Total execution time: 3.8 hours
 
 **By Phase:**
 
@@ -32,12 +32,14 @@ Progress: [█████████░] 66%
 | 03    | 4     | 40 min | 10 min   |
 | 04    | 5     | 52 min | 10 min   |
 | 05    | 7     | 35 min | 5 min    |
+| 06    | 1     | 19 min | 19 min   |
 
 **Recent Trend:**
-- Last 5 plans: 05-03 (8 min), 05-04 (8 min), 05-01 (9 min), 05-02 (7 min), 05-07 (3 min)
-- Trend: Improving
+- Last 5 plans: 05-04 (8 min), 05-01 (9 min), 05-02 (7 min), 05-07 (3 min), 06-01 (19 min)
+- Trend: Stable
 
 *Updated after each plan completion*
+| Phase 06 P01 | 19 | 3 tasks | 10 files |
 | Phase 05 P09 | 5 | 2 tasks | 1 files |
 | Phase 05 P02 | 7 | 3 tasks | 5 files |
 | Phase 03 P05 | 8 | 3 tasks | 10 files |
@@ -156,6 +158,13 @@ Recent decisions affecting current work:
 - [Phase 05-02]: Fuzzy matching with 60% threshold for property identification
 - [Phase 05-02]: Placeholder userId from Telegram chat ID for testing before user linking
 - [Phase 05]: Fire-and-forget Telegram notifications prevent blocking triggers
+- [Phase 06-01]: vite-plugin-pwa with generateSW mode for automatic service worker generation
+- [Phase 06-01]: CacheFirst strategy for Firebase Storage images with 30-day expiration
+- [Phase 06-01]: Show update prompt rather than auto-update to give user control
+- [Phase 06-01]: 7-day dismissal period for install banner to avoid annoyance
+- [Phase 06-01]: Detect iOS separately for manual installation instructions
+- [Phase 06-01]: Toast-style notification at bottom-right for service worker updates
+- [Phase 06-01]: Fixed banner at top for install prompt
 
 ### Pending Todos
 
@@ -167,7 +176,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-21
-Stopped at: Completed 05-09: ValuationCard Integration (Gap Closure)
-Resume file: .planning/phases/05-telegram-bot-publishing/05-09-SUMMARY.md
-Next action: Continue Phase 5 - proceed to plan 05-08 (last remaining plan)
+Last session: 2026-02-22
+Stopped at: Completed 06-01: PWA Foundation Setup
+Resume file: .planning/phases/06-mobile-pwa-sharing/06-01-SUMMARY.md
+Next action: Continue Phase 6 - proceed to plan 06-02 (offline functionality)

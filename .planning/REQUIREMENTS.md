@@ -67,8 +67,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Mobil (MOBL)
 
-- [ ] **MOBL-01**: Uygulama responsive olmalı (mobil tarayıcıda çalışmalı)
-- [ ] **MOBL-02**: PWA olarak yüklenebilmeli (home screen)
+- [x] **MOBL-01**: Uygulama responsive olmalı (mobil tarayıcıda çalışmalı)
+- [x] **MOBL-02**: PWA olarak yüklenebilmeli (home screen)
 - [ ] **MOBL-03**: Offline modda mülk/müşteri görüntülenebilmeli
 - [ ] **MOBL-04**: Online olunca değişiklikler senkronize olmalı
 - [ ] **MOBL-05**: Mobilde kamera ile fotoğraf çekip direkt yüklenebilmeli
@@ -175,8 +175,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ESLE-05 | Phase 5 | Complete |
 | ESLE-06 | Phase 5 | Complete |
 | ESLE-07 | Phase 5 | Complete |
-| MOBL-01 | Phase 6 | Pending |
-| MOBL-02 | Phase 6 | Pending |
+| MOBL-01 | Phase 6 | Complete |
+| MOBL-02 | Phase 6 | Complete |
 | MOBL-03 | Phase 6 | Pending |
 | MOBL-04 | Phase 6 | Pending |
 | MOBL-05 | Phase 6 | Pending |
