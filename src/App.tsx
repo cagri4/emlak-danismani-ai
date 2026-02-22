@@ -18,6 +18,7 @@ import Properties from '@/pages/Properties'
 import PropertyAdd from '@/pages/PropertyAdd'
 import PropertyEdit from '@/pages/PropertyEdit'
 import PropertyDetail from '@/pages/PropertyDetail'
+import { PropertySharePage } from '@/pages/properties/PropertySharePage'
 import Customers from '@/pages/Customers'
 import CustomerAdd from '@/pages/CustomerAdd'
 import CustomerDetail from '@/pages/CustomerDetail'
@@ -54,6 +55,9 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/kvkk" element={<KVKKConsent />} />
+
+            {/* Public share page */}
+            <Route path="/share/:userId/:propertyId" element={<PropertySharePage />} />
 
             {/* Protected routes */}
             <Route
