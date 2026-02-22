@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/toast'
+import { SendEmailButton } from '@/components/customer/SendEmailButton'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import {
   ArrowLeft,
@@ -218,6 +219,11 @@ export default function CustomerDetail() {
           </div>
 
           <div className="flex gap-2">
+            <SendEmailButton
+              customerId={id!}
+              customerEmail={customer.email}
+              customerName={customer.name}
+            />
             <Button
               variant="outline"
               onClick={() => navigate(`/customers/${id}/edit`)}

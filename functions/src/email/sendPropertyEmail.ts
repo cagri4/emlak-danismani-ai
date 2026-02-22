@@ -71,6 +71,14 @@ export const sendPropertyEmail = onCall(
         throw new HttpsError('not-found', 'Mülk verisi bulunamadı');
       }
 
+      // Prepare location string
+      const locationStr = property.location?.city && property.location?.district
+        ? `${property.location.city}, ${property.location.district}`
+        : property.location?.city || 'Konum belirtilmemiş';
+
+      // Extract photo URLs from PropertyPhoto objects
+      const photoUrls = property.photos?.map((photo: any) => photo.url).filter(Boolean) || [];
+
       // Send email via Resend
       const { data, error } = await resend.emails.send({
         from: 'Emlak Danışmanı <noreply@resend.dev>',
@@ -81,12 +89,12 @@ export const sendPropertyEmail = onCall(
           property: {
             title: property.title,
             price: property.price,
-            location: property.location,
-            propertyType: property.propertyType,
+            location: locationStr,
+            propertyType: property.type || property.propertyType,
             rooms: property.rooms,
             area: property.area,
-            photos: property.photos,
-            description: property.description,
+            photos: photoUrls,
+            description: property.description || property.aiDescription,
           },
         }),
         tags: [
