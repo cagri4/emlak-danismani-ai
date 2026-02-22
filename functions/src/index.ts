@@ -30,5 +30,5 @@ export { publishProperty } from './publishing/publishProperty';
 // Export share image generator
 export { generateShareImage } from './http/generateShareImage';
 
-// Future exports:
-// - Email notification functions
+// Export email functions
+export { sendPropertyEmail } from './email/sendPropertyEmail';
