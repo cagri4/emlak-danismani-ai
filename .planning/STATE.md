@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 ## Current Position
 
 Phase: 6 of 7 (Mobile PWA & Sharing)
-Plan: 4 of 5 in current phase
-Status: In Progress
-Last activity: 2026-02-22 — Completed 06-04: FCM Push Notifications
+Plan: 5 of 5 in current phase
+Status: Phase Complete
+Last activity: 2026-02-22 — Completed 06-05: WhatsApp Sharing with Rich Previews
 
-Progress: [█████████░] 77%
+Progress: [█████████░] 80%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 26
-- Average duration: 11 min
-- Total execution time: 5.4 hours
+- Total plans completed: 27
+- Average duration: 14 min
+- Total execution time: 7.0 hours
 
 **By Phase:**
 
@@ -32,13 +32,14 @@ Progress: [█████████░] 77%
 | 03    | 4     | 40 min | 10 min   |
 | 04    | 5     | 52 min | 10 min   |
 | 05    | 7     | 35 min | 5 min    |
-| 06    | 4     | 109 min | 27 min   |
+| 06    | 5     | 202 min | 40 min   |
 
 **Recent Trend:**
-- Last 5 plans: 05-07 (3 min), 06-01 (19 min), 06-02 (16 min), 06-03 (17 min), 06-04 (57 min)
+- Last 5 plans: 06-01 (19 min), 06-02 (16 min), 06-03 (17 min), 06-04 (57 min), 06-05 (93 min)
 - Trend: Increasing (complex features)
 
 *Updated after each plan completion*
+| Phase 06 P05 | 93 | 3 tasks | 10 files |
 | Phase 06 P04 | 57 | 3 tasks | 6 files |
 | Phase 06 P03 | 17 | 3 tasks | 5 files |
 | Phase 06 P02 | 16 | 3 tasks | 5 files |
@@ -180,6 +181,10 @@ Recent decisions affecting current work:
 - [Phase 06-04]: Fire-and-forget FCM sends in Cloud Functions to avoid blocking triggers
 - [Phase 06-04]: Automatic invalid token cleanup on send failures (self-maintaining)
 - [Phase 06-04]: 7-day dismissal period for notification permission prompt
+- [Phase 06-05]: Web Share API with WhatsApp URL scheme fallback for cross-platform compatibility
+- [Phase 06-05]: Simple image resize (no text overlay) for MVP share images via Sharp
+- [Phase 06-05]: Public share routes with userId in URL for multi-tenant public access
+- [Phase 06-05]: Custom dropdown component to avoid shadcn dependency bloat
 
 ### Pending Todos
 
@@ -192,6 +197,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: Completed 06-04: FCM Push Notifications
-Resume file: .planning/phases/06-mobile-pwa-sharing/06-04-SUMMARY.md
-Next action: Continue Phase 6 - proceed to plan 06-05 (photo sharing)
+Stopped at: Completed 06-05: WhatsApp Sharing with Rich Previews (Phase 6 Complete)
+Resume file: .planning/phases/06-mobile-pwa-sharing/06-05-SUMMARY.md
+Next action: Proceed to Phase 7 (Analytics & Optimization)
