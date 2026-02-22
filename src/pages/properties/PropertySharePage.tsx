@@ -77,8 +77,11 @@ export function PropertySharePage() {
     property.photos?.[0] ||
     null
 
-  // Build OG image URL (will use Cloud Function in Task 2)
-  const ogImageUrl = coverPhoto?.url || ''
+  // Build OG image URL using Cloud Function for optimized share image
+  // Falls back to direct cover photo URL if Cloud Function URL construction fails
+  const ogImageUrl = userId && propertyId
+    ? `https://europe-west1-emlak-ai-asist.cloudfunctions.net/generateShareImage?userId=${userId}&propertyId=${propertyId}`
+    : coverPhoto?.url || ''
 
   // Format property details for OG description
   const ogDescription = [

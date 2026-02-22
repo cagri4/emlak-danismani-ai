@@ -27,5 +27,8 @@ export { telegramWebhook } from './telegram/bot';
 // Export publishing functions
 export { publishProperty } from './publishing/publishProperty';
 
+// Export share image generator
+export { generateShareImage } from './http/generateShareImage';
+
 // Future exports:
 // - Email notification functions
