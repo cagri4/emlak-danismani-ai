@@ -152,10 +152,12 @@ Plans:
   1. User can send property details to customer via email from system
   2. User can see email delivery status (sent/delivered/opened)
   3. User can filter customers by lead temperature (hot/cold) and view prioritized lists
-**Plans**: TBD
+**Plans**: 3 plans in 2 waves
 
 Plans:
-- [ ] 07-01: TBD
+- [ ] 07-01-PLAN.md — Email infrastructure: Resend SDK, React Email template, sendPropertyEmail Cloud Function (Wave 1)
+- [ ] 07-02-PLAN.md — Email tracking: Resend webhooks, email status display, EmailHistoryModal (Wave 2)
+- [ ] 07-03-PLAN.md — Customer filtering: Verify and polish temperature filter with count badges (Wave 1)
 
 ## Progress
 
@@ -169,5 +171,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 3. Background Processing & Scraping | 6/6 | Complete | 2026-02-20 |
 | 4. Media Enhancement & Voice | 5/5 | Complete | 2026-02-21 |
 | 5. Telegram Bot & Publishing | 9/9 | Complete | 2026-02-22 |
-| 6. Mobile PWA & Sharing | 3/5 | In Progress | - |
-| 7. Email & Advanced Features | 0/1 | Not started | - |
+| 6. Mobile PWA & Sharing | 5/5 | Complete | 2026-02-22 |
+| 7. Email & Advanced Features | 0/3 | Not started | - |
