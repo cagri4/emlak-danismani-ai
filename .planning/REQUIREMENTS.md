@@ -27,7 +27,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **MUST-03**: Kullanıcı müşteriye not ekleyebilmeli
 - [x] **MUST-04**: Sistem müşteri etkileşim geçmişini tutmalı
 - [x] **MUST-05**: AI müşterileri önceliklendirmeli (lead scoring)
-- [ ] **MUST-06**: Kullanıcı müşterileri filtreleyebilmeli (sıcak/soğuk lead)
+- [x] **MUST-06**: Kullanıcı müşterileri filtreleyebilmeli (sıcak/soğuk lead)
 
 ### AI Arayüz (AIUI)
 
@@ -186,7 +186,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ILET-02 | Phase 6 | Pending |
 | ILET-06 | Phase 7 | Pending |
 | ILET-07 | Phase 7 | Pending |
-| MUST-06 | Phase 7 | Pending |
+| MUST-06 | Phase 7 | Complete |
 
 **Coverage:**
 - v1 requirements: 62 total
