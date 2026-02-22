@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 import { ChatProvider } from '@/components/chat/ChatProvider'
 import { ChatFloatingButton } from '@/components/chat/ChatFloatingButton'
 import { ChatModal } from '@/components/chat/ChatModal'
+import { ReloadPrompt } from '@/pwa/ReloadPrompt'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import Login from '@/pages/Login'
 import Register from '@/pages/Register'
@@ -137,6 +138,9 @@ function App() {
 
           {/* Chat UI - persists across all routes */}
           <ChatComponents />
+
+          {/* PWA update prompt - persists across all routes */}
+          <ReloadPrompt />
         </ChatProvider>
       </AuthProvider>
     </BrowserRouter>
