@@ -1,5 +1,7 @@
-import { create } from 'zustand';
-import { PhotoUpload } from '../types/photo';
+import { create } from 'zustand'
+import { persist, createJSONStorage, StateStorage } from 'zustand/middleware'
+import { get, set, del } from 'idb-keyval'
+import { PhotoUpload } from '../types/photo'
 
 interface UploadState {
   uploads: PhotoUpload[];
@@ -16,14 +18,33 @@ interface UploadState {
 }
 
 /**
- * Upload state management using zustand.
+ * IndexedDB storage adapter for zustand persist middleware
  *
- * Key benefit: State persists across route navigation, allowing users to
- * navigate away while uploads continue in background.
+ * Uses idb-keyval for simple key-value storage in IndexedDB.
+ * Benefits over localStorage:
+ * - Works in service worker context
+ * - No 5MB size limit
+ * - Better performance for large objects
+ */
+const idbStorage: StateStorage = {
+  getItem: async (name) => (await get(name)) || null,
+  setItem: async (name, value) => set(name, value),
+  removeItem: async (name) => del(name),
+}
+
+/**
+ * Upload state management using zustand with IndexedDB persistence.
+ *
+ * Key benefits:
+ * - State persists across route navigation (uploads continue in background)
+ * - State survives page refresh and browser restart
+ * - Works in service worker context (localStorage doesn't)
  *
  * Per user decision: Uploads continue in background when user navigates.
  */
-export const useUploadStore = create<UploadState>((set, get) => ({
+export const useUploadStore = create<UploadState>()(
+  persist(
+    (set, get) => ({
   uploads: [],
   activePropertyId: null,
 
@@ -99,4 +120,10 @@ export const useUploadStore = create<UploadState>((set, get) => ({
       (u) => u.status === 'pending' || u.status === 'uploading'
     );
   },
-}));
+    }),
+    {
+      name: 'upload-store',
+      storage: createJSONStorage(() => idbStorage),
+    }
+  )
+)
