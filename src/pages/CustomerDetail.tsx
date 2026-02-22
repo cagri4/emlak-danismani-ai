@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { useToast } from '@/components/ui/toast'
 import { SendEmailButton } from '@/components/customer/SendEmailButton'
+import { EmailHistoryModal } from '@/components/customer/EmailHistoryModal'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import {
   ArrowLeft,
@@ -23,6 +24,7 @@ import {
   BedDouble,
   MessageSquare,
   Plus,
+  History,
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
@@ -62,6 +64,7 @@ export default function CustomerDetail() {
   const [showNoteForm, setShowNoteForm] = useState(false)
   const [noteContent, setNoteContent] = useState('')
   const [isAddingNote, setIsAddingNote] = useState(false)
+  const [showEmailHistory, setShowEmailHistory] = useState(false)
 
   useEffect(() => {
     const fetchCustomerData = async () => {
@@ -224,6 +227,14 @@ export default function CustomerDetail() {
               customerEmail={customer.email}
               customerName={customer.name}
             />
+            <Button
+              variant="outline"
+              onClick={() => setShowEmailHistory(true)}
+              className="gap-2"
+            >
+              <History className="h-4 w-4" />
+              E-posta Geçmişi
+            </Button>
             <Button
               variant="outline"
               onClick={() => navigate(`/customers/${id}/edit`)}
@@ -458,6 +469,13 @@ export default function CustomerDetail() {
             )}
           </CardContent>
         </Card>
+
+        {/* Email History Modal */}
+        <EmailHistoryModal
+          customerId={id!}
+          open={showEmailHistory}
+          onClose={() => setShowEmailHistory(false)}
+        />
       </div>
     </DashboardLayout>
   )
