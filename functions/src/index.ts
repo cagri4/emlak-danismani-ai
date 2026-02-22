@@ -32,3 +32,6 @@ export { generateShareImage } from './http/generateShareImage';
 
 // Export email functions
 export { sendPropertyEmail } from './email/sendPropertyEmail';
+
+// Export Resend webhook
+export { resendWebhook } from './http/resendWebhook';
