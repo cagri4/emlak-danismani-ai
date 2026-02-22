@@ -14,6 +14,7 @@ import { PhotoEditor } from '@/components/photos/PhotoEditor'
 import { AdvancedPhotoEditor } from '@/components/photos/AdvancedPhotoEditor'
 import { UploadProgressIndicator } from '@/components/photos/UploadProgressIndicator'
 import { ValuationCard } from '@/components/property/ValuationCard'
+import { ShareButton } from '@/components/properties/ShareButton'
 import { usePhotoUpload } from '@/hooks/usePhotoUpload'
 import { ArrowLeft, Edit, Trash2, MapPin, Home, AlertCircle, Pencil, Image } from 'lucide-react'
 import { format } from 'date-fns'
@@ -328,6 +329,7 @@ export default function PropertyDetail() {
           </div>
 
           <div className="flex gap-2">
+            <ShareButton property={property} />
             <Button
               variant="outline"
               onClick={() => navigate(`/properties/${id}/edit`)}
