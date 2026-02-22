@@ -3,6 +3,7 @@ import { getAuth, connectAuthEmulator } from 'firebase/auth'
 import { initializeFirestore, persistentLocalCache, connectFirestoreEmulator } from 'firebase/firestore'
 import { getStorage, connectStorageEmulator } from 'firebase/storage'
 import { getFunctions, connectFunctionsEmulator } from 'firebase/functions'
+import { getMessaging, isSupported } from 'firebase/messaging'
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -21,6 +22,25 @@ export const db = initializeFirestore(app, {
 })
 export const storage = getStorage(app)
 export const functions = getFunctions(app, 'europe-west1')
+
+// Initialize Firebase Cloud Messaging (conditionally - not supported in all browsers)
+let messagingInstance: ReturnType<typeof getMessaging> | null = null
+
+export const getMessagingInstance = async () => {
+  if (messagingInstance) return messagingInstance
+
+  try {
+    const supported = await isSupported()
+    if (supported) {
+      messagingInstance = getMessaging(app)
+      return messagingInstance
+    }
+  } catch (error) {
+    console.warn('Firebase Messaging not supported:', error)
+  }
+
+  return null
+}
 
 // Connect to emulators in development
 if (import.meta.env.DEV && import.meta.env.VITE_USE_FIREBASE_EMULATOR === 'true') {
