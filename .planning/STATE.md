@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Emlakçının zamanını geri ver — AI manuel işleri yapar, emlakçı satışa odaklanır
-**Current focus:** Phase 6 — Mobile PWA & Sharing (3 of 5 plans complete)
+**Current focus:** Phase 6 — Mobile PWA & Sharing (4 of 5 plans complete)
 
 ## Current Position
 
 Phase: 6 of 7 (Mobile PWA & Sharing)
-Plan: 3 of 5 in current phase
+Plan: 4 of 5 in current phase
 Status: In Progress
-Last activity: 2026-02-22 — Completed 06-03: Mobile Camera Capture
+Last activity: 2026-02-22 — Completed 06-04: FCM Push Notifications
 
-Progress: [█████████░] 74%
+Progress: [█████████░] 77%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 25
-- Average duration: 8 min
-- Total execution time: 4.4 hours
+- Total plans completed: 26
+- Average duration: 11 min
+- Total execution time: 5.4 hours
 
 **By Phase:**
 
@@ -32,13 +32,14 @@ Progress: [█████████░] 74%
 | 03    | 4     | 40 min | 10 min   |
 | 04    | 5     | 52 min | 10 min   |
 | 05    | 7     | 35 min | 5 min    |
-| 06    | 3     | 52 min | 17 min   |
+| 06    | 4     | 109 min | 27 min   |
 
 **Recent Trend:**
-- Last 5 plans: 05-02 (7 min), 05-07 (3 min), 06-01 (19 min), 06-02 (16 min), 06-03 (17 min)
-- Trend: Stable
+- Last 5 plans: 05-07 (3 min), 06-01 (19 min), 06-02 (16 min), 06-03 (17 min), 06-04 (57 min)
+- Trend: Increasing (complex features)
 
 *Updated after each plan completion*
+| Phase 06 P04 | 57 | 3 tasks | 6 files |
 | Phase 06 P03 | 17 | 3 tasks | 5 files |
 | Phase 06 P02 | 16 | 3 tasks | 5 files |
 | Phase 06 P01 | 19 | 3 tasks | 10 files |
@@ -175,6 +176,10 @@ Recent decisions affecting current work:
 - [Phase 06-03]: Auto-stop camera after capture to release resources
 - [Phase 06-03]: Fallback to file input with capture="environment" for unsupported devices
 - [Phase 06-03]: Full-screen modal pattern for camera to maximize viewfinder
+- [Phase 06-04]: Separate useFCMNotifications hook from useNotifications for clean separation (push vs in-app)
+- [Phase 06-04]: Fire-and-forget FCM sends in Cloud Functions to avoid blocking triggers
+- [Phase 06-04]: Automatic invalid token cleanup on send failures (self-maintaining)
+- [Phase 06-04]: 7-day dismissal period for notification permission prompt
 
 ### Pending Todos
 
@@ -187,6 +192,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: Completed 06-03: Mobile Camera Capture
-Resume file: .planning/phases/06-mobile-pwa-sharing/06-03-SUMMARY.md
-Next action: Continue Phase 6 - proceed to plan 06-04 (photo sharing)
+Stopped at: Completed 06-04: FCM Push Notifications
+Resume file: .planning/phases/06-mobile-pwa-sharing/06-04-SUMMARY.md
+Next action: Continue Phase 6 - proceed to plan 06-05 (photo sharing)

@@ -138,10 +138,10 @@ Plans:
 **Plans**: 5 plans in 3 waves
 
 Plans:
-- [ ] 06-01-PLAN.md — PWA foundation: vite-plugin-pwa, manifest, service worker, install prompt (Wave 1)
-- [ ] 06-02-PLAN.md — Offline persistence: Firestore persistentLocalCache, offline banner, IndexedDB store (Wave 2)
-- [ ] 06-03-PLAN.md — Camera capture: getUserMedia, compression, PhotoUploader integration (Wave 2)
-- [ ] 06-04-PLAN.md — Push notifications: FCM setup, permission prompt, Cloud Function integration (Wave 2)
+- [x] 06-01-PLAN.md — PWA foundation: vite-plugin-pwa, manifest, service worker, install prompt (Wave 1) ✅ **COMPLETED** (19 min, 3 tasks, 10 files)
+- [x] 06-02-PLAN.md — Offline persistence: Firestore persistentLocalCache, offline banner, IndexedDB store (Wave 2) ✅ **COMPLETED** (16 min, 3 tasks, 5 files)
+- [x] 06-03-PLAN.md — Camera capture: getUserMedia, compression, PhotoUploader integration (Wave 2) ✅ **COMPLETED** (17 min, 3 tasks, 5 files)
+- [x] 06-04-PLAN.md — Push notifications: FCM setup, permission prompt, Cloud Function integration (Wave 2) ✅ **COMPLETED** (57 min, 3 tasks, 6 files)
 - [ ] 06-05-PLAN.md — WhatsApp sharing: share utilities, public share page, OG meta tags, ShareButton (Wave 3)
 
 ### Phase 7: Email & Advanced Features

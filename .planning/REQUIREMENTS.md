@@ -72,8 +72,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **MOBL-03**: Offline modda mülk/müşteri görüntülenebilmeli
 - [x] **MOBL-04**: Online olunca değişiklikler senkronize olmalı
 - [x] **MOBL-05**: Mobilde kamera ile fotoğraf çekip direkt yüklenebilmeli
-- [ ] **MOBL-06**: Push notification ile bildirim alınabilmeli
-- [ ] **MOBL-07**: Yeni eşleşme bildirim olarak gelmeli
+- [x] **MOBL-06**: Push notification ile bildirim alınabilmeli
+- [x] **MOBL-07**: Yeni eşleşme bildirim olarak gelmeli
 
 ### İletişim (ILET)
 
@@ -180,8 +180,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MOBL-03 | Phase 6 | Complete |
 | MOBL-04 | Phase 6 | Complete |
 | MOBL-05 | Phase 6 | 06-03 |
-| MOBL-06 | Phase 6 | Pending |
-| MOBL-07 | Phase 6 | Pending |
+| MOBL-06 | Phase 6 | Complete (06-04) |
+| MOBL-07 | Phase 6 | Complete (06-04) |
 | ILET-01 | Phase 6 | Pending |
 | ILET-02 | Phase 6 | Pending |
 | ILET-06 | Phase 7 | Pending |
