@@ -82,7 +82,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **ILET-03**: Telegram bot üzerinden mülk arayabilmeli
 - [x] **ILET-04**: Telegram bot üzerinden durum güncelleyebilmeli
 - [x] **ILET-05**: Telegram'dan bildirim alabilmeli
-- [ ] **ILET-06**: Sistem üzerinden e-posta gönderebilmeli
+- [x] **ILET-06**: Sistem üzerinden e-posta gönderebilmeli
 - [ ] **ILET-07**: Gönderilen e-postaların durumunu takip edebilmeli
 
 ### Altyapı (ALTI)
@@ -184,7 +184,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MOBL-07 | Phase 6 | Complete (06-04) |
 | ILET-01 | Phase 6 | Pending |
 | ILET-02 | Phase 6 | Pending |
-| ILET-06 | Phase 7 | Pending |
+| ILET-06 | Phase 7 | Complete |
 | ILET-07 | Phase 7 | Pending |
 | MUST-06 | Phase 7 | Complete |
 
