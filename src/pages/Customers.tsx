@@ -16,6 +16,16 @@ export default function Customers() {
   // Calculate lead scores for all customers
   const leadScores = useLeadScores(customers)
 
+  // Calculate temperature counts
+  const temperatureCounts = useMemo(() => {
+    const counts = { hot: 0, warm: 0, cold: 0 }
+    customers.forEach(c => {
+      const temp = leadScores.get(c.id)?.temperature
+      if (temp) counts[temp]++
+    })
+    return counts
+  }, [customers, leadScores])
+
   // Sort and filter customers
   const filteredAndSortedCustomers = useMemo(() => {
     let result = [...customers]
@@ -143,7 +153,7 @@ export default function Customers() {
                         : 'bg-white text-gray-600 border-gray-200 hover:bg-red-50'
                     }`}
                   >
-                    Sıcak
+                    Sıcak ({temperatureCounts.hot})
                   </button>
                   <button
                     onClick={() => setFilterTemperature('warm')}
@@ -153,7 +163,7 @@ export default function Customers() {
                         : 'bg-white text-gray-600 border-gray-200 hover:bg-amber-50'
                     }`}
                   >
-                    Ilık
+                    Ilık ({temperatureCounts.warm})
                   </button>
                   <button
                     onClick={() => setFilterTemperature('cold')}
@@ -163,11 +173,17 @@ export default function Customers() {
                         : 'bg-white text-gray-600 border-gray-200 hover:bg-blue-50'
                     }`}
                   >
-                    Soğuk
+                    Soğuk ({temperatureCounts.cold})
                   </button>
                 </div>
               </div>
             </div>
+
+            {filteredAndSortedCustomers.length === 0 && customers.length > 0 && (
+              <div className="text-center py-8 text-muted-foreground">
+                Seçilen filtreye uygun müşteri bulunamadı
+              </div>
+            )}
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {filteredAndSortedCustomers.map((customer) => (
