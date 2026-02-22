@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Emlakçının zamanını geri ver — AI manuel işleri yapar, emlakçı satışa odaklanır
-**Current focus:** Phase 6 — Mobile PWA & Sharing (1 of 5 plans complete)
+**Current focus:** Phase 6 — Mobile PWA & Sharing (3 of 5 plans complete)
 
 ## Current Position
 
 Phase: 6 of 7 (Mobile PWA & Sharing)
-Plan: 1 of 5 in current phase
+Plan: 3 of 5 in current phase
 Status: In Progress
-Last activity: 2026-02-22 — Completed 06-01: PWA Foundation Setup
+Last activity: 2026-02-22 — Completed 06-03: Mobile Camera Capture
 
-Progress: [█████████░] 68%
+Progress: [█████████░] 74%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 23
-- Average duration: 7 min
-- Total execution time: 3.8 hours
+- Total plans completed: 24
+- Average duration: 8 min
+- Total execution time: 4.1 hours
 
 **By Phase:**
 
@@ -32,10 +32,10 @@ Progress: [█████████░] 68%
 | 03    | 4     | 40 min | 10 min   |
 | 04    | 5     | 52 min | 10 min   |
 | 05    | 7     | 35 min | 5 min    |
-| 06    | 1     | 19 min | 19 min   |
+| 06    | 2     | 35 min | 18 min   |
 
 **Recent Trend:**
-- Last 5 plans: 05-04 (8 min), 05-01 (9 min), 05-02 (7 min), 05-07 (3 min), 06-01 (19 min)
+- Last 5 plans: 05-01 (9 min), 05-02 (7 min), 05-07 (3 min), 06-01 (19 min), 06-02 (16 min)
 - Trend: Stable
 
 *Updated after each plan completion*
@@ -59,6 +59,7 @@ Progress: [█████████░] 68%
 | Phase 05 P02 | 7 | 3 tasks | 5 files |
 | Phase 05 P07 | 193 | 2 tasks | 2 files |
 | Phase 05 P09 | 5 | 2 tasks | 1 files |
+| Phase 06 P02 | 16 | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -165,6 +166,8 @@ Recent decisions affecting current work:
 - [Phase 06-01]: Detect iOS separately for manual installation instructions
 - [Phase 06-01]: Toast-style notification at bottom-right for service worker updates
 - [Phase 06-01]: Fixed banner at top for install prompt
+- [Phase 06]: persistentLocalCache chosen over deprecated enableIndexedDbPersistence for modern offline support
+- [Phase 06]: IndexedDB via idb-keyval for upload state persistence (works in service worker context)
 
 ### Pending Todos
 
@@ -177,6 +180,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: Completed 06-01: PWA Foundation Setup
-Resume file: .planning/phases/06-mobile-pwa-sharing/06-01-SUMMARY.md
-Next action: Continue Phase 6 - proceed to plan 06-02 (offline functionality)
+Stopped at: Completed 06-02: Offline Data Persistence
+Resume file: .planning/phases/06-mobile-pwa-sharing/06-02-SUMMARY.md
+Next action: Continue Phase 6 - proceed to plan 06-03 (share links)
