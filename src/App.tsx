@@ -6,6 +6,7 @@ import { ChatModal } from '@/components/chat/ChatModal'
 import { ReloadPrompt } from '@/pwa/ReloadPrompt'
 import { InstallPrompt } from '@/components/layout/InstallPrompt'
 import { OfflineBanner } from '@/components/layout/OfflineBanner'
+import { NotificationPermissionPrompt } from '@/components/notifications/NotificationPermissionPrompt'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import Login from '@/pages/Login'
 import Register from '@/pages/Register'
@@ -33,6 +34,7 @@ function ChatComponents() {
     <>
       <ChatFloatingButton />
       <ChatModal />
+      <NotificationPermissionPrompt />
     </>
   )
 }
