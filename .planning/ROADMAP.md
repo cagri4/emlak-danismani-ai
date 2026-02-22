@@ -120,9 +120,9 @@ Plans:
 - [x] 05-04-PLAN.md — Portal photo resizer and publishing infrastructure (Wave 1) ✅ **COMPLETED**
 - [x] 05-05-PLAN.md — Portal publishers for sahibinden, hepsiemlak, emlakjet with Playwright (Wave 2) ✅ **COMPLETED**
 - [x] 05-06-PLAN.md — AI price suggestions and valuation reports with Claude (Wave 1) ✅ **COMPLETED**
-- [ ] 05-07-PLAN.md — Gap closure: Wire Telegram notifications to matching triggers (Wave 1)
-- [ ] 05-08-PLAN.md — Gap closure: Complete portal publisher implementations (Wave 1)
-- [ ] 05-09-PLAN.md — Gap closure: Integrate ValuationCard in PropertyDetail (Wave 1)
+- [x] 05-07-PLAN.md — Gap closure: Wire Telegram notifications to matching triggers (Wave 1) ✅ **COMPLETED**
+- [x] 05-08-PLAN.md — Gap closure: Complete portal publisher implementations (Wave 1) ✅ **COMPLETED**
+- [x] 05-09-PLAN.md — Gap closure: Integrate ValuationCard in PropertyDetail (Wave 1) ✅ **COMPLETED**
 
 ### Phase 6: Mobile PWA & Sharing
 **Goal**: Users can access the system as a mobile app with offline support and share properties via WhatsApp
