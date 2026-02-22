@@ -4,6 +4,7 @@ import { ChatProvider } from '@/components/chat/ChatProvider'
 import { ChatFloatingButton } from '@/components/chat/ChatFloatingButton'
 import { ChatModal } from '@/components/chat/ChatModal'
 import { ReloadPrompt } from '@/pwa/ReloadPrompt'
+import { InstallPrompt } from '@/components/layout/InstallPrompt'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import Login from '@/pages/Login'
 import Register from '@/pages/Register'
@@ -39,6 +40,9 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <ChatProvider>
+          {/* PWA install prompt - shows at top of app */}
+          <InstallPrompt />
+
           <Routes>
             {/* Public routes */}
             <Route path="/login" element={<Login />} />
