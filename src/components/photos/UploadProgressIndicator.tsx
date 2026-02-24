@@ -17,10 +17,11 @@ interface UploadProgressIndicatorProps {
 export function UploadProgressIndicator({ uploads }: UploadProgressIndicatorProps) {
   if (uploads.length === 0) return null;
 
-  const truncateFilename = (filename: string, maxLength = 20) => {
+  const truncateFilename = (filename: string | undefined, maxLength = 20) => {
+    if (!filename) return 'Dosya';
     if (filename.length <= maxLength) return filename;
     const ext = filename.split('.').pop();
-    const name = filename.substring(0, maxLength - ext!.length - 4);
+    const name = filename.substring(0, maxLength - (ext?.length || 0) - 4);
     return `${name}...${ext}`;
   };
 
@@ -34,7 +35,7 @@ export function UploadProgressIndicator({ uploads }: UploadProgressIndicatorProp
             {/* Filename and status */}
             <div className="flex items-center justify-between text-sm">
               <span className="text-gray-600 truncate">
-                {truncateFilename(upload.file.name)}
+                {truncateFilename(upload.file?.name)}
               </span>
 
               {/* Status icon */}
