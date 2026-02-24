@@ -1,21 +1,22 @@
 import { onCall } from 'firebase-functions/v2/https';
 import { onTaskDispatched } from 'firebase-functions/v2/tasks';
 import { db, bucket, REGION } from '../config';
-import { detectPortal, findSimilarProperties, type ScrapedProperty } from '../scrapers/common';
-import { scrapeSahibinden } from '../scrapers/sahibinden';
-import { scrapeHepsiemlak } from '../scrapers/hepsiemlak';
-import { scrapeEmlakjet } from '../scrapers/emlakjet';
+import { detectPortal, extractListingId, type ScrapedProperty } from '../scrapers/common';
 
 /**
  * Import property from URL - callable function
- * Returns scraped data and similar properties for preview
- * Does NOT save yet - just returns for user confirmation
+ *
+ * NOTE: Full scraping with Playwright is disabled in Cloud Functions
+ * because it requires browser binaries that exceed resource limits.
+ *
+ * Current behavior: Returns a placeholder with the URL for manual entry.
+ * Future: Integrate with Cloud Run or external scraping service.
  */
 export const importPropertyFromUrl = onCall(
   {
     region: REGION,
-    memory: '1GiB',
-    timeoutSeconds: 60
+    memory: '512MiB',
+    timeoutSeconds: 30
   },
   async (request) => {
     const { url, userId } = request.data as { url: string; userId: string };
@@ -28,42 +29,38 @@ export const importPropertyFromUrl = onCall(
     const portal = detectPortal(url);
 
     if (portal === 'unknown') {
-      throw new Error('Desteklenmeyen portal');
+      throw new Error('Desteklenmeyen portal. Sahibinden, Hepsiemlak veya Emlakjet URL\'i girin.');
     }
 
-    try {
-      // Call appropriate scraper based on portal
-      let scraped: ScrapedProperty;
+    // Extract listing ID from URL
+    const sourceId = extractListingId(url, portal);
 
-      switch (portal) {
-        case 'sahibinden':
-          scraped = await scrapeSahibinden(url);
-          break;
-        case 'hepsiemlak':
-          scraped = await scrapeHepsiemlak(url);
-          break;
-        case 'emlakjet':
-          scraped = await scrapeEmlakjet(url);
-          break;
-        default:
-          throw new Error('Bilinmeyen portal');
-      }
+    // Return placeholder data - user will need to fill in details manually
+    // Full scraping requires browser automation which isn't available in Cloud Functions
+    const placeholder: ScrapedProperty = {
+      title: `${portal.charAt(0).toUpperCase() + portal.slice(1)} İlanı`,
+      price: 0,
+      currency: 'TRY',
+      propertyType: 'daire',
+      location: {
+        city: '',
+        district: '',
+        fullAddress: ''
+      },
+      photoUrls: [],
+      sourceUrl: url,
+      sourcePortal: portal,
+      sourceId
+    };
 
-      // Find similar properties to warn about duplicates
-      const similar = await findSimilarProperties(scraped, userId);
+    console.log(`Portal import requested for ${portal}: ${url}`);
 
-      return {
-        scraped,
-        similar: similar.map(p => ({
-          id: p.id,
-          title: p.title,
-          location: p.location
-        }))
-      };
-    } catch (error) {
-      console.error('Error scraping property:', error);
-      throw new Error('Property scraping failed');
-    }
+    return {
+      scraped: placeholder,
+      similar: [],
+      message: 'Otomatik veri çekme şu anda devre dışı. Lütfen ilan bilgilerini manuel olarak girin.',
+      manualEntryRequired: true
+    };
   }
 );
 

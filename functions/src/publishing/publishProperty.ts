@@ -1,29 +1,18 @@
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
-import { publishToSahibinden } from './publishers/sahibinden';
-import { publishToHepsiemlak } from './publishers/hepsiemlak';
-import { publishToEmlakjet } from './publishers/emlakjet';
-import { generatePortalPhotos } from './photoResizer';
 import { PortalType, ListingData, PublishingResult } from './types';
 
 /**
  * Cloud Function to publish property listing to Turkish real estate portals
  *
- * This function:
- * - Resizes photos to portal specifications
- * - Routes to portal-specific publisher
- * - Returns success/failure with portal listing ID/URL
+ * NOTE: Portal publishing is disabled in Cloud Functions
+ * because Playwright browser automation exceeds resource limits.
  *
- * Usage from Telegram bot or client app:
- * ```
- * const result = await publishProperty({
- *   portal: 'sahibinden',
- *   listing: { propertyId, title, description, ... },
- *   credentials: { email, password }
- * });
- * ```
+ * To enable full publishing:
+ * - Deploy to Cloud Run with Playwright support
+ * - Or use portal APIs directly (if available)
  */
 export const publishProperty = onCall(
-  { region: 'europe-west1', memory: '2GiB', timeoutSeconds: 300 },
+  { region: 'europe-west1', memory: '512MiB', timeoutSeconds: 30 },
   async (request) => {
     const { portal, listing, credentials } = request.data as {
       portal: PortalType;
@@ -39,27 +28,13 @@ export const publishProperty = onCall(
       );
     }
 
-    // Resize photos for portal
-    console.log(`Resizing ${listing.photoUrls.length} photos for ${portal}...`);
-    const resizedPhotos = await generatePortalPhotos(listing.photoUrls, portal);
-    console.log(`Resized ${resizedPhotos.length} photos for ${portal}`);
+    console.log(`Portal publishing requested for ${portal}`);
+    console.log('NOTE: Browser-based publishing is currently disabled.');
 
-    // Publish to selected portal
-    let result: PublishingResult;
-    switch (portal) {
-      case 'sahibinden':
-        result = await publishToSahibinden(listing, credentials);
-        break;
-      case 'hepsiemlak':
-        result = await publishToHepsiemlak(listing, credentials);
-        break;
-      case 'emlakjet':
-        result = await publishToEmlakjet(listing, credentials);
-        break;
-      default:
-        throw new HttpsError('invalid-argument', `Gecersiz portal: ${portal}`);
-    }
-
-    return result;
+    // Return informative error
+    throw new HttpsError(
+      'unimplemented',
+      `Portal yayınlama şu anda devre dışı. ${portal} portalına manuel olarak ilan ekleyebilirsiniz.`
+    );
   }
 );

@@ -1,5 +1,3 @@
-import { chromium, Browser, Page } from 'playwright';
-import { backOff } from 'exponential-backoff';
 import * as fuzzball from 'fuzzball';
 import { db } from '../config';
 
@@ -61,70 +59,9 @@ export function detectPortal(url: string): PortalType {
   return 'unknown';
 }
 
-/**
- * Generic retry wrapper using exponential backoff
- * Handles transient failures when scraping portals
- */
-export async function scrapeWithRetry<T>(
-  fn: () => Promise<T>,
-  operationName = 'scrape'
-): Promise<T> {
-  return backOff(fn, {
-    numOfAttempts: 3,
-    startingDelay: 1000,
-    maxDelay: 10000,
-    timeMultiple: 2,
-    retry: (error: any) => {
-      // Retry on network errors or timeouts
-      const shouldRetry =
-        error?.message?.includes('timeout') ||
-        error?.message?.includes('network') ||
-        error?.message?.includes('ERR_CONNECTION') ||
-        error?.code === 'ECONNREFUSED';
-
-      if (shouldRetry) {
-        console.log(`Retrying ${operationName} after error:`, error.message);
-      }
-
-      return shouldRetry;
-    }
-  });
-}
-
-/**
- * Create browser instance with anti-bot measures
- */
-export async function createBrowser(): Promise<{ browser: Browser; page: Page }> {
-  const browser = await chromium.launch({
-    headless: true,
-    args: [
-      '--disable-blink-features=AutomationControlled',
-      '--no-sandbox',
-      '--disable-setuid-sandbox'
-    ]
-  });
-
-  const context = await browser.newContext({
-    viewport: { width: 1920, height: 1080 },
-    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    locale: 'tr-TR'
-  });
-
-  const page = await context.newPage();
-
-  // Add random delay to appear more human-like
-  await randomDelay(2000, 4000);
-
-  return { browser, page };
-}
-
-/**
- * Random delay helper for anti-bot measures
- */
-export async function randomDelay(min: number, max: number): Promise<void> {
-  const delay = Math.floor(Math.random() * (max - min + 1)) + min;
-  await new Promise(resolve => setTimeout(resolve, delay));
-}
+// NOTE: Browser-based scraping functions removed
+// Playwright requires browser binaries which exceed Cloud Functions limits
+// Use Cloud Run or external scraping service for full scraping support
 
 /**
  * Find similar properties using fuzzy string matching
