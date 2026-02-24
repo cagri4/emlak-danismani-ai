@@ -16,6 +16,7 @@ export { transcribeVoice } from './voice/transcribeVoice';
 // Export AI valuation functions
 export { generatePriceSuggestion } from './ai/pricePredictor';
 export { generateValuationReport } from './ai/valuationReport';
+export { generatePropertyDescriptions } from './ai/descriptionGenerator';
 
 // Export matching triggers
 export { notifyMatchingCustomers } from './triggers/onPropertyCreated';
