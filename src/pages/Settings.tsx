@@ -63,7 +63,13 @@ export default function Settings() {
                     KVKK Onay Tarihi
                   </p>
                   <p className="text-sm">
-                    {format(new Date(consentData.acceptedAt), 'PPpp', { locale: tr })}
+                    {consentData.acceptedAt && format(
+                      typeof (consentData.acceptedAt as unknown as { toDate?: () => Date }).toDate === 'function'
+                        ? (consentData.acceptedAt as unknown as { toDate: () => Date }).toDate()
+                        : new Date(consentData.acceptedAt),
+                      'PPpp',
+                      { locale: tr }
+                    )}
                   </p>
                 </div>
                 <div>
