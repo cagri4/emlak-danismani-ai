@@ -2,7 +2,8 @@ import type { IntentResult } from './structured-schemas'
 import type { Property, PropertyFormData } from '@/types/property'
 import type { Customer, CustomerFormData } from '@/types/customer'
 import { validateCommandEntities } from './command-parser'
-import { getFunctions, httpsCallable } from 'firebase/functions'
+import { httpsCallable } from 'firebase/functions'
+import { functions } from '../firebase'
 
 /**
  * Command execution context - hooks and data access
@@ -670,7 +671,6 @@ async function handleImportProperty(
 
   // Call scraper function to get property data
   try {
-    const functions = getFunctions()
     const importFn = httpsCallable(functions, 'importPropertyFromUrl')
 
     const response: any = await importFn({

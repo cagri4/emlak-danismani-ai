@@ -2,7 +2,8 @@ import { formatDistanceToNow } from 'date-fns'
 import { tr } from 'date-fns/locale'
 import { ExternalLink, X } from 'lucide-react'
 import type { Notification } from '@/types/notification'
-import { getFunctions, httpsCallable } from 'firebase/functions'
+import { httpsCallable } from 'firebase/functions'
+import { functions } from '@/lib/firebase'
 import { useState } from 'react'
 
 interface NotificationDropdownProps {
@@ -33,7 +34,6 @@ export default function NotificationDropdown({
 
     try {
       // Call the import function
-      const functions = getFunctions()
       const importFn = httpsCallable(functions, 'importPropertyFromUrl')
 
       await importFn({
