@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useKVKKConsent } from '@/hooks/useKVKKConsent'
 import { useAuthActions } from '@/hooks/useAuth'
+import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -9,12 +10,20 @@ import { AlertCircle, LogOut } from 'lucide-react'
 
 export default function KVKKConsent() {
   const navigate = useNavigate()
+  const { userProfile, loading } = useAuth()
   const { saveConsent } = useKVKKConsent()
   const { signOut } = useAuthActions()
   const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
   const contentRef = useRef<HTMLDivElement>(null)
+
+  // Redirect to dashboard if user already has KVKK consent
+  useEffect(() => {
+    if (!loading && userProfile?.kvkkConsent) {
+      navigate('/dashboard')
+    }
+  }, [loading, userProfile, navigate])
 
   useEffect(() => {
     const handleScroll = () => {
