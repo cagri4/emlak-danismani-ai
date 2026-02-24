@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Star, Trash2, GripVertical, Pencil, Wand2 } from 'lucide-react';
 import { PropertyPhoto } from '../../types/photo';
 import { PhotoEnhanceButton } from './PhotoEnhanceButton';
+import { getThumbnailUrl } from '../../lib/utils';
 
 interface PhotoGridProps {
   photos: PropertyPhoto[];
@@ -119,11 +120,18 @@ export function PhotoGrid({
               ${isEditable ? 'cursor-move' : ''}
             `}
           >
-            {/* Photo image */}
+            {/* Photo image - try public thumbnail first, then stored thumbnailUrl, then original */}
             <img
-              src={photo.thumbnailUrl || photo.url}
+              src={getThumbnailUrl(photo.url) || photo.thumbnailUrl || photo.url}
               alt={`Fotoğraf ${photo.order + 1}`}
               className="w-full h-full object-cover"
+              onError={(e) => {
+                // If thumbnail fails, fall back to original URL
+                const target = e.target as HTMLImageElement;
+                if (target.src !== photo.url) {
+                  target.src = photo.url;
+                }
+              }}
             />
 
             {/* Cover badge */}

@@ -32,3 +32,4 @@ dist-ssr
 functions/lib/
 functions/node_modules/
 dev-dist/
+.vercel

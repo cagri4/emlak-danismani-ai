@@ -8,7 +8,7 @@ import { REGION } from '../config';
  *
  * Triggers on: properties/* path
  * Actions:
- * - Generates thumbnail (200x200, quality 80)
+ * - Generates thumbnail (200x200, quality 80) - made public for easy access
  * - Compresses original (quality 85)
  *
  * Per KVKK compliance: All processing in europe-west1 region
@@ -58,7 +58,6 @@ export const processPropertyPhoto = onObjectFinalized(
       const pathParts = filePath.split('/');
       const fileName = pathParts[pathParts.length - 1];
       const fileNameWithoutExt = fileName.substring(0, fileName.lastIndexOf('.'));
-      const fileExt = fileName.substring(fileName.lastIndexOf('.') + 1);
       const directory = pathParts.slice(0, -1).join('/');
 
       // Generate thumbnail
@@ -73,17 +72,18 @@ export const processPropertyPhoto = onObjectFinalized(
         .jpeg({ quality: 80 })
         .toFile(tempThumbnailPath);
 
-      // Upload thumbnail
+      // Upload thumbnail and make it public
       await bucket.upload(tempThumbnailPath, {
         destination: thumbnailPath,
         metadata: {
           contentType: 'image/jpeg',
         },
+        public: true, // Make thumbnail publicly accessible
       });
 
       const [thumbMetadata] = await bucket.file(thumbnailPath).getMetadata();
       const thumbSize = Number(thumbMetadata.size || 0);
-      console.log(`Thumbnail created: ${thumbnailPath} (${(thumbSize / 1024).toFixed(2)} KB)`);
+      console.log(`Thumbnail created (public): ${thumbnailPath} (${(thumbSize / 1024).toFixed(2)} KB)`);
 
       // Compress original
       const tempCompressedPath = `/tmp/${Date.now()}-compressed.jpg`;

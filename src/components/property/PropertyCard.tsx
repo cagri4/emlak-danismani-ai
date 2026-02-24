@@ -5,6 +5,8 @@ import StatusBadge from './StatusBadge'
 import PropertyPlaceholder from './PropertyPlaceholder'
 import { format } from 'date-fns'
 import { tr } from 'date-fns/locale'
+import { getThumbnailUrl } from '@/lib/utils'
+import { useState } from 'react'
 
 interface PropertyCardProps {
   property: Property
@@ -12,6 +14,23 @@ interface PropertyCardProps {
 
 export default function PropertyCard({ property }: PropertyCardProps) {
   const hasPhoto = property.photos && property.photos.length > 0
+  const [imgError, setImgError] = useState(false)
+
+  // Get the best available image URL
+  const getImageUrl = () => {
+    if (!hasPhoto) return null
+    const photo = property.photos![0]
+
+    // If we already had an error, use original URL
+    if (imgError) return photo.url
+
+    // Try public thumbnail URL first
+    const publicThumbUrl = getThumbnailUrl(photo.url)
+    if (publicThumbUrl) return publicThumbUrl
+
+    // Fall back to stored thumbnailUrl or original
+    return photo.thumbnailUrl || photo.url
+  }
 
   return (
     <Link to={`/properties/${property.id}`}>
@@ -20,9 +39,10 @@ export default function PropertyCard({ property }: PropertyCardProps) {
         <div className="relative h-48 bg-gray-100">
           {hasPhoto ? (
             <img
-              src={property.photos![0].thumbnailUrl || property.photos![0].url}
+              src={getImageUrl()!}
               alt={property.title}
               className="w-full h-full object-cover"
+              onError={() => setImgError(true)}
             />
           ) : (
             <PropertyPlaceholder type={property.type} className="w-full h-full" />
