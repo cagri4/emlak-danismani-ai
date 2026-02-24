@@ -4,9 +4,16 @@ import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Lazy initialization to avoid errors during deployment
+let openaiClient: OpenAI | null = null;
+function getOpenAI(): OpenAI {
+  if (!openaiClient) {
+    openaiClient = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+  }
+  return openaiClient;
+}
 
 interface TranscribeRequest {
   audioBase64: string;  // Base64-encoded audio data
@@ -47,7 +54,7 @@ export const transcribeVoice = functions.onCall(
       fs.writeFileSync(tempFilePath, audioBuffer);
 
       // Call Whisper API
-      const transcription = await openai.audio.transcriptions.create({
+      const transcription = await getOpenAI().audio.transcriptions.create({
         file: fs.createReadStream(tempFilePath),
         model: 'whisper-1',
         language: 'tr',  // Turkish

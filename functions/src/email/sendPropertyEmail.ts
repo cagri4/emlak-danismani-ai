@@ -3,8 +3,14 @@ import { Resend } from 'resend';
 import { db, REGION } from '../config';
 import PropertyEmail from './templates/PropertyEmail';
 
-// Initialize Resend
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy initialization to avoid errors during deployment
+let resendClient: Resend | null = null;
+function getResend(): Resend {
+  if (!resendClient) {
+    resendClient = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resendClient;
+}
 
 interface SendPropertyEmailRequest {
   customerId: string;
@@ -80,7 +86,7 @@ export const sendPropertyEmail = onCall(
       const photoUrls = property.photos?.map((photo: any) => photo.url).filter(Boolean) || [];
 
       // Send email via Resend
-      const { data, error } = await resend.emails.send({
+      const { data, error } = await getResend().emails.send({
         from: 'Emlak Danışmanı <noreply@resend.dev>',
         to: customer.email,
         subject: `Mülk Önerisi: ${property.title}`,

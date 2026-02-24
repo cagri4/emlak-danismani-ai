@@ -1,9 +1,15 @@
 import { Bot } from 'grammy';
 
-// Create bot instance for sending notifications
-// This can be the same token but separate instance for clarity
-const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
-const notificationBot = new Bot(BOT_TOKEN);
+// Lazy initialization to avoid errors during deployment
+let notificationBot: Bot | null = null;
+function getBot(): Bot | null {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  if (!token) return null;
+  if (!notificationBot) {
+    notificationBot = new Bot(token);
+  }
+  return notificationBot;
+}
 
 /**
  * Send a notification message to a Telegram chat
@@ -17,8 +23,9 @@ export async function sendTelegramNotification(
   message: string,
   options?: { parseMode?: 'HTML' | 'Markdown' }
 ): Promise<boolean> {
-  // Validate inputs
-  if (!BOT_TOKEN) {
+  // Get bot instance (lazy initialization)
+  const bot = getBot();
+  if (!bot) {
     console.error('TELEGRAM_BOT_TOKEN is not configured. Cannot send notification.');
     return false;
   }
@@ -37,7 +44,7 @@ export async function sendTelegramNotification(
   }
 
   try {
-    await notificationBot.api.sendMessage(chatId, finalMessage, {
+    await bot.api.sendMessage(chatId, finalMessage, {
       parse_mode: options?.parseMode,
     });
     console.log(`Telegram notification sent successfully to chat ${chatId}`);
