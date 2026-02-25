@@ -12,10 +12,13 @@ let bot: Bot | null = null;
 
 function getBot(): Bot {
   if (!bot) {
+    console.log('Initializing Telegram bot...');
     const token = process.env.TELEGRAM_BOT_TOKEN;
     if (!token) {
+      console.error('TELEGRAM_BOT_TOKEN is not set');
       throw new Error('TELEGRAM_BOT_TOKEN is not set');
     }
+    console.log('Bot token found, creating Bot instance...');
     bot = new Bot(token);
 
     // Error handling wrapper
@@ -23,12 +26,51 @@ function getBot(): Bot {
       console.error('Bot error:', err);
     });
 
-    // Register command handlers
-    bot.command('start', handleStart);
-    bot.command('help', handleHelp);
-    bot.command('ara', handleSearch);
-    bot.command('durum', handleStatus);
-    bot.command('eslesmeler', handleMatches);
+    // Register command handlers with error wrapping
+    bot.command('start', async (ctx) => {
+      try {
+        await handleStart(ctx);
+      } catch (e) {
+        console.error('Start handler error:', e);
+        await ctx.reply('Bir hata oluştu. Lütfen tekrar deneyin.');
+      }
+    });
+
+    bot.command('help', async (ctx) => {
+      try {
+        await handleHelp(ctx);
+      } catch (e) {
+        console.error('Help handler error:', e);
+        await ctx.reply('Bir hata oluştu. Lütfen tekrar deneyin.');
+      }
+    });
+
+    bot.command('ara', async (ctx) => {
+      try {
+        await handleSearch(ctx);
+      } catch (e) {
+        console.error('Search handler error:', e);
+        await ctx.reply('Arama sırasında bir hata oluştu.');
+      }
+    });
+
+    bot.command('durum', async (ctx) => {
+      try {
+        await handleStatus(ctx);
+      } catch (e) {
+        console.error('Status handler error:', e);
+        await ctx.reply('Durum güncellemesi sırasında bir hata oluştu.');
+      }
+    });
+
+    bot.command('eslesmeler', async (ctx) => {
+      try {
+        await handleMatches(ctx);
+      } catch (e) {
+        console.error('Matches handler error:', e);
+        await ctx.reply('Eşleşmeler yüklenirken bir hata oluştu.');
+      }
+    });
 
     // Default handler for unknown messages
     bot.on('message', async (ctx) => {
@@ -38,6 +80,8 @@ function getBot(): Bot {
         console.error('Default handler error:', error);
       }
     });
+
+    console.log('Telegram bot initialized successfully');
   }
   return bot;
 }
@@ -50,9 +94,48 @@ export const telegramWebhook = onRequest(
   {
     region: REGION,
     secrets: ['TELEGRAM_BOT_TOKEN', 'ANTHROPIC_API_KEY'],
+    timeoutSeconds: 60, // Allow time for AI operations
   },
   async (req, res) => {
-    const botInstance = getBot();
-    return webhookCallback(botInstance, 'https')(req, res);
+    const startTime = Date.now();
+    console.log(`[${new Date().toISOString()}] Telegram webhook received:`, req.method);
+
+    // Only handle POST requests
+    if (req.method !== 'POST') {
+      console.log('Non-POST request, returning OK');
+      res.status(200).send('OK');
+      return;
+    }
+
+    try {
+      // Log request body for debugging
+      const update = req.body;
+      console.log('Update:', JSON.stringify(update).substring(0, 500));
+
+      if (!update || !update.update_id) {
+        console.log('Invalid update, no update_id');
+        res.status(200).send('OK');
+        return;
+      }
+
+      // Initialize bot
+      console.log('Getting bot instance...');
+      const botInstance = getBot();
+      console.log('Bot instance obtained');
+
+      // Manually handle the update
+      console.log('Handling update...');
+      await botInstance.handleUpdate(update);
+
+      console.log(`Webhook processed successfully in ${Date.now() - startTime}ms`);
+      res.status(200).send('OK');
+    } catch (error) {
+      console.error('Telegram webhook error:', error);
+      console.error('Error stack:', (error as Error).stack);
+      console.log(`Webhook failed after ${Date.now() - startTime}ms`);
+
+      // Return 200 to prevent Telegram from retrying
+      res.status(200).send('Error handled');
+    }
   }
 );

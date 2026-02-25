@@ -29,10 +29,11 @@ export default function PropertyDetail() {
   const { id } = useParams<{ id: string }>()
   const { user } = useAuth()
   const { getProperty, deleteProperty, updateStatus, updateProperty } = useProperties({ useRealtime: false })
-  const { uploads } = usePhotoUpload(id || '')
+  const { uploads, clearCompleted, isUploading } = usePhotoUpload(id || '')
   const [property, setProperty] = useState<Property | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [wasUploading, setWasUploading] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [editingDescription, setEditingDescription] = useState(false)
@@ -60,6 +61,28 @@ export default function PropertyDetail() {
 
     fetchProperty()
   }, [id])
+
+  // Watch for upload completion and refresh property
+  useEffect(() => {
+    // Track if we were uploading
+    if (isUploading) {
+      setWasUploading(true)
+    }
+
+    // When uploads finish (was uploading, now not), refresh property
+    if (wasUploading && !isUploading && id) {
+      const refreshProperty = async () => {
+        console.log('Uploads complete, refreshing property data...')
+        const result = await getProperty(id)
+        if (result.success && result.property) {
+          setProperty(result.property)
+          console.log('Property refreshed with', result.property.photos?.length || 0, 'photos')
+        }
+      }
+      refreshProperty()
+      setWasUploading(false)
+    }
+  }, [isUploading, wasUploading, id, getProperty])
 
   const handleStatusChange = async (newStatus: PropertyStatus) => {
     if (!id || !property) return
@@ -558,7 +581,7 @@ export default function PropertyDetail() {
             {id && <PhotoUploader propertyId={id} onUploadComplete={handleUploadComplete} />}
 
             {/* Upload progress (only when uploads active) */}
-            {uploads.length > 0 && <UploadProgressIndicator uploads={uploads} />}
+            {uploads.length > 0 && <UploadProgressIndicator uploads={uploads} onClearCompleted={clearCompleted} />}
 
             {/* Photo grid */}
             <PhotoGrid

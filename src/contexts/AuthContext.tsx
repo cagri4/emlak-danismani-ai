@@ -38,18 +38,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (firebaseUser) {
         // Use real-time listener for user profile (fixes KVKK race condition)
+        console.log('🔐 Setting up profile listener for:', firebaseUser.uid)
         unsubscribeProfile = onSnapshot(
           doc(db, 'users', firebaseUser.uid),
           (docSnapshot) => {
             if (docSnapshot.exists()) {
-              setUserProfile(docSnapshot.data() as UserProfile)
+              const profileData = docSnapshot.data() as UserProfile
+              console.log('🔐 User profile loaded:', {
+                hasKvkkConsent: !!profileData.kvkkConsent,
+                kvkkConsent: profileData.kvkkConsent
+              })
+              setUserProfile(profileData)
             } else {
+              console.log('🔐 User profile document does not exist')
               setUserProfile(null)
             }
             setLoading(false)
           },
           (error) => {
-            console.error('Error fetching user profile:', error)
+            console.error('🔐 Error fetching user profile:', error)
             setUserProfile(null)
             setLoading(false)
           }

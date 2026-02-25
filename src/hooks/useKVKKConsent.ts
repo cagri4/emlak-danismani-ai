@@ -17,6 +17,7 @@ export function useKVKKConsent() {
     }
 
     try {
+      console.log('💾 Saving KVKK consent for user:', user.uid)
       const userDocRef = doc(db, 'users', user.uid)
       const consentData: KvkkConsent = {
         acceptedAt: new Date().toISOString(),
@@ -41,10 +42,11 @@ export function useKVKKConsent() {
         { merge: true }
       )
 
+      console.log('💾 KVKK consent saved successfully')
       // No need to reload - AuthContext uses real-time listener and will auto-update
       return { success: true }
     } catch (error: any) {
-      console.error('KVKK save error:', error)
+      console.error('💾 KVKK save error:', error)
       return { success: false, error: error?.message || 'KVKK onayı kaydedilemedi' }
     }
   }

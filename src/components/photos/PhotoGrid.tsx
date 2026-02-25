@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Star, Trash2, GripVertical, Pencil, Wand2 } from 'lucide-react';
 import { PropertyPhoto } from '../../types/photo';
 import { PhotoEnhanceButton } from './PhotoEnhanceButton';
-import { getThumbnailUrl } from '../../lib/utils';
 
 interface PhotoGridProps {
   photos: PropertyPhoto[];
@@ -98,6 +97,9 @@ export function PhotoGrid({
     );
   }
 
+  // Debug: log photo URLs
+  console.log('PhotoGrid photos:', photos.map(p => ({ id: p.id, url: p.url?.substring(0, 50) + '...' })));
+
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {photos.map((photo) => {
@@ -113,25 +115,19 @@ export function PhotoGrid({
             onDragLeave={handleDragLeave}
             onDrop={(e) => handleDrop(e, photo.id)}
             className={`
-              relative aspect-square rounded-lg overflow-hidden group
+              relative rounded-lg overflow-hidden group
               transition-all duration-200
               ${isDragging ? 'opacity-50' : ''}
               ${isDropTarget ? 'ring-2 ring-blue-500' : ''}
               ${isEditable ? 'cursor-move' : ''}
             `}
           >
-            {/* Photo image - try public thumbnail first, then stored thumbnailUrl, then original */}
+            {/* Photo image */}
             <img
-              src={getThumbnailUrl(photo.url) || photo.thumbnailUrl || photo.url}
+              src={photo.url}
               alt={`Fotoğraf ${photo.order + 1}`}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                // If thumbnail fails, fall back to original URL
-                const target = e.target as HTMLImageElement;
-                if (target.src !== photo.url) {
-                  target.src = photo.url;
-                }
-              }}
+              className="w-full h-auto object-cover rounded-lg"
+              style={{ minHeight: '150px', maxHeight: '200px' }}
             />
 
             {/* Cover badge */}
@@ -143,7 +139,7 @@ export function PhotoGrid({
 
             {/* Hover overlay with actions (only if editable) */}
             {isEditable && (
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-opacity duration-200">
+              <div className="absolute inset-0 bg-transparent hover:bg-black/40 transition-all duration-200">
                 <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                   {/* Star icon to set as cover */}
                   <button

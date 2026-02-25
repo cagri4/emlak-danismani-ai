@@ -3,6 +3,7 @@ import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { storage, db } from '../lib/firebase';
 import { useUploadStore } from '../stores/uploadStore';
 import { useAuth } from '../contexts/AuthContext';
+import { getThumbnailUrl } from '../lib/utils';
 
 /**
  * Hook for uploading property photos with progress tracking.
@@ -60,12 +61,14 @@ export function usePhotoUpload(propertyId: string) {
             setComplete(upload.id, downloadURL);
 
             // Update property document with photo
+            // Use public GCS URL for thumbnail (Cloud Function makes it public)
+            const publicThumbnailUrl = getThumbnailUrl(downloadURL);
             const propertyRef = doc(db, `users/${user.uid}/properties`, propertyId);
             await updateDoc(propertyRef, {
               photos: arrayUnion({
                 id: upload.id,
                 url: downloadURL,
-                thumbnailUrl: downloadURL.replace(/(\.[^.]+)$/, '-thumb.jpg'),
+                thumbnailUrl: publicThumbnailUrl || downloadURL, // Fallback to original if URL parsing fails
                 order: upload.order,
                 isCover: upload.order === 0, // First photo is cover
                 uploadedAt: new Date(),

@@ -2,9 +2,19 @@ import { Context } from 'grammy';
 import Anthropic from '@anthropic-ai/sdk';
 import { getFirestore, Query, DocumentData } from 'firebase-admin/firestore';
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || '',
-});
+// Lazy initialization - create client inside handler when secrets are available
+let anthropicClient: Anthropic | null = null;
+
+function getAnthropicClient(): Anthropic {
+  if (!anthropicClient) {
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+      throw new Error('ANTHROPIC_API_KEY not set');
+    }
+    anthropicClient = new Anthropic({ apiKey });
+  }
+  return anthropicClient;
+}
 
 interface SearchFilters {
   location: {
@@ -34,7 +44,7 @@ export async function handleSearch(ctx: Context) {
     }
 
     // Use Claude AI to parse the Turkish query
-    const response = await anthropic.messages.create({
+    const response = await getAnthropicClient().messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1024,
       messages: [{

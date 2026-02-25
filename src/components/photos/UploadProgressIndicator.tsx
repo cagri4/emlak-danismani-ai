@@ -1,8 +1,10 @@
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { PhotoUpload } from '../../types/photo';
+import { useEffect } from 'react';
 
 interface UploadProgressIndicatorProps {
   uploads: PhotoUpload[];
+  onClearCompleted?: () => void;
 }
 
 /**
@@ -14,7 +16,21 @@ interface UploadProgressIndicatorProps {
  * - Status icon: spinner (uploading), check (done), X (error)
  * - Error message if failed
  */
-export function UploadProgressIndicator({ uploads }: UploadProgressIndicatorProps) {
+export function UploadProgressIndicator({ uploads, onClearCompleted }: UploadProgressIndicatorProps) {
+  // Check if all uploads are done
+  const allDone = uploads.length > 0 && uploads.every(u => u.status === 'done');
+  const hasErrors = uploads.some(u => u.status === 'error');
+
+  // Auto-clear completed uploads after 2 seconds
+  useEffect(() => {
+    if (allDone && !hasErrors && onClearCompleted) {
+      const timer = setTimeout(() => {
+        onClearCompleted();
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [allDone, hasErrors, onClearCompleted]);
+
   if (uploads.length === 0) return null;
 
   const truncateFilename = (filename: string | undefined, maxLength = 20) => {
@@ -25,9 +41,18 @@ export function UploadProgressIndicator({ uploads }: UploadProgressIndicatorProp
     return `${name}...${ext}`;
   };
 
+  // Dynamic header based on status
+  const getHeader = () => {
+    if (allDone && !hasErrors) return 'Yükleme Tamamlandı ✓';
+    if (hasErrors) return 'Yükleme Hatası';
+    return 'Yükleniyor...';
+  };
+
   return (
-    <div className="space-y-2 bg-gray-50 rounded-lg p-4">
-      <h3 className="text-sm font-medium text-gray-700">Yükleniyor...</h3>
+    <div className={`space-y-2 rounded-lg p-4 ${allDone && !hasErrors ? 'bg-green-50' : hasErrors ? 'bg-red-50' : 'bg-gray-50'}`}>
+      <h3 className={`text-sm font-medium ${allDone && !hasErrors ? 'text-green-700' : hasErrors ? 'text-red-700' : 'text-gray-700'}`}>
+        {getHeader()}
+      </h3>
 
       <div className="space-y-3">
         {uploads.map((upload) => (
