@@ -66,15 +66,16 @@ export default function Properties() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="space-y-8">
+        {/* Page Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Mülkler</h1>
-            <p className="text-muted-foreground mt-1">
-              Portföyünüzdeki {properties.length} mülkü yönetin
+            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Mülkler</h1>
+            <p className="text-slate-500 mt-1">
+              Portföyünüzdeki <span className="font-semibold text-indigo-600">{properties.length}</span> mülkü yönetin
             </p>
           </div>
-          <Button onClick={() => navigate('/properties/new')} className="gap-2">
+          <Button onClick={() => navigate('/properties/new')} className="gap-2 shadow-lg shadow-indigo-500/20">
             <Plus className="h-4 w-4" />
             Yeni Mülk Ekle
           </Button>

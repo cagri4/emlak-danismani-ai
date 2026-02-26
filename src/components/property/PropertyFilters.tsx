@@ -10,7 +10,8 @@ import {
   PRICE_RANGES,
 } from '@/lib/constants'
 import { PropertyStatus, ListingType } from '@/types/property'
-import { Filter, X, ChevronDown, ChevronUp } from 'lucide-react'
+import { Filter, X, ChevronDown, ChevronUp, Search, SlidersHorizontal } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface PropertyFiltersProps {
   onFilterChange: (filters: FilterValues) => void
@@ -63,9 +64,29 @@ export default function PropertyFilters({
   const activeFilterCount = Object.values(localFilters).filter((v) => v !== undefined).length
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border p-4">
+    <div className="bg-white rounded-2xl shadow-soft border border-slate-100 overflow-hidden">
+      {/* Header */}
+      <div className="px-6 py-4 bg-gradient-to-r from-slate-50 to-white border-b border-slate-100">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/20">
+              <SlidersHorizontal className="h-4 w-4 text-white" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900">Filtreler</h3>
+              <p className="text-xs text-slate-500">Mülkleri filtreleyin</p>
+            </div>
+          </div>
+          {activeFilterCount > 0 && (
+            <span className="px-3 py-1 text-xs font-medium bg-indigo-100 text-indigo-700 rounded-full">
+              {activeFilterCount} aktif
+            </span>
+          )}
+        </div>
+      </div>
+
       {/* Mobile Toggle */}
-      <div className="lg:hidden mb-4">
+      <div className="lg:hidden p-4 border-b border-slate-100">
         <Button
           variant="outline"
           onClick={() => setIsExpanded(!isExpanded)}
@@ -73,12 +94,7 @@ export default function PropertyFilters({
         >
           <span className="flex items-center gap-2">
             <Filter className="h-4 w-4" />
-            Filtreler
-            {activeFilterCount > 0 && (
-              <span className="bg-primary text-white text-xs px-2 py-0.5 rounded-full">
-                {activeFilterCount}
-              </span>
-            )}
+            {isExpanded ? 'Filtreleri Gizle' : 'Filtreleri Göster'}
           </span>
           {isExpanded ? (
             <ChevronUp className="h-4 w-4" />
@@ -89,11 +105,17 @@ export default function PropertyFilters({
       </div>
 
       {/* Filters */}
-      <div className={`space-y-4 ${!isExpanded && 'hidden lg:block'}`}>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className={cn(
+        'p-6 space-y-6 transition-all duration-300',
+        !isExpanded && 'hidden lg:block'
+      )}>
+        {/* Main Filters Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
           {/* Status Filter */}
           <div className="space-y-2">
-            <Label htmlFor="status-filter">Durum</Label>
+            <Label htmlFor="status-filter" className="text-sm font-medium text-slate-700">
+              Durum
+            </Label>
             <Select
               id="status-filter"
               value={localFilters.status || ''}
@@ -112,7 +134,9 @@ export default function PropertyFilters({
 
           {/* Listing Type Filter */}
           <div className="space-y-2">
-            <Label htmlFor="listing-type-filter">İlan Tipi</Label>
+            <Label htmlFor="listing-type-filter" className="text-sm font-medium text-slate-700">
+              İlan Tipi
+            </Label>
             <Select
               id="listing-type-filter"
               value={localFilters.listingType || ''}
@@ -131,7 +155,9 @@ export default function PropertyFilters({
 
           {/* City Filter */}
           <div className="space-y-2">
-            <Label htmlFor="city-filter">Şehir</Label>
+            <Label htmlFor="city-filter" className="text-sm font-medium text-slate-700">
+              Şehir
+            </Label>
             <Select
               id="city-filter"
               value={localFilters.city || ''}
@@ -150,7 +176,9 @@ export default function PropertyFilters({
 
           {/* Price Range Filter */}
           <div className="space-y-2">
-            <Label htmlFor="price-range-filter">Fiyat Aralığı</Label>
+            <Label htmlFor="price-range-filter" className="text-sm font-medium text-slate-700">
+              Fiyat Aralığı
+            </Label>
             <Select
               id="price-range-filter"
               value={localFilters.priceRange || ''}
@@ -167,39 +195,51 @@ export default function PropertyFilters({
         </div>
 
         {/* Custom Price Range */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="min-price">Min Fiyat</Label>
-            <Input
-              id="min-price"
-              type="number"
-              placeholder="0"
-              value={localFilters.minPrice || ''}
-              onChange={(e) =>
-                handleFilterUpdate('minPrice', e.target.value ? Number(e.target.value) : undefined)
-              }
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="max-price">Max Fiyat</Label>
-            <Input
-              id="max-price"
-              type="number"
-              placeholder="Sınırsız"
-              value={localFilters.maxPrice || ''}
-              onChange={(e) =>
-                handleFilterUpdate('maxPrice', e.target.value ? Number(e.target.value) : undefined)
-              }
-            />
+        <div className="pt-4 border-t border-slate-100">
+          <Label className="text-sm font-medium text-slate-700 mb-3 block">
+            Özel Fiyat Aralığı
+          </Label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="relative">
+              <Input
+                id="min-price"
+                type="number"
+                placeholder="Min fiyat"
+                value={localFilters.minPrice || ''}
+                onChange={(e) =>
+                  handleFilterUpdate('minPrice', e.target.value ? Number(e.target.value) : undefined)
+                }
+                className="pl-8"
+              />
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">₺</span>
+            </div>
+            <div className="relative">
+              <Input
+                id="max-price"
+                type="number"
+                placeholder="Max fiyat"
+                value={localFilters.maxPrice || ''}
+                onChange={(e) =>
+                  handleFilterUpdate('maxPrice', e.target.value ? Number(e.target.value) : undefined)
+                }
+                className="pl-8"
+              />
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">₺</span>
+            </div>
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-2">
-          <Button onClick={handleApplyFilters} className="flex-1">
+        <div className="flex gap-3 pt-4 border-t border-slate-100">
+          <Button onClick={handleApplyFilters} className="flex-1 gap-2 shadow-lg shadow-indigo-500/20">
+            <Search className="h-4 w-4" />
             Filtrele
           </Button>
-          <Button variant="outline" onClick={handleClearFilters} className="gap-2">
+          <Button
+            variant="outline"
+            onClick={handleClearFilters}
+            className="gap-2 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
+          >
             <X className="h-4 w-4" />
             Temizle
           </Button>
