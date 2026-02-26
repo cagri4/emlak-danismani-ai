@@ -10,18 +10,22 @@ export async function handleStart(ctx: Context): Promise<void> {
   // Log chat ID for debugging/future user linking
   console.log(`Telegram /start command from chat ID: ${chatId}`);
 
-  // Send Turkish welcome message
+  // Send Turkish welcome message with Chat ID for linking
   await ctx.reply(
-    `Merhaba! Emlak asistanina hosgeldiniz.
+    `🏠 Merhaba! Emlak AI Asistanına hoş geldiniz.
 
-Bu bot ile:
-- Mulk arayabilirsiniz (/ara)
-- Mulk durumunu guncelleyebilirsiniz (/durum)
-- Bildirim alabilirsiniz
+📱 <b>Chat ID'niz:</b> <code>${chatId}</code>
 
-/help yazarak tum komutlari gorebilirsiniz.`
+Web uygulamasından (Ayarlar > Telegram Bağlantısı) bu ID'yi girerek hesabınızı bağlayın.
+
+Bağlandıktan sonra yapabilecekleriniz:
+• Doğal Türkçe ile soru sorma
+• Mülk arama ve listeleme
+• Müşteri eşleştirme
+• Fiyat ve durum güncelleme
+• Anlık bildirim alma
+
+/help yazarak tüm komutları görebilirsiniz.`,
+    { parse_mode: 'HTML' }
   );
-
-  // TODO: Link user's telegramChatId to Firestore when authentication is implemented
-  // This will enable sending notifications to specific users
 }
