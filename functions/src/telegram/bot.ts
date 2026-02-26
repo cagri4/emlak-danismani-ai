@@ -6,6 +6,7 @@ import { handleHelp } from './commands/help';
 import { handleSearch } from './commands/search';
 import { handleStatus } from './commands/status';
 import { handleMatches } from './commands/matches';
+import { handleNaturalLanguage } from './ai-handler';
 
 // Lazy initialization to avoid errors during deployment
 let bot: Bot | null = null;
@@ -73,12 +74,21 @@ async function getBot(): Promise<Bot> {
       }
     });
 
-    // Default handler for unknown messages
-    bot.on('message', async (ctx) => {
+    // Default handler - use AI for natural language processing
+    bot.on('message:text', async (ctx) => {
       try {
-        await ctx.reply('Bilinmeyen komut. /help yazarak yardim alabilirsiniz.');
+        // Skip if it looks like an unrecognized command
+        if (ctx.message.text.startsWith('/')) {
+          await ctx.reply('Bilinmeyen komut. /help yazarak yardım alabilirsiniz.');
+          return;
+        }
+
+        // Process with AI
+        console.log('Processing with AI handler:', ctx.message.text.substring(0, 50));
+        await handleNaturalLanguage(ctx);
       } catch (error) {
-        console.error('Default handler error:', error);
+        console.error('AI handler error:', error);
+        await ctx.reply('Bir hata oluştu. Lütfen tekrar deneyin veya /help yazın.');
       }
     });
 
