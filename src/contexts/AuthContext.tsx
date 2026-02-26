@@ -42,18 +42,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         unsubscribeProfile = onSnapshot(
           doc(db, 'users', firebaseUser.uid),
           (docSnapshot) => {
+            // Check if data is from server (not cache) to avoid flash
+            const fromCache = docSnapshot.metadata.fromCache
+            const hasPendingWrites = docSnapshot.metadata.hasPendingWrites
+
             if (docSnapshot.exists()) {
               const profileData = docSnapshot.data() as UserProfile
               console.log('🔐 User profile loaded:', {
                 hasKvkkConsent: !!profileData.kvkkConsent,
-                kvkkConsent: profileData.kvkkConsent
+                kvkkConsent: profileData.kvkkConsent,
+                fromCache,
+                hasPendingWrites
               })
-              setUserProfile(profileData)
+
+              // Only update profile if:
+              // 1. Data is from server (not cache), OR
+              // 2. Profile already has kvkkConsent (cache is valid)
+              if (!fromCache || profileData.kvkkConsent) {
+                setUserProfile(profileData)
+                setLoading(false)
+              }
+              // If from cache without kvkkConsent, wait for server data
             } else {
               console.log('🔐 User profile document does not exist')
               setUserProfile(null)
+              setLoading(false)
             }
-            setLoading(false)
           },
           (error) => {
             console.error('🔐 Error fetching user profile:', error)
