@@ -148,13 +148,13 @@ async function processWithAI(
   userId: string,
   db: FirebaseFirestore.Firestore
 ): Promise<string> {
-  // Create context summary for Claude
-  const propertySummary = properties.slice(0, 20).map(p =>
-    `- ${p.title}: ${p.type}, ${formatPrice(p.price)}, ${p.location.district}/${p.location.city}, ${p.status}`
+  // Create context summary for Claude with IDs for updates
+  const propertySummary = properties.slice(0, 20).map((p, idx) =>
+    `${idx + 1}. [ID:${p.id}] ${p.title} - ${p.type}, ${formatPrice(p.price)}, ${p.location.district}/${p.location.city}, durum: ${p.status}`
   ).join('\n');
 
-  const customerSummary = customers.slice(0, 20).map(c =>
-    `- ${c.name}: Bütçe ${formatPrice(c.preferences.budget.min)}-${formatPrice(c.preferences.budget.max)}, Lokasyon: ${c.preferences.location.join(', ') || 'Belirtilmemiş'}`
+  const customerSummary = customers.slice(0, 20).map((c, idx) =>
+    `${idx + 1}. [ID:${c.id}] ${c.name}: Bütçe ${formatPrice(c.preferences.budget.min)}-${formatPrice(c.preferences.budget.max)}, Lokasyon: ${c.preferences.location.join(', ') || 'Belirtilmemiş'}`
   ).join('\n');
 
   const systemPrompt = `Sen bir emlak danışmanı asistanısın. Telegram üzerinden Türkçe yardım ediyorsun.
@@ -172,7 +172,7 @@ YAPABİLECEKLERİN:
 2. Müşteri arama ve listeleme
 3. Müşteri-mülk eşleştirme önerileri
 4. Mülk fiyat güncelleme
-5. Durum güncelleme (satıldı, kiralandı, vb.)
+5. Durum güncelleme (satıldı, kiralandı, aktif, opsiyonlu)
 6. Genel emlak danışmanlığı soruları
 
 KURALLAR:
@@ -181,13 +181,20 @@ KURALLAR:
 - Fiyatları "2.5M TL" formatında yaz
 - Türkçe karakterleri doğru kullan
 - Bilmediğin şeylerde dürüst ol
-- Gerçek veri yoksa "kayıt bulunamadı" de
 
-ÖNEMLİ: Eğer kullanıcı bir güncelleme istiyorsa (fiyat değiştir, durum güncelle), hangi mülk/müşteri olduğunu netleştir ve güncellemeyi yapacağını söyle. Sonra JSON formatında güncelleme komutunu döndür:
-<update>{"type": "property_price", "id": "MULK_ID", "price": YENI_FIYAT}</update>
-<update>{"type": "property_status", "id": "MULK_ID", "status": "satıldı|kiralandı|aktif|opsiyonlu"}</update>
+GÜNCELLEME KURALLARI (ÇOK ÖNEMLİ):
+Kullanıcı fiyat veya durum güncellemesi istediğinde:
+1. Önce kullanıcıya ne yapacağını açıkla
+2. Sonra cevabının EN SONUNA şu formatta güncelleme komutu ekle:
 
-Eğer eşleştirme istenirse, mevcut müşteri tercihlerine göre uygun mülkleri listele.`;
+Fiyat güncellemesi için:
+<update>{"type":"property_price","id":"BURAYA_GERCEK_MULK_ID","price":25000000}</update>
+
+Durum güncellemesi için:
+<update>{"type":"property_status","id":"BURAYA_GERCEK_MULK_ID","status":"satıldı"}</update>
+
+DİKKAT: "id" alanına yukarıdaki listeden gerçek mülk ID'sini koy (örn: [ID:abc123] ise "abc123" yaz).
+Fiyatı sayı olarak yaz (25M = 25000000, 1.5M = 1500000).`;
 
   const response = await getAnthropicClient().messages.create({
     model: 'claude-sonnet-4-20250514',
@@ -209,13 +216,20 @@ Eğer eşleştirme istenirse, mevcut müşteri tercihlerine göre uygun mülkler
   // Check for update commands and execute them
   const updateMatch = responseText.match(/<update>(.*?)<\/update>/s);
   if (updateMatch) {
+    console.log('Found update command:', updateMatch[1]);
     try {
       const updateData = JSON.parse(updateMatch[1]);
-      await executeUpdate(db, userId, updateData);
-      // Remove the update tag from response
+      console.log('Parsed update data:', JSON.stringify(updateData));
+      const updateResult = await executeUpdate(db, userId, updateData);
+      // Remove the update tag from response and add confirmation
       responseText = responseText.replace(/<update>.*?<\/update>/s, '').trim();
+      if (updateResult) {
+        responseText += '\n\n✅ ' + updateResult;
+      }
     } catch (e) {
       console.error('Update execution error:', e);
+      responseText = responseText.replace(/<update>.*?<\/update>/s, '').trim();
+      responseText += '\n\n❌ Güncelleme sırasında hata oluştu: ' + (e as Error).message;
     }
   }
 
@@ -229,13 +243,14 @@ async function executeUpdate(
   db: FirebaseFirestore.Firestore,
   userId: string,
   updateData: any
-): Promise<void> {
+): Promise<string | null> {
   try {
     if (updateData.type === 'property_price' && updateData.id && updateData.price) {
       await db.collection('users').doc(userId)
         .collection('properties').doc(updateData.id)
         .update({ price: updateData.price, updatedAt: new Date() });
       console.log(`Property ${updateData.id} price updated to ${updateData.price}`);
+      return `Fiyat ${formatPrice(updateData.price)} olarak güncellendi`;
     }
 
     if (updateData.type === 'property_status' && updateData.id && updateData.status) {
@@ -243,7 +258,10 @@ async function executeUpdate(
         .collection('properties').doc(updateData.id)
         .update({ status: updateData.status, updatedAt: new Date() });
       console.log(`Property ${updateData.id} status updated to ${updateData.status}`);
+      return `Durum "${updateData.status}" olarak güncellendi`;
     }
+
+    return null;
   } catch (error) {
     console.error('Failed to execute update:', error);
     throw error;
