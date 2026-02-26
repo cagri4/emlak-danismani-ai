@@ -9,8 +9,9 @@ import { handleMatches } from './commands/matches';
 
 // Lazy initialization to avoid errors during deployment
 let bot: Bot | null = null;
+let botInitialized = false;
 
-function getBot(): Bot {
+async function getBot(): Promise<Bot> {
   if (!bot) {
     console.log('Initializing Telegram bot...');
     const token = process.env.TELEGRAM_BOT_TOKEN;
@@ -81,8 +82,17 @@ function getBot(): Bot {
       }
     });
 
+    console.log('Telegram bot handlers registered');
+  }
+
+  // Initialize bot if not done yet (required by grammy for webhooks)
+  if (!botInitialized) {
+    console.log('Calling bot.init()...');
+    await bot.init();
+    botInitialized = true;
     console.log('Telegram bot initialized successfully');
   }
+
   return bot;
 }
 
@@ -120,8 +130,8 @@ export const telegramWebhook = onRequest(
 
       // Initialize bot
       console.log('Getting bot instance...');
-      const botInstance = getBot();
-      console.log('Bot instance obtained');
+      const botInstance = await getBot();
+      console.log('Bot instance obtained and initialized');
 
       // Manually handle the update
       console.log('Handling update...');
