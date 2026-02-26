@@ -44,29 +44,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           (docSnapshot) => {
             // Check if data is from server (not cache) to avoid flash
             const fromCache = docSnapshot.metadata.fromCache
-            const hasPendingWrites = docSnapshot.metadata.hasPendingWrites
 
             if (docSnapshot.exists()) {
               const profileData = docSnapshot.data() as UserProfile
               console.log('🔐 User profile loaded:', {
                 hasKvkkConsent: !!profileData.kvkkConsent,
-                kvkkConsent: profileData.kvkkConsent,
-                fromCache,
-                hasPendingWrites
+                fromCache
               })
 
-              // Only update profile if:
-              // 1. Data is from server (not cache), OR
-              // 2. Profile already has kvkkConsent (cache is valid)
+              // Always update profile with latest data
+              setUserProfile(profileData)
+
+              // Only set loading=false when we have server data or cache with consent
+              // This prevents brief flash of KVKK page when cache is stale
               if (!fromCache || profileData.kvkkConsent) {
-                setUserProfile(profileData)
                 setLoading(false)
               }
-              // If from cache without kvkkConsent, wait for server data
             } else {
-              console.log('🔐 User profile document does not exist')
-              setUserProfile(null)
-              setLoading(false)
+              console.log('🔐 User profile document does not exist, fromCache:', fromCache)
+              // Only act on server data, not cache "not found"
+              if (!fromCache) {
+                setUserProfile(null)
+                setLoading(false)
+              }
             }
           },
           (error) => {

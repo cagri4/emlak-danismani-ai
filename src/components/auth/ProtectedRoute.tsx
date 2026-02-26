@@ -9,7 +9,10 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, userProfile, loading } = useAuth()
 
-  if (loading) {
+  // Show loading spinner while:
+  // 1. Still loading auth state, OR
+  // 2. User exists but profile not loaded yet (waiting for Firestore)
+  if (loading || (user && !userProfile)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -28,8 +31,8 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     return <Navigate to="/verify-email" replace />
   }
 
-  // Redirect to KVKK if userProfile doesn't exist yet or doesn't have consent
-  if (!userProfile || !userProfile.kvkkConsent) {
+  // Redirect to KVKK only if profile loaded but doesn't have consent
+  if (userProfile && !userProfile.kvkkConsent) {
     return <Navigate to="/kvkk" replace />
   }
 
