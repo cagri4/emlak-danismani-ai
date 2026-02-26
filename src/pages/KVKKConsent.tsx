@@ -45,6 +45,18 @@ export default function KVKKConsent() {
     }
   }, [hasScrolledToBottom])
 
+  // Show loading state while checking consent or if consent exists (waiting for redirect)
+  if (loading || userProfile?.kvkkConsent) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Yükleniyor...</p>
+        </div>
+      </div>
+    )
+  }
+
   const handleAccept = async () => {
     setIsSubmitting(true)
     setError('')
