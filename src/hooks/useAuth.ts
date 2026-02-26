@@ -72,7 +72,9 @@ export function useAuthActions() {
           company: '',
           emailVerified: result.user.emailVerified,
           createdAt: serverTimestamp(),
-          kvkkConsent: null,
+          // Note: kvkkConsent is intentionally NOT included here
+          // With merge: true, existing kvkkConsent values will be preserved
+          // New users will have no kvkkConsent and will be prompted
         },
         { merge: true }
       )
