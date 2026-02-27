@@ -1,9 +1,9 @@
 ---
-status: diagnosed
+status: resolved
 phase: 01-foundation-compliance
 source: [01-01-SUMMARY.md, 01-02-SUMMARY.md, 01-03-SUMMARY.md]
 started: 2026-02-22T15:00:00Z
-updated: 2026-02-27T12:15:00Z
+updated: 2026-02-27T14:30:00Z
 ---
 
 ## Current Test
@@ -73,8 +73,8 @@ skipped: 0
 ## Gaps
 
 - truth: "Mülk listesinde status, şehir, fiyat aralığı filtreleri çalışır. Filtreler URL'de saklanır."
-  status: failed
-  reason: "User reported: filrtelere bir mülkün bir şehir girdim, Mülkler yüklenirken hata oluştu çıktısı verdi"
+  status: resolved
+  reason: "Fixed by 01-04-PLAN.md - Added Firestore composite indexes for all filter combinations"
   severity: major
   test: 10
   root_cause: "Missing Firestore composite indexes. useProperties.ts combines where() filters with orderBy('createdAt'), but firestore.indexes.json is empty."
