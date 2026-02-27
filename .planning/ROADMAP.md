@@ -32,12 +32,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. User can see dashboard with basic metrics (property count, status breakdown)
   4. User can generate Turkish property description from property attributes using AI
   5. System stores data in KVKK-compliant manner (Europe region, consent management)
-**Plans**: 3 plans in 3 waves
+**Plans**: 4 plans in 3 waves
 
 Plans:
 - [x] 01-01-PLAN.md - Project setup, Firebase config, auth system (email/password, Google OAuth, password reset) ✅ **COMPLETED** (17 min, 3 tasks, 29 files)
 - [x] 01-02-PLAN.md - KVKK consent flow, property types/schemas, property CRUD operations ✅ **COMPLETED** (8 min, 3 tasks, 14 files)
 - [x] 01-03-PLAN.md - Dashboard with metrics, property cards/grid, filters, AI description generation ✅ **COMPLETED** (10 min, 4 tasks, 30 files)
+- [x] 01-04-PLAN.md - Gap closure: Firestore composite indexes for property filtering ✅ **COMPLETED** (1 min, 2 tasks, 1 file)
 
 ### Phase 2: AI Interface & Matching
 **Goal**: Users can interact with the system using natural Turkish language and get intelligent property-customer matches
