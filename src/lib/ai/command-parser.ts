@@ -255,14 +255,8 @@ export function validateCommandEntities(
       break
 
     case 'search_properties':
-      // At least one search criteria required
-      const hasSearchCriteria =
-        entities.location?.city ||
-        entities.propertyType ||
-        entities.price?.min ||
-        entities.price?.max ||
-        entities.rooms
-      if (!hasSearchCriteria) missing.push('arama kriteri')
+      // Allow listing all properties if no criteria (returns all)
+      // At least one search criteria is preferred but not required
       break
 
     case 'update_status':

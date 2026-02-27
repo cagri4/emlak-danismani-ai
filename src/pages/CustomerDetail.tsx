@@ -199,7 +199,7 @@ export default function CustomerDetail() {
     <DashboardLayout>
       <div className="max-w-5xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="space-y-4">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
@@ -209,7 +209,7 @@ export default function CustomerDetail() {
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">{customer.name}</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{customer.name}</h1>
               <div className="flex items-center gap-2 mt-1">
                 <span className={`px-2 py-1 rounded-md text-xs font-medium ${urgencyColors[customer.preferences.urgency]}`}>
                   Aciliyet: {urgencyLabels[customer.preferences.urgency]}
@@ -221,7 +221,7 @@ export default function CustomerDetail() {
             </div>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <SendEmailButton
               customerId={id!}
               customerEmail={customer.email}
@@ -231,14 +231,16 @@ export default function CustomerDetail() {
               variant="outline"
               onClick={() => setShowEmailHistory(true)}
               className="gap-2"
+              size="sm"
             >
               <History className="h-4 w-4" />
-              E-posta Geçmişi
+              <span className="hidden sm:inline">E-posta Geçmişi</span>
             </Button>
             <Button
               variant="outline"
               onClick={() => navigate(`/customers/${id}/edit`)}
               className="gap-2"
+              size="sm"
             >
               <Edit className="h-4 w-4" />
               Düzenle
@@ -247,6 +249,7 @@ export default function CustomerDetail() {
               variant="destructive"
               onClick={() => setShowDeleteConfirm(true)}
               disabled={isDeleting}
+              size="sm"
             >
               <Trash2 className="h-4 w-4" />
             </Button>

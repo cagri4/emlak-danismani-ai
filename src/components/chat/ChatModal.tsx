@@ -17,7 +17,7 @@ export function ChatModal() {
   };
 
   return (
-    <div className="fixed bottom-24 right-6 w-96 h-[500px] bg-white rounded-lg shadow-xl flex flex-col z-50 animate-in slide-in-from-bottom-4 fade-in duration-200">
+    <div className="fixed inset-0 sm:inset-auto sm:bottom-24 sm:right-6 sm:w-96 sm:h-[500px] bg-white sm:rounded-lg shadow-xl flex flex-col z-50 animate-in slide-in-from-bottom-4 fade-in duration-200">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         <h2 className="text-lg font-semibold text-gray-900">AI Asistan</h2>

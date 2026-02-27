@@ -243,6 +243,14 @@ async function handleSearchProperties(
   entities: IntentResult['entities'],
   context: CommandContext
 ): Promise<CommandResult> {
+  // If no properties loaded, inform user
+  if (context.properties.length === 0) {
+    return {
+      success: true,
+      message: 'Henüz mülk eklenmemiş. "Mülk ekle" komutuyla yeni mülk ekleyebilirsiniz.'
+    }
+  }
+
   // Filter properties based on search criteria
   let results = [...context.properties]
 
