@@ -1,5 +1,5 @@
 ---
-status: complete
+status: diagnosed
 phase: 01-foundation-compliance
 source: [01-01-SUMMARY.md, 01-02-SUMMARY.md, 01-03-SUMMARY.md]
 started: 2026-02-22T15:00:00Z
@@ -77,7 +77,16 @@ skipped: 0
   reason: "User reported: filrtelere bir mülkün bir şehir girdim, Mülkler yüklenirken hata oluştu çıktısı verdi"
   severity: major
   test: 10
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "Missing Firestore composite indexes. useProperties.ts combines where() filters with orderBy('createdAt'), but firestore.indexes.json is empty."
+  artifacts:
+    - path: "firestore.indexes.json"
+      issue: "Empty indexes array - no composite indexes defined"
+    - path: "src/hooks/useProperties.ts"
+      issue: "Query at line 73-75 uses where('location.city') with orderBy('createdAt')"
+  missing:
+    - "Add composite indexes for location.city + createdAt"
+    - "Add composite indexes for status + createdAt"
+    - "Add composite indexes for type + createdAt"
+    - "Add composite indexes for listingType + createdAt"
+    - "Deploy indexes with firebase deploy --only firestore:indexes"
+  debug_session: ".planning/debug/property-city-filter-error.md"
