@@ -50,9 +50,8 @@ result: pass
 
 ### 10. Mülk Filtreleme
 expected: Mülk listesinde status, şehir, fiyat aralığı filtreleri çalışır. Filtreler URL'de saklanır (sayfa yenilenince kalır).
-result: issue
-reported: "filrtelere bir mülkün bir şehir girdim, Mülkler yüklenirken hata oluştu çıktısı verdi"
-severity: major
+result: pass
+verified_after_fix: 2026-02-27
 
 ### 11. AI Açıklama Üretme
 expected: Mülk detay sayfasında "AI Açıklama Oluştur" butonu var. Tıklayınca 3 farklı Türkçe açıklama seçeneği sunulur. Birini seçince mülke kaydedilir.
@@ -65,8 +64,8 @@ result: pass
 ## Summary
 
 total: 12
-passed: 11
-issues: 1
+passed: 12
+issues: 0
 pending: 0
 skipped: 0
 
