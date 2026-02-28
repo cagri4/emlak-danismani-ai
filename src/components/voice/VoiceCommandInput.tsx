@@ -120,7 +120,7 @@ export function VoiceCommandInput({ onTranscript, disabled = false }: VoiceComma
 
       {/* Error message */}
       {error && (
-        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 text-xs text-red-500 whitespace-nowrap bg-white px-2 py-1 rounded shadow-sm border border-red-200">
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 text-xs text-red-500 whitespace-nowrap bg-white px-2 py-1 rounded shadow-sm border border-red-200">
           {error}
         </div>
       )}
