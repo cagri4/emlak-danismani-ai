@@ -71,6 +71,7 @@ Progress: [██████████] 100%
 | Phase 07 P01 | 14 | 3 tasks | 8 files |
 | Phase 07 P02 | 13 | 3 tasks | 6 files |
 | Phase 01 P04 | 72 | 2 tasks | 1 files |
+| Phase 04 P06 | 1 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -203,6 +204,8 @@ Recent decisions affecting current work:
 - [Phase 07-02]: CollectionGroup queries to find emails across customer subcollections
 - [Phase 01-04]: Firestore composite indexes required for where() + orderBy() query combinations
 - [Phase 01-04]: Collection group indexes for subcollection property queries
+- [Phase 04]: fetch + createObjectURL instead of crossOrigin='anonymous' to prevent Firebase Storage CORS canvas taint (04-06)
+- [Phase 04]: Crop save storage path uses root properties/${id}/ matching upload path in usePhotoUpload.ts (04-06)
 
 ### Pending Todos
 
