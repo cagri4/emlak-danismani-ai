@@ -244,13 +244,14 @@ ${propertySummary || 'Henüz mülk yok'}
 ${customerSummary || 'Henüz müşteri yok'}
 
 YAPABİLECEKLERİN:
-1. Mülk arama ve listeleme
-2. Müşteri arama ve listeleme
-3. Müşteri-mülk eşleştirme önerileri
-4. Mülk fiyat güncelleme
-5. Durum güncelleme (satıldı, kiralandı, aktif, opsiyonlu)
-6. Mülk veya müşteri silme (onay gerektirir)
-7. Genel emlak danışmanlığı soruları
+1. Mülk ekleme (doğal dilde: "3+1 daire ekle, Kadıköy, 120m², 5M TL")
+2. Mülk arama ve listeleme
+3. Müşteri arama ve listeleme
+4. Müşteri-mülk eşleştirme önerileri
+5. Mülk fiyat güncelleme
+6. Durum güncelleme (satıldı, kiralandı, aktif, opsiyonlu)
+7. Mülk veya müşteri silme (onay gerektirir)
+8. Genel emlak danışmanlığı soruları
 
 KURALLAR:
 - Kısa ve öz cevaplar ver
@@ -262,16 +263,25 @@ KURALLAR:
 KOMUT FORMATLARI (ÇOK ÖNEMLİ):
 Cevabının EN SONUNA uygun komutu ekle:
 
-1. Fiyat güncellemesi:
+1. Yeni mülk ekleme:
+<add>{"type":"property","title":"Yalıkavak Villa","propertyType":"villa","listingType":"satılık","price":15000000,"area":250,"rooms":"2+1","city":"Muğla","district":"Bodrum","neighborhood":"Yalıkavak","features":["Deniz Manzarası","Havuz"]}</add>
+
+propertyType: daire | villa | müstakil | arsa | dükkan | ofis
+listingType: satılık | kiralık
+features: opsiyonel, uygun özellikler ekle
+
+Kullanıcının mesajından çıkarabildiğin tüm alanları doldur. Eksik alanlar için makul varsayımlar yap (örn: fiyat belirtilmemişse 0 yaz, listingType belirtilmemişse "satılık" kabul et).
+
+2. Fiyat güncellemesi:
 <update>{"type":"property_price","id":"MULK_ID","price":25000000}</update>
 
-2. Durum güncellemesi:
+3. Durum güncellemesi:
 <update>{"type":"property_status","id":"MULK_ID","status":"satıldı"}</update>
 
-3. Mülk silme (ONAY İSTEYECEK):
+4. Mülk silme (ONAY İSTEYECEK):
 <delete>{"type":"property","id":"MULK_ID","title":"Mülk Adı"}</delete>
 
-4. Müşteri silme (ONAY İSTEYECEK):
+5. Müşteri silme (ONAY İSTEYECEK):
 <delete>{"type":"customer","id":"MUSTERI_ID","title":"Müşteri Adı"}</delete>
 
 DİKKAT:
@@ -320,6 +330,25 @@ DİKKAT:
     }
   }
 
+  // Check for add commands and execute them immediately
+  const addMatch = responseText.match(/<add>(.*?)<\/add>/s);
+  if (addMatch) {
+    console.log('Found add command:', addMatch[1]);
+    try {
+      const addData = JSON.parse(addMatch[1]);
+      console.log('Parsed add data:', JSON.stringify(addData));
+      const addResult = await executeAdd(db, userId, addData);
+      responseText = responseText.replace(/<add>.*?<\/add>/s, '').trim();
+      if (addResult) {
+        responseText += '\n\n✅ ' + addResult;
+      }
+    } catch (e) {
+      console.error('Add execution error:', e);
+      responseText = responseText.replace(/<add>.*?<\/add>/s, '').trim();
+      responseText += '\n\n❌ Ekleme sırasında hata oluştu: ' + (e as Error).message;
+    }
+  }
+
   // Check for update commands and execute them immediately
   const updateMatch = responseText.match(/<update>(.*?)<\/update>/s);
   if (updateMatch) {
@@ -341,6 +370,51 @@ DİKKAT:
   }
 
   return { text: responseText, deleteConfirmation };
+}
+
+/**
+ * Execute property/customer add
+ */
+async function executeAdd(
+  db: FirebaseFirestore.Firestore,
+  userId: string,
+  addData: any
+): Promise<string | null> {
+  try {
+    if (addData.type === 'property') {
+      const now = new Date();
+      const propertyData = {
+        title: addData.title || `${addData.rooms || ''} ${addData.propertyType || 'Mülk'}`.trim(),
+        type: addData.propertyType || 'daire',
+        listingType: addData.listingType || 'satılık',
+        price: addData.price || 0,
+        area: addData.area || 0,
+        rooms: addData.rooms || '',
+        status: 'aktif' as const,
+        description: addData.description || '',
+        location: {
+          city: addData.city || '',
+          district: addData.district || '',
+          neighborhood: addData.neighborhood || '',
+        },
+        features: addData.features || [],
+        photos: [],
+        createdAt: now,
+        updatedAt: now,
+      };
+
+      const docRef = await db.collection('users').doc(userId)
+        .collection('properties').add(propertyData);
+
+      console.log(`Property ${docRef.id} added by user ${userId}`);
+      return `"${propertyData.title}" mülkü başarıyla eklendi (ID: ${docRef.id})`;
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Failed to execute add:', error);
+    throw error;
+  }
 }
 
 /**
