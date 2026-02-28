@@ -76,10 +76,10 @@ export function PhotoEnhanceButton({
       title={tooltipText}
     >
       {isEnhancing ? (
-        <Loader2 className="h-5 w-5 text-blue-600 animate-spin" />
+        <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 animate-spin" />
       ) : (
         <Sparkles
-          className={`h-5 w-5 ${alreadyEnhanced ? 'text-blue-600 fill-blue-100' : 'text-gray-600'}`}
+          className={`h-4 w-4 sm:h-5 sm:w-5 ${alreadyEnhanced ? 'text-blue-600 fill-blue-100' : 'text-gray-600'}`}
         />
       )}
     </button>

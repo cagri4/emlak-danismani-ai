@@ -141,7 +141,7 @@ export function PhotoGrid({
             {isEditable && (
               <div className="absolute inset-0 bg-black/0 sm:hover:bg-black/40 transition-all duration-200">
                 {/* Action buttons - always visible on mobile, hover on desktop */}
-                <div className="absolute bottom-0 inset-x-0 flex items-center justify-center gap-2 p-2 bg-gradient-to-t from-black/60 to-transparent sm:opacity-0 sm:group-hover:opacity-100 sm:absolute sm:inset-0 sm:bg-black/40 sm:from-transparent transition-opacity duration-200">
+                <div className="absolute bottom-0 inset-x-0 flex flex-wrap items-center justify-center gap-1 p-2 bg-gradient-to-t from-black/60 to-transparent sm:opacity-0 sm:group-hover:opacity-100 sm:absolute sm:inset-0 sm:bg-black/40 sm:from-transparent transition-opacity duration-200">
                   {/* Star icon to set as cover */}
                   <button
                     onClick={() => handleSetCover(photo.id)}
