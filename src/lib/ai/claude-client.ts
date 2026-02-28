@@ -268,3 +268,165 @@ function createUserFriendlyError(error: any): string {
     return error?.message || 'Bir hata oluştu. Lütfen tekrar deneyin.'
   }
 }
+
+/**
+ * Format price in Turkish format
+ */
+function formatPrice(price: number): string {
+  if (!price) return 'Belirtilmemiş'
+  if (price >= 1000000) {
+    return `${(price / 1000000).toFixed(1).replace('.0', '')}M TL`
+  } else if (price >= 1000) {
+    return `${(price / 1000).toFixed(0)}K TL`
+  }
+  return `${price.toLocaleString('tr-TR')} TL`
+}
+
+export interface SmartChatResult {
+  text: string
+  action?: {
+    type: 'update_price' | 'update_status' | 'delete_property' | 'delete_customer'
+    id: string
+    value?: any
+    title?: string
+    needsConfirmation?: boolean
+  }
+}
+
+export interface ChatContext {
+  properties: Array<{
+    id: string
+    title: string
+    type: string
+    price: number
+    location: { city: string; district: string }
+    status: string
+    rooms?: string
+  }>
+  customers: Array<{
+    id: string
+    name: string
+    preferences: {
+      budget: { min: number; max: number }
+      location: string[]
+    }
+  }>
+}
+
+/**
+ * Smart chat handler - similar to Telegram bot AI
+ * Gives Claude full context and lets it respond naturally
+ */
+export async function smartChat(
+  userMessage: string,
+  context: ChatContext,
+  conversationHistory: Array<{ role: 'user' | 'assistant'; content: string }>
+): Promise<SmartChatResult> {
+  try {
+    const client = getClient()
+
+    // Build property summary with IDs
+    const propertySummary = context.properties.slice(0, 20).map((p, idx) =>
+      `${idx + 1}. [ID:${p.id}] ${p.title} - ${p.type}, ${formatPrice(p.price)}, ${p.location.district}/${p.location.city}, durum: ${p.status}`
+    ).join('\n')
+
+    // Build customer summary with IDs
+    const customerSummary = context.customers.slice(0, 20).map((c, idx) =>
+      `${idx + 1}. [ID:${c.id}] ${c.name}: Bütçe ${formatPrice(c.preferences.budget.min)}-${formatPrice(c.preferences.budget.max)}, Lokasyon: ${c.preferences.location.join(', ') || 'Belirtilmemiş'}`
+    ).join('\n')
+
+    const smartSystemPrompt = `Sen bir emlak danışmanı asistanısın. Türkçe yardım ediyorsun.
+
+MEVCUT VERİLER:
+
+📊 MÜLKLER (${context.properties.length} adet):
+${propertySummary || 'Henüz mülk yok'}
+
+👥 MÜŞTERİLER (${context.customers.length} adet):
+${customerSummary || 'Henüz müşteri yok'}
+
+YAPABİLECEKLERİN:
+1. Mülk arama ve listeleme
+2. Müşteri arama ve listeleme
+3. Müşteri-mülk eşleştirme önerileri
+4. Mülk fiyat güncelleme
+5. Durum güncelleme (satıldı, kiralandı, aktif, opsiyonlu)
+6. Mülk veya müşteri silme (onay gerektirir)
+7. Genel emlak danışmanlığı soruları
+
+KURALLAR:
+- Kısa ve öz cevaplar ver
+- Emoji kullan ama abartma
+- Fiyatları "2.5M TL" formatında yaz
+- Türkçe karakterleri doğru kullan
+- Bilmediğin şeylerde dürüst ol
+- Samimi ve yardımsever ol
+
+KOMUT FORMATLARI (ÇOK ÖNEMLİ):
+Cevabının EN SONUNA uygun komutu ekle:
+
+1. Fiyat güncellemesi:
+<action>{"type":"update_price","id":"MULK_ID","value":25000000}</action>
+
+2. Durum güncellemesi:
+<action>{"type":"update_status","id":"MULK_ID","value":"satıldı"}</action>
+
+3. Mülk silme (ONAY İSTEYECEK):
+<action>{"type":"delete_property","id":"MULK_ID","title":"Mülk Adı","needsConfirmation":true}</action>
+
+4. Müşteri silme (ONAY İSTEYECEK):
+<action>{"type":"delete_customer","id":"MUSTERI_ID","title":"Müşteri Adı","needsConfirmation":true}</action>
+
+DİKKAT:
+- "id" alanına yukarıdaki listeden gerçek ID'yi koy (örn: [ID:abc123] ise "abc123" yaz)
+- Fiyatı sayı olarak yaz (25M = 25000000)
+- Silme işlemlerinde needsConfirmation: true kullan`
+
+    // Build messages with conversation history
+    const messages: Array<{ role: 'user' | 'assistant'; content: string }> = [
+      ...conversationHistory.slice(-10),
+      { role: 'user', content: userMessage }
+    ]
+
+    const response = await client.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1024,
+      system: smartSystemPrompt,
+      messages,
+    })
+
+    const content = response.content[0]
+    if (content.type !== 'text') {
+      return { text: 'Bir hata oluştu.' }
+    }
+
+    let responseText = content.text
+    let action: SmartChatResult['action'] = undefined
+
+    // Check for action commands
+    const actionMatch = responseText.match(/<action>(.*?)<\/action>/s)
+    if (actionMatch) {
+      try {
+        const actionData = JSON.parse(actionMatch[1])
+        action = {
+          type: actionData.type,
+          id: actionData.id,
+          value: actionData.value,
+          title: actionData.title,
+          needsConfirmation: actionData.needsConfirmation
+        }
+        // Remove the action tag from response
+        responseText = responseText.replace(/<action>.*?<\/action>/s, '').trim()
+      } catch (e) {
+        console.error('Action parse error:', e)
+        responseText = responseText.replace(/<action>.*?<\/action>/s, '').trim()
+      }
+    }
+
+    return { text: responseText, action }
+
+  } catch (error: any) {
+    console.error('Smart chat error:', error)
+    return { text: createUserFriendlyError(error) }
+  }
+}

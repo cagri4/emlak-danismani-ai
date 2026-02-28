@@ -1,4 +1,4 @@
-import { Context } from 'grammy';
+import { Context, InlineKeyboard } from 'grammy';
 import Anthropic from '@anthropic-ai/sdk';
 import { getFirestore } from 'firebase-admin/firestore';
 
@@ -79,13 +79,80 @@ export async function handleNaturalLanguage(ctx: Context): Promise<void> {
     ]);
 
     // Use Claude to understand the message and generate response
-    const response = await processWithAI(message, properties, customers, linkedUser.id, db);
+    const result = await processWithAI(message, properties, customers, linkedUser.id, db);
 
-    await ctx.reply(response, { parse_mode: 'HTML' });
+    // Check if we need to show delete confirmation
+    if (result.deleteConfirmation) {
+      const keyboard = new InlineKeyboard()
+        .text('✅ Evet, Sil', `delete_confirm:${linkedUser.id}:${result.deleteConfirmation.id}:${result.deleteConfirmation.type}`)
+        .text('❌ İptal', 'delete_cancel');
+
+      await ctx.reply(result.text, {
+        parse_mode: 'HTML',
+        reply_markup: keyboard
+      });
+    } else {
+      await ctx.reply(result.text, { parse_mode: 'HTML' });
+    }
 
   } catch (error) {
     console.error('AI handler error:', error);
     await ctx.reply('Bir hata oluştu. Lütfen tekrar deneyin.');
+  }
+}
+
+/**
+ * Handle delete confirmation callback
+ */
+export async function handleDeleteCallback(ctx: Context): Promise<void> {
+  const callbackData = ctx.callbackQuery?.data;
+  if (!callbackData) return;
+
+  try {
+    await ctx.answerCallbackQuery();
+
+    if (callbackData === 'delete_cancel') {
+      await ctx.editMessageText('❌ Silme işlemi iptal edildi.');
+      return;
+    }
+
+    if (callbackData.startsWith('delete_confirm:')) {
+      const parts = callbackData.split(':');
+      const userId = parts[1];
+      const itemId = parts[2];
+      const itemType = parts[3]; // 'property' or 'customer'
+
+      const db = getFirestore();
+
+      if (itemType === 'property') {
+        // Get property title before deleting
+        const propDoc = await db.collection('users').doc(userId)
+          .collection('properties').doc(itemId).get();
+        const propTitle = propDoc.exists ? (propDoc.data() as Property).title : 'Mülk';
+
+        // Delete the property
+        await db.collection('users').doc(userId)
+          .collection('properties').doc(itemId).delete();
+
+        console.log(`Property ${itemId} deleted by user ${userId}`);
+        await ctx.editMessageText(`✅ "${propTitle}" başarıyla silindi.`);
+      } else if (itemType === 'customer') {
+        // Get customer name before deleting
+        const custDoc = await db.collection('users').doc(userId)
+          .collection('customers').doc(itemId).get();
+        const custName = custDoc.exists ? (custDoc.data() as Customer).name : 'Müşteri';
+
+        // Delete the customer
+        await db.collection('users').doc(userId)
+          .collection('customers').doc(itemId).delete();
+
+        console.log(`Customer ${itemId} deleted by user ${userId}`);
+        await ctx.editMessageText(`✅ "${custName}" başarıyla silindi.`);
+      }
+    }
+  } catch (error) {
+    console.error('Delete callback error:', error);
+    await ctx.editMessageText('❌ Silme sırasında hata oluştu: ' + (error as Error).message);
   }
 }
 
@@ -138,6 +205,15 @@ async function getUserCustomers(db: FirebaseFirestore.Firestore, userId: string)
   })) as Customer[];
 }
 
+interface AIResult {
+  text: string;
+  deleteConfirmation?: {
+    id: string;
+    type: 'property' | 'customer';
+    title: string;
+  };
+}
+
 /**
  * Process message with Claude AI and execute actions
  */
@@ -147,7 +223,7 @@ async function processWithAI(
   customers: Customer[],
   userId: string,
   db: FirebaseFirestore.Firestore
-): Promise<string> {
+): Promise<AIResult> {
   // Create context summary for Claude with IDs for updates
   const propertySummary = properties.slice(0, 20).map((p, idx) =>
     `${idx + 1}. [ID:${p.id}] ${p.title} - ${p.type}, ${formatPrice(p.price)}, ${p.location.district}/${p.location.city}, durum: ${p.status}`
@@ -173,7 +249,8 @@ YAPABİLECEKLERİN:
 3. Müşteri-mülk eşleştirme önerileri
 4. Mülk fiyat güncelleme
 5. Durum güncelleme (satıldı, kiralandı, aktif, opsiyonlu)
-6. Genel emlak danışmanlığı soruları
+6. Mülk veya müşteri silme (onay gerektirir)
+7. Genel emlak danışmanlığı soruları
 
 KURALLAR:
 - Kısa ve öz cevaplar ver
@@ -182,19 +259,25 @@ KURALLAR:
 - Türkçe karakterleri doğru kullan
 - Bilmediğin şeylerde dürüst ol
 
-GÜNCELLEME KURALLARI (ÇOK ÖNEMLİ):
-Kullanıcı fiyat veya durum güncellemesi istediğinde:
-1. Önce kullanıcıya ne yapacağını açıkla
-2. Sonra cevabının EN SONUNA şu formatta güncelleme komutu ekle:
+KOMUT FORMATLARI (ÇOK ÖNEMLİ):
+Cevabının EN SONUNA uygun komutu ekle:
 
-Fiyat güncellemesi için:
-<update>{"type":"property_price","id":"BURAYA_GERCEK_MULK_ID","price":25000000}</update>
+1. Fiyat güncellemesi:
+<update>{"type":"property_price","id":"MULK_ID","price":25000000}</update>
 
-Durum güncellemesi için:
-<update>{"type":"property_status","id":"BURAYA_GERCEK_MULK_ID","status":"satıldı"}</update>
+2. Durum güncellemesi:
+<update>{"type":"property_status","id":"MULK_ID","status":"satıldı"}</update>
 
-DİKKAT: "id" alanına yukarıdaki listeden gerçek mülk ID'sini koy (örn: [ID:abc123] ise "abc123" yaz).
-Fiyatı sayı olarak yaz (25M = 25000000, 1.5M = 1500000).`;
+3. Mülk silme (ONAY İSTEYECEK):
+<delete>{"type":"property","id":"MULK_ID","title":"Mülk Adı"}</delete>
+
+4. Müşteri silme (ONAY İSTEYECEK):
+<delete>{"type":"customer","id":"MUSTERI_ID","title":"Müşteri Adı"}</delete>
+
+DİKKAT:
+- "id" alanına yukarıdaki listeden gerçek ID'yi koy (örn: [ID:abc123] ise "abc123" yaz)
+- Fiyatı sayı olarak yaz (25M = 25000000)
+- Silme işlemlerinde kullanıcıya "Silmek istediğinize emin misiniz?" gibi bir soru sor`;
 
   const response = await getAnthropicClient().messages.create({
     model: 'claude-sonnet-4-20250514',
@@ -208,12 +291,36 @@ Fiyatı sayı olarak yaz (25M = 25000000, 1.5M = 1500000).`;
 
   const content = response.content[0];
   if (content.type !== 'text') {
-    return 'Bir hata oluştu.';
+    return { text: 'Bir hata oluştu.' };
   }
 
   let responseText = content.text;
+  let deleteConfirmation: AIResult['deleteConfirmation'] = undefined;
 
-  // Check for update commands and execute them
+  // Check for delete commands (needs confirmation)
+  const deleteMatch = responseText.match(/<delete>(.*?)<\/delete>/s);
+  if (deleteMatch) {
+    console.log('Found delete command:', deleteMatch[1]);
+    try {
+      const deleteData = JSON.parse(deleteMatch[1]);
+      console.log('Parsed delete data:', JSON.stringify(deleteData));
+
+      // Remove the delete tag from response
+      responseText = responseText.replace(/<delete>.*?<\/delete>/s, '').trim();
+
+      // Set up confirmation
+      deleteConfirmation = {
+        id: deleteData.id,
+        type: deleteData.type,
+        title: deleteData.title
+      };
+    } catch (e) {
+      console.error('Delete parse error:', e);
+      responseText = responseText.replace(/<delete>.*?<\/delete>/s, '').trim();
+    }
+  }
+
+  // Check for update commands and execute them immediately
   const updateMatch = responseText.match(/<update>(.*?)<\/update>/s);
   if (updateMatch) {
     console.log('Found update command:', updateMatch[1]);
@@ -233,7 +340,7 @@ Fiyatı sayı olarak yaz (25M = 25000000, 1.5M = 1500000).`;
     }
   }
 
-  return responseText;
+  return { text: responseText, deleteConfirmation };
 }
 
 /**

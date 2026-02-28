@@ -6,7 +6,7 @@ import { handleHelp } from './commands/help';
 import { handleSearch } from './commands/search';
 import { handleStatus } from './commands/status';
 import { handleMatches } from './commands/matches';
-import { handleNaturalLanguage } from './ai-handler';
+import { handleNaturalLanguage, handleDeleteCallback } from './ai-handler';
 
 // Lazy initialization to avoid errors during deployment
 let bot: Bot | null = null;
@@ -71,6 +71,17 @@ async function getBot(): Promise<Bot> {
       } catch (e) {
         console.error('Matches handler error:', e);
         await ctx.reply('Eşleşmeler yüklenirken bir hata oluştu.');
+      }
+    });
+
+    // Handle callback queries (for delete confirmations, etc.)
+    bot.on('callback_query:data', async (ctx) => {
+      try {
+        console.log('Callback query received:', ctx.callbackQuery.data);
+        await handleDeleteCallback(ctx);
+      } catch (error) {
+        console.error('Callback handler error:', error);
+        await ctx.answerCallbackQuery({ text: 'Bir hata oluştu' });
       }
     });
 

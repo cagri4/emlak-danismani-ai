@@ -1,19 +1,15 @@
 ---
 phase: 06-mobile-pwa-sharing
-verified: 2026-02-22T18:45:00Z
-status: gaps_found
-score: 5/6 must-haves verified
-re_verification: false
-gaps:
-  - truth: "User receives push notifications for new matches and updates"
-    status: partial
-    reason: "FCM infrastructure complete but NotificationPermissionPrompt not wired to UI"
-    artifacts:
-      - path: "src/components/notifications/NotificationPermissionPrompt.tsx"
-        issue: "Component exists but never imported/rendered in App"
-    missing:
-      - "Import NotificationPermissionPrompt in App.tsx or dashboard"
-      - "Render component in appropriate location (e.g., after authentication)"
+verified: 2026-02-26T10:00:00Z
+status: passed
+score: 6/6 must-haves verified
+re_verification: true
+previous_status: gaps_found
+previous_score: 5/6
+gaps_closed:
+  - "NotificationPermissionPrompt wired to App.tsx ChatComponents (line 37)"
+gaps_remaining: []
+regressions: []
 ---
 
 # Phase 6: Mobile PWA & Sharing Verification Report
@@ -36,10 +32,10 @@ gaps:
 | 2 | User can view properties and customers while offline (in rural areas without signal) | ✓ VERIFIED | Firestore persistentLocalCache enabled, OfflineBanner integrated in App.tsx |
 | 3 | Changes made offline sync automatically when connection restored | ✓ VERIFIED | Firestore automatic sync, upload store with IndexedDB persistence |
 | 4 | User can take photo with phone camera and upload directly to property | ✓ VERIFIED | useCamera hook + CameraCapture component integrated in PhotoUploader.tsx |
-| 5 | User receives push notifications for new matches and updates | ⚠️ PARTIAL | FCM infrastructure complete (messaging, service worker, Cloud Function), but NotificationPermissionPrompt not wired to UI |
+| 5 | User receives push notifications for new matches and updates | ✓ VERIFIED | FCM infrastructure complete, NotificationPermissionPrompt wired in App.tsx ChatComponents (line 37), shows for authenticated users |
 | 6 | User can share property card to WhatsApp with photos, details, and contact link | ✓ VERIFIED | ShareButton integrated in PropertyDetail.tsx, share utilities exist, Cloud Function for OG images |
 
-**Score:** 5/6 truths verified (1 partial)
+**Score:** 6/6 truths verified (100%)
 
 ### Required Artifacts
 
@@ -123,7 +119,7 @@ gaps:
 | useFCMNotifications | getToken | firebase/messaging | ✓ WIRED | Line 2 import, line 92 usage with VAPID key |
 | onPropertyCreated | messaging.send | firebase-admin/messaging | ✓ WIRED | Line 3 import, line 97 getMessaging(), line 117 messaging.send() |
 | firebase-messaging-sw.js | onBackgroundMessage | firebase-messaging-compat | ✓ WIRED | Lines 5-6 importScripts, line 24 onBackgroundMessage |
-| App.tsx | NotificationPermissionPrompt | component import | ✗ NOT_WIRED | Component exists but NEVER imported or rendered |
+| App.tsx | NotificationPermissionPrompt | component import | ✓ WIRED | Line 9 import, line 37 render in ChatComponents (authenticated users only) |
 
 #### WhatsApp Sharing
 
@@ -143,20 +139,22 @@ gaps:
 | MOBL-03 | 06-02 | Offline property/customer view | ✓ SATISFIED | persistentLocalCache enabled |
 | MOBL-04 | 06-02 | Offline sync | ✓ SATISFIED | Firestore auto-sync, IndexedDB upload store |
 | MOBL-05 | 06-03 | Camera photo upload | ✓ SATISFIED | useCamera + CameraCapture integrated |
-| MOBL-06 | 06-04 | Push notifications | ⚠️ BLOCKED | FCM setup complete but prompt not wired |
+| MOBL-06 | 06-04 | Push notifications | ✓ SATISFIED | FCM setup complete, NotificationPermissionPrompt wired in App.tsx |
 | MOBL-07 | 06-04 | Match notifications | ✓ SATISFIED | Cloud Function triggers send FCM |
 | ILET-01 | 06-05 | WhatsApp sharing | ✓ SATISFIED | ShareButton with shareToWhatsApp |
 | ILET-02 | 06-05 | Share with photos/details | ✓ SATISFIED | PropertySharePage + generateShareImage |
 
-**Coverage:** 8/9 requirements satisfied, 1 blocked by missing UI integration
+**Coverage:** 9/9 requirements satisfied (100%)
 
 ### Anti-Patterns Found
 
 | File | Line | Pattern | Severity | Impact |
 |------|------|---------|----------|--------|
-| src/components/notifications/NotificationPermissionPrompt.tsx | - | Orphaned component | 🛑 Blocker | Users cannot enable push notifications - no UI to request permission |
 | public/firebase-messaging-sw.js | 12-17 | Hardcoded Firebase config | ⚠️ Warning | Config must be manually updated if project changes |
 | src/pages/properties/PropertySharePage.tsx | 102-121 | SPA OG tags | ℹ️ Info | Social crawlers may not parse client-side meta tags - needs SSR/prerendering |
+
+**Previous blocker resolved:**
+- ✓ NotificationPermissionPrompt.tsx - Now wired in App.tsx ChatComponents (line 37)
 
 ### Human Verification Required
 
@@ -192,48 +190,46 @@ gaps:
 
 ## Gaps Summary
 
-Phase 06 is **95% complete** with one critical gap preventing full goal achievement:
+**Phase 06 is 100% complete.** All gaps have been closed.
 
-### Gap 1: Notification Permission Prompt Not Wired
+### Gap 1: Notification Permission Prompt Not Wired (CLOSED)
 
-**Impact:** Users cannot enable push notifications because there's no UI to trigger the permission request flow.
+**Previous Impact:** Users could not enable push notifications because there was no UI to trigger the permission request flow.
 
-**Root Cause:** Plan 06-04 created `NotificationPermissionPrompt.tsx` component but SUMMARY.md claims integration without actual implementation. Component exists but is never imported or rendered.
+**Resolution:**
+- `NotificationPermissionPrompt` imported in App.tsx (line 9)
+- Component rendered in ChatComponents (line 37)
+- Shows only for authenticated users
+- Includes 7-day dismissal logic
+- Full Turkish UI with "Bildirimleri Aç" button
 
 **Evidence:**
-- Component file exists: `src/components/notifications/NotificationPermissionPrompt.tsx` (103 lines)
-- Component exports `NotificationPermissionPrompt` function
-- Grep search across `src/` shows ZERO imports of this component
-- `App.tsx` does not import or render it
-- Dashboard pages do not import or render it
-
-**Fix Required:**
-1. Import `NotificationPermissionPrompt` in `App.tsx` or appropriate dashboard page
-2. Render component in location visible to authenticated users (e.g., after login, in dashboard)
-3. Component should show when:
-   - User is authenticated
-   - Permission not yet granted or denied
-   - Not dismissed within last 7 days
-
-**Suggested Integration Point:**
 ```typescript
-// In src/App.tsx or src/pages/Dashboard.tsx
+// App.tsx line 9
 import { NotificationPermissionPrompt } from '@/components/notifications/NotificationPermissionPrompt'
 
-// Inside authenticated route section
-{user && <NotificationPermissionPrompt />}
+// App.tsx lines 33-39 (ChatComponents)
+return (
+  <>
+    <ChatFloatingButton />
+    <ChatModal />
+    <NotificationPermissionPrompt />
+  </>
+)
 ```
 
-### Other Observations
+### Remaining Observations
 
-**Non-blocking warnings:**
-- Firebase config hardcoded in service worker (documented limitation, acceptable for MVP)
-- SPA OG tags may not work for social crawlers (documented in SUMMARY, SSR recommended for production)
+**Non-blocking warnings (acceptable for MVP):**
+- Firebase config hardcoded in service worker (documented limitation)
+- SPA OG tags may not work for social crawlers (SSR recommended for production)
 
-**All other must-haves VERIFIED** - Phase 06 infrastructure is solid and production-ready pending gap closure.
+**All must-haves VERIFIED** - Phase 06 infrastructure is solid and production-ready.
 
 ---
 
-_Verified: 2026-02-22T18:45:00Z_
+_Verified: 2026-02-26T10:00:00Z_
 
 _Verifier: Claude (gsd-verifier)_
+
+_Re-verification: Gap closure confirmed - NotificationPermissionPrompt wired in App.tsx_

@@ -1,11 +1,9 @@
 import { useState, useCallback, useEffect } from 'react';
 import type { ChatMessage } from '@/types/chat';
-import { parseCommand } from '@/lib/ai/command-parser';
-import { handleCommand } from '@/lib/ai/command-handlers';
+import { smartChat, ChatContext } from '@/lib/ai/claude-client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProperties } from './useProperties';
 import { useCustomers } from './useCustomers';
-import { useMatching } from './useMatching';
 import { saveMessage, getConversation } from '@/lib/firebase/conversation-service';
 
 interface UseChatReturn {
@@ -15,6 +13,12 @@ interface UseChatReturn {
   clearMessages: () => void;
   setIsLoading: (loading: boolean) => void;
   conversationId: string;
+}
+
+interface PendingAction {
+  type: 'delete_property' | 'delete_customer';
+  id: string;
+  title: string;
 }
 
 // Get or create a persistent conversation ID for the user
@@ -35,7 +39,7 @@ export function useChat(): UseChatReturn {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [conversationId, setConversationId] = useState<string>('');
-  const [pendingConfirmation, setPendingConfirmation] = useState<any>(null);
+  const [pendingAction, setPendingAction] = useState<PendingAction | null>(null);
   const [historyLoaded, setHistoryLoaded] = useState(false);
 
   // Initialize conversation ID and load history when user is available
@@ -66,26 +70,17 @@ export function useChat(): UseChatReturn {
     loadHistory();
   }, [user, conversationId, historyLoaded]);
 
-  // Get property and customer hooks for command execution
+  // Get property and customer hooks
   const {
     properties,
-    addProperty,
     updateProperty,
-    getProperty,
+    deleteProperty,
   } = useProperties();
 
   const {
     customers,
-    addCustomer,
-    updateCustomer,
-    getCustomer,
-    addInteraction,
+    deleteCustomer,
   } = useCustomers();
-
-  const {
-    findPropertiesForCustomer,
-    findCustomersForProperty,
-  } = useMatching();
 
   const addMessage = useCallback((message: ChatMessage) => {
     setMessages((prev) => [...prev, message]);
@@ -114,125 +109,161 @@ export function useChat(): UseChatReturn {
     setIsLoading(true);
 
     try {
-      // Parse command with AI
-      const parsed = await parseCommand(content, messages);
+      const lowerContent = content.toLowerCase().trim();
 
-      // If clarification needed, ask user
-      if (parsed.needsClarification) {
-        const clarificationMessage: ChatMessage = {
-          id: crypto.randomUUID(),
-          role: 'assistant',
-          content: parsed.clarificationQuestion || 'Anlayamadım. Lütfen daha açık ifade eder misiniz?',
-          timestamp: new Date(),
-          status: 'sent',
-        };
+      // Check for confirmation/cancellation of pending action
+      if (pendingAction) {
+        if (lowerContent === 'evet' || lowerContent === 'tamam' || lowerContent === 'olur' || lowerContent === 'sil') {
+          // Execute the pending action
+          let result;
+          if (pendingAction.type === 'delete_property') {
+            result = await deleteProperty(pendingAction.id);
+          } else {
+            result = await deleteCustomer(pendingAction.id);
+          }
 
-        addMessage(clarificationMessage);
-        setIsLoading(false);
-        return;
+          const responseMessage: ChatMessage = {
+            id: crypto.randomUUID(),
+            role: 'assistant',
+            content: result.success
+              ? `✅ "${pendingAction.title}" başarıyla silindi.`
+              : `❌ Silme sırasında hata oluştu: ${result.error}`,
+            timestamp: new Date(),
+            status: 'sent',
+          };
+
+          addMessage(responseMessage);
+          setPendingAction(null);
+          setIsLoading(false);
+          return;
+        } else if (lowerContent === 'hayır' || lowerContent === 'iptal' || lowerContent === 'vazgeç') {
+          const cancelMessage: ChatMessage = {
+            id: crypto.randomUUID(),
+            role: 'assistant',
+            content: '❌ Silme işlemi iptal edildi.',
+            timestamp: new Date(),
+            status: 'sent',
+          };
+
+          addMessage(cancelMessage);
+          setPendingAction(null);
+          setIsLoading(false);
+          return;
+        }
+        // If not a clear confirmation/cancellation, clear pending and continue
+        setPendingAction(null);
       }
 
-      // Handle special confirmation intents
-      if (parsed.intent === 'confirm_action' && pendingConfirmation) {
-        // Re-run the original command with confirmation
-        const result = await handleCommand(
-          pendingConfirmation.action,
-          pendingConfirmation.entities,
-          {
-            userId: user.uid,
-            properties,
-            addProperty,
-            updateProperty,
-            getProperty,
-            customers,
-            addCustomer,
-            updateCustomer,
-            getCustomer,
-            addInteraction,
-            findPropertiesForCustomer,
-            findCustomersForProperty,
+      // Build context for Claude
+      const context: ChatContext = {
+        properties: properties.map(p => ({
+          id: p.id,
+          title: p.title,
+          type: p.type,
+          price: p.price,
+          location: {
+            city: p.location.city,
+            district: p.location.district,
           },
-          pendingConfirmation
-        );
+          status: p.status,
+          rooms: p.rooms,
+        })),
+        customers: customers.map(c => ({
+          id: c.id,
+          name: c.name,
+          preferences: {
+            budget: c.preferences?.budget || { min: 0, max: 0 },
+            location: c.preferences?.location || [],
+          },
+        })),
+      };
 
-        // Add AI response
+      // Build conversation history for context
+      const conversationHistory = messages.slice(-10).map(m => ({
+        role: m.role as 'user' | 'assistant',
+        content: m.content,
+      }));
+
+      // Use smart chat
+      const result = await smartChat(content, context, conversationHistory);
+
+      // Handle actions
+      if (result.action) {
+        const action = result.action;
+
+        if (action.type === 'update_price' && action.id && action.value) {
+          // Execute price update immediately
+          const updateResult = await updateProperty(action.id, { price: action.value });
+          const statusText = updateResult.success
+            ? `\n\n✅ Fiyat ${formatPrice(action.value)} olarak güncellendi.`
+            : `\n\n❌ Güncelleme hatası: ${updateResult.error}`;
+
+          const aiMessage: ChatMessage = {
+            id: crypto.randomUUID(),
+            role: 'assistant',
+            content: result.text + statusText,
+            timestamp: new Date(),
+            status: 'sent',
+          };
+
+          addMessage(aiMessage);
+        } else if (action.type === 'update_status' && action.id && action.value) {
+          // Execute status update immediately
+          const updateResult = await updateProperty(action.id, { status: action.value });
+          const statusText = updateResult.success
+            ? `\n\n✅ Durum "${action.value}" olarak güncellendi.`
+            : `\n\n❌ Güncelleme hatası: ${updateResult.error}`;
+
+          const aiMessage: ChatMessage = {
+            id: crypto.randomUUID(),
+            role: 'assistant',
+            content: result.text + statusText,
+            timestamp: new Date(),
+            status: 'sent',
+          };
+
+          addMessage(aiMessage);
+        } else if ((action.type === 'delete_property' || action.type === 'delete_customer') && action.needsConfirmation) {
+          // Store pending action for confirmation
+          setPendingAction({
+            type: action.type,
+            id: action.id,
+            title: action.title || 'Öğe',
+          });
+
+          const confirmMessage: ChatMessage = {
+            id: crypto.randomUUID(),
+            role: 'assistant',
+            content: result.text + '\n\n⚠️ Silmek istediğinize emin misiniz? (evet/hayır)',
+            timestamp: new Date(),
+            status: 'sent',
+          };
+
+          addMessage(confirmMessage);
+        } else {
+          // Unknown action, just show the text
+          const aiMessage: ChatMessage = {
+            id: crypto.randomUUID(),
+            role: 'assistant',
+            content: result.text,
+            timestamp: new Date(),
+            status: 'sent',
+          };
+
+          addMessage(aiMessage);
+        }
+      } else {
+        // No action, just show the response
         const aiMessage: ChatMessage = {
           id: crypto.randomUUID(),
           role: 'assistant',
-          content: result.message,
+          content: result.text,
           timestamp: new Date(),
           status: 'sent',
-          embeddedProperty: result.propertyId,
-          embeddedCustomer: result.customerId,
-          embeddedMatches: result.matches,
         };
 
         addMessage(aiMessage);
-        setPendingConfirmation(null);
-        setIsLoading(false);
-        return;
       }
-
-      if (parsed.intent === 'cancel_action') {
-        const cancelMessage: ChatMessage = {
-          id: crypto.randomUUID(),
-          role: 'assistant',
-          content: 'İşlem iptal edildi.',
-          timestamp: new Date(),
-          status: 'sent',
-        };
-
-        addMessage(cancelMessage);
-        setPendingConfirmation(null);
-        setIsLoading(false);
-        return;
-      }
-
-      // Handle the command
-      const result = await handleCommand(
-        parsed.intent!,
-        parsed.entities,
-        {
-          userId: user.uid,
-          properties,
-          addProperty,
-          updateProperty,
-          getProperty,
-          customers,
-          addCustomer,
-          updateCustomer,
-          getCustomer,
-          addInteraction,
-          findPropertiesForCustomer,
-          findCustomersForProperty,
-        },
-        pendingConfirmation
-      );
-
-      // If needs confirmation, store pending data
-      if (result.needsConfirmation) {
-        setPendingConfirmation({
-          action: parsed.intent,
-          entities: parsed.entities,
-          ...result.confirmationData,
-        });
-      } else {
-        setPendingConfirmation(null);
-      }
-
-      // Add AI response with embedded cards
-      const aiMessage: ChatMessage = {
-        id: crypto.randomUUID(),
-        role: 'assistant',
-        content: result.message,
-        timestamp: new Date(),
-        status: 'sent',
-        embeddedProperty: result.propertyId,
-        embeddedCustomer: result.customerId,
-        embeddedMatches: result.matches,
-      };
-
-      addMessage(aiMessage);
 
     } catch (error: any) {
       console.error('Error processing message:', error);
@@ -249,11 +280,11 @@ export function useChat(): UseChatReturn {
     } finally {
       setIsLoading(false);
     }
-  }, [user, messages, pendingConfirmation, addMessage, properties, customers, addProperty, updateProperty, getProperty, addCustomer, updateCustomer, getCustomer, addInteraction, findPropertiesForCustomer, findCustomersForProperty]);
+  }, [user, messages, pendingAction, addMessage, properties, customers, updateProperty, deleteProperty, deleteCustomer]);
 
   const clearMessages = useCallback(() => {
     setMessages([]);
-    setPendingConfirmation(null);
+    setPendingAction(null);
     setHistoryLoaded(false);
     // Start a new conversation
     if (user) {
@@ -271,4 +302,17 @@ export function useChat(): UseChatReturn {
     setIsLoading,
     conversationId,
   };
+}
+
+/**
+ * Format price in Turkish format
+ */
+function formatPrice(price: number): string {
+  if (!price) return 'Belirtilmemiş'
+  if (price >= 1000000) {
+    return `${(price / 1000000).toFixed(1).replace('.0', '')}M TL`
+  } else if (price >= 1000) {
+    return `${(price / 1000).toFixed(0)}K TL`
+  }
+  return `${price.toLocaleString('tr-TR')} TL`
 }
