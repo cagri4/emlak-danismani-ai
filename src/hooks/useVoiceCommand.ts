@@ -13,6 +13,15 @@ interface UseVoiceCommandReturn {
   clearTranscript: () => void;
 }
 
+const MIME_TYPES = [
+  'audio/webm;codecs=opus',
+  'audio/webm',
+  'audio/ogg;codecs=opus',
+  'audio/ogg',
+  'audio/mp4',
+  '',  // empty string = browser default
+];
+
 export function useVoiceCommand(): UseVoiceCommandReturn {
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
@@ -24,6 +33,7 @@ export function useVoiceCommand(): UseVoiceCommandReturn {
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const mimeTypeRef = useRef<string>('');
 
   const startRecording = useCallback(async () => {
     try {
@@ -40,9 +50,12 @@ export function useVoiceCommand(): UseVoiceCommandReturn {
       });
       streamRef.current = stream;
 
-      const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'audio/webm;codecs=opus',
-      });
+      const mimeType = MIME_TYPES.find(type =>
+        type === '' || MediaRecorder.isTypeSupported(type)
+      ) ?? '';
+      mimeTypeRef.current = mimeType;
+
+      const mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : {});
 
       mediaRecorder.ondataavailable = (e) => {
         if (e.data.size > 0) {
@@ -65,8 +78,16 @@ export function useVoiceCommand(): UseVoiceCommandReturn {
           stopRecording();
         }
       }, 1000);
-    } catch (err) {
-      setError('Mikrofon izni reddedildi');
+    } catch (err: any) {
+      if (err?.name === 'NotAllowedError' || err?.name === 'PermissionDeniedError') {
+        setError('Mikrofon izni reddedildi. Tarayıcı ayarlarından izin verin.');
+      } else if (err?.name === 'NotFoundError') {
+        setError('Mikrofon bulunamadı. Cihazınızda mikrofon var mı kontrol edin.');
+      } else if (err?.name === 'NotSupportedError') {
+        setError('Tarayıcınız ses kaydını desteklemiyor.');
+      } else {
+        setError('Ses kaydı başlatılamadı. Tekrar deneyin.');
+      }
     }
   }, []);
 
@@ -91,7 +112,7 @@ export function useVoiceCommand(): UseVoiceCommandReturn {
         streamRef.current?.getTracks().forEach((track) => track.stop());
 
         try {
-          const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' });
+          const audioBlob = new Blob(chunksRef.current, { type: mimeTypeRef.current || 'audio/webm' });
           const result = await transcribeVoiceCommand(audioBlob);
 
           if (result.success && result.transcript) {
