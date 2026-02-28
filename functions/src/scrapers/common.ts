@@ -48,7 +48,7 @@ export type PortalType = 'sahibinden' | 'hepsiemlak' | 'emlakjet' | 'unknown';
 export function detectPortal(url: string): PortalType {
   const lowerUrl = url.toLowerCase();
 
-  if (lowerUrl.includes('sahibinden.com')) {
+  if (lowerUrl.includes('sahibinden.com') || lowerUrl.includes('shbd.io')) {
     return 'sahibinden';
   } else if (lowerUrl.includes('hepsiemlak.com')) {
     return 'hepsiemlak';
@@ -57,6 +57,24 @@ export function detectPortal(url: string): PortalType {
   }
 
   return 'unknown';
+}
+
+/**
+ * Resolve shortened URLs to their full form
+ * Handles: shbd.io -> sahibinden.com
+ */
+export async function resolveShortUrl(url: string): Promise<string> {
+  const shortDomains = ['shbd.io'];
+  try {
+    const urlObj = new URL(url);
+    if (shortDomains.some(d => urlObj.hostname.includes(d))) {
+      const response = await fetch(url, { method: 'HEAD', redirect: 'follow' });
+      return response.url || url;
+    }
+  } catch {
+    // If resolution fails, return original URL
+  }
+  return url;
 }
 
 // NOTE: Browser-based scraping functions removed

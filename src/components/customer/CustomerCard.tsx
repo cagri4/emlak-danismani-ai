@@ -57,7 +57,12 @@ export default function CustomerCard({ customer, leadScore }: CustomerCardProps)
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <h3 className="text-lg font-semibold text-gray-900 truncate">{customer.name}</h3>
-                  {leadScore && <LeadTemperatureBadge temperature={leadScore.temperature} showLabel={false} />}
+                  {leadScore && (
+                    <div className="flex items-center gap-1">
+                      <LeadTemperatureBadge temperature={leadScore.temperature} showLabel={false} />
+                      <span className="text-xs font-medium text-gray-500">{leadScore.score}</span>
+                    </div>
+                  )}
                   <button
                     onClick={handleBoostToggle}
                     className="ml-auto p-1 hover:bg-gray-100 rounded transition-colors"

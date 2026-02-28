@@ -137,18 +137,19 @@ export function PhotoGrid({
               </div>
             )}
 
-            {/* Hover overlay with actions (only if editable) */}
+            {/* Action overlay (only if editable) */}
             {isEditable && (
-              <div className="absolute inset-0 bg-transparent hover:bg-black/40 transition-all duration-200">
-                <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <div className="absolute inset-0 bg-black/0 sm:hover:bg-black/40 transition-all duration-200">
+                {/* Action buttons - always visible on mobile, hover on desktop */}
+                <div className="absolute bottom-0 inset-x-0 flex items-center justify-center gap-2 p-2 bg-gradient-to-t from-black/60 to-transparent sm:opacity-0 sm:group-hover:opacity-100 sm:absolute sm:inset-0 sm:bg-black/40 sm:from-transparent transition-opacity duration-200">
                   {/* Star icon to set as cover */}
                   <button
                     onClick={() => handleSetCover(photo.id)}
                     className="p-2 bg-white rounded-full hover:bg-gray-100 transition-colors"
-                    title="Kapak fotoğrafı olarak ayarla"
+                    title="Kapak fotoğrafı yap"
                   >
                     <Star
-                      className={`h-5 w-5 ${
+                      className={`h-4 w-4 sm:h-5 sm:w-5 ${
                         photo.isCover ? 'fill-yellow-400 text-yellow-400' : 'text-gray-600'
                       }`}
                     />
@@ -159,9 +160,9 @@ export function PhotoGrid({
                     <button
                       onClick={() => onEdit(photo)}
                       className="p-2 bg-white rounded-full hover:bg-gray-100 transition-colors"
-                      title="Fotoğrafı kırp"
+                      title="Kırp"
                     >
-                      <Pencil className="h-5 w-5 text-gray-600" />
+                      <Pencil className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600" />
                     </button>
                   )}
 
@@ -170,9 +171,9 @@ export function PhotoGrid({
                     <button
                       onClick={() => onAdvancedEdit(photo)}
                       className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full hover:from-purple-600 hover:to-pink-600 transition-colors"
-                      title="Gelişmiş düzenleyici (Gökyüzü değiştir, Perspektif düzelt)"
+                      title="AI Düzenle"
                     >
-                      <Wand2 className="h-5 w-5 text-white" />
+                      <Wand2 className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                     </button>
                   )}
 
@@ -192,12 +193,12 @@ export function PhotoGrid({
                     className="p-2 bg-white rounded-full hover:bg-red-50 transition-colors"
                     title="Sil"
                   >
-                    <Trash2 className="h-5 w-5 text-red-600" />
+                    <Trash2 className="h-4 w-4 sm:h-5 sm:w-5 text-red-600" />
                   </button>
                 </div>
 
-                {/* Drag handle */}
-                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                {/* Drag handle - hidden on mobile */}
+                <div className="absolute top-2 right-2 hidden sm:block opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                   <GripVertical className="h-5 w-5 text-white" />
                 </div>
               </div>

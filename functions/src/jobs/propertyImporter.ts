@@ -1,7 +1,7 @@
 import { onCall } from 'firebase-functions/v2/https';
 import { onTaskDispatched } from 'firebase-functions/v2/tasks';
 import { db, bucket, REGION } from '../config';
-import { detectPortal, extractListingId, type ScrapedProperty } from '../scrapers/common';
+import { detectPortal, extractListingId, resolveShortUrl, type ScrapedProperty } from '../scrapers/common';
 
 /**
  * Import property from URL - callable function
@@ -19,11 +19,14 @@ export const importPropertyFromUrl = onCall(
     timeoutSeconds: 30
   },
   async (request) => {
-    const { url, userId } = request.data as { url: string; userId: string };
+    const { url: rawUrl, userId } = request.data as { url: string; userId: string };
 
-    if (!url || !userId) {
+    if (!rawUrl || !userId) {
       throw new Error('URL and userId are required');
     }
+
+    // Resolve short URLs (e.g., shbd.io -> sahibinden.com)
+    const url = await resolveShortUrl(rawUrl);
 
     // Detect which portal the URL belongs to
     const portal = detectPortal(url);

@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* Prevent horizontal scroll and pinch zoom on mobile */
+html, body {
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+}
+
 @layer base {
   :root {
     /* Modern color palette - Indigo/Violet theme */
