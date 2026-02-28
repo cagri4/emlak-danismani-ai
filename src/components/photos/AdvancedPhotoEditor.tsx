@@ -78,6 +78,8 @@ export function AdvancedPhotoEditor({
   const handleSkyReplace = async () => {
     setIsProcessing(true);
     setProcessingMessage('Gökyüzü değiştiriliyor... (10-30 saniye sürebilir)');
+    // Yield to React render cycle so overlay appears before CF call
+    await new Promise(resolve => setTimeout(resolve, 0));
 
     try {
       const result = await enhancePhoto({
@@ -97,8 +99,12 @@ export function AdvancedPhotoEditor({
       }
     } catch (error: any) {
       console.error('Sky replacement error:', error);
-      if (error.message?.includes('Cloudinary')) {
-        toast.error('Bu özellik henüz aktif değil. Yöneticiye başvurun.');
+      const isConfigError =
+        error.message?.includes('Cloudinary') ||
+        error.code === 'functions/failed-precondition' ||
+        error.message?.includes('not configured');
+      if (isConfigError) {
+        toast.error('Cloudinary yapılandırılmamış. Bu özellik için yönetici panelinden Cloudinary API anahtarlarını ekleyin.');
       } else {
         toast.error('Bir hata oluştu');
       }
@@ -111,6 +117,8 @@ export function AdvancedPhotoEditor({
   const handlePerspectiveCorrect = async () => {
     setIsProcessing(true);
     setProcessingMessage('Perspektif düzeltiliyor... (10-30 saniye sürebilir)');
+    // Yield to React render cycle so overlay appears before CF call
+    await new Promise(resolve => setTimeout(resolve, 0));
 
     try {
       const result = await enhancePhoto({
@@ -130,8 +138,12 @@ export function AdvancedPhotoEditor({
       }
     } catch (error: any) {
       console.error('Perspective correction error:', error);
-      if (error.message?.includes('Cloudinary')) {
-        toast.error('Bu özellik henüz aktif değil. Yöneticiye başvurun.');
+      const isConfigError =
+        error.message?.includes('Cloudinary') ||
+        error.code === 'functions/failed-precondition' ||
+        error.message?.includes('not configured');
+      if (isConfigError) {
+        toast.error('Cloudinary yapılandırılmamış. Bu özellik için yönetici panelinden Cloudinary API anahtarlarını ekleyin.');
       } else {
         toast.error('Bir hata oluştu');
       }
@@ -317,6 +329,9 @@ export function AdvancedPhotoEditor({
               <div className="space-y-4">
                 <p className="text-sm text-gray-600 mb-4">
                   ⚠️ Bu işlemler 10-30 saniye sürebilir
+                </p>
+                <p className="text-xs text-amber-600 bg-amber-50 rounded p-2">
+                  Not: Bu özellikler Cloudinary yapılandırması gerektirir. Yapılandırılmamışsa hata mesajı gösterilir.
                 </p>
 
                 {/* Sky Replace */}
