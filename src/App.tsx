@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { Toaster } from 'sonner'
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 import { ChatProvider } from '@/components/chat/ChatProvider'
 import { ChatFloatingButton } from '@/components/chat/ChatFloatingButton'
@@ -155,6 +156,9 @@ function App() {
 
           {/* PWA update prompt - persists across all routes */}
           <ReloadPrompt />
+
+          {/* Global toast notifications */}
+          <Toaster position="top-center" richColors />
         </ChatProvider>
       </AuthProvider>
     </BrowserRouter>
