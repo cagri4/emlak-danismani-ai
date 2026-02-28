@@ -19,7 +19,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
   // Get the best available image URL
   const getImageUrl = () => {
     if (!hasPhoto) return null
-    const photo = property.photos![0]
+    const photo = property.photos!.find(p => p.isCover) || property.photos![0]
 
     // If we already had an error, use original URL
     if (imgError) return photo.url
