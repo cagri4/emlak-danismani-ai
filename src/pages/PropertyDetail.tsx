@@ -237,8 +237,8 @@ export default function PropertyDetail() {
     if (!id || !user || !editingPhoto || !property?.photos) return
 
     try {
-      // Upload cropped blob to same path (overwrite)
-      const photoRef = storageRef(storage, `users/${user.uid}/properties/${id}/photos/${editingPhoto.id}.jpg`)
+      // Upload cropped blob to root-level properties path (matches upload path in usePhotoUpload.ts)
+      const photoRef = storageRef(storage, `properties/${id}/${editingPhoto.id}.jpg`)
       await uploadBytes(photoRef, croppedBlob)
 
       // Get new download URL with cache-buster
