@@ -120,8 +120,17 @@ export function useVoiceCommand(): UseVoiceCommandReturn {
           } else {
             setError(result.error || 'Ses tanıma başarısız');
           }
-        } catch (err) {
-          setError('Ses tanıma hatası');
+        } catch (err: any) {
+          const msg = err?.message || '';
+          if (msg.includes('not-found') || msg.includes('NOT_FOUND') || err?.code === 'functions/not-found') {
+            setError('Ses tanıma servisi bulunamadı. Cloud Functions deploy edilmeli.');
+          } else if (msg.includes('unauthenticated') || err?.code === 'functions/unauthenticated') {
+            setError('Ses tanıma için giriş yapmanız gerekiyor.');
+          } else if (msg.includes('internal') || msg.includes('OPENAI')) {
+            setError('Ses tanıma servisi yapılandırılmamış (OpenAI API key gerekli).');
+          } else {
+            setError('Ses tanıma hatası. Cloud Functions deploy edilmiş mi kontrol edin.');
+          }
         } finally {
           setIsTranscribing(false);
           resolve();

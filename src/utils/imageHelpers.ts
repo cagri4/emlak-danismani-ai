@@ -1,13 +1,18 @@
 import { Area } from 'react-easy-crop';
 
 /**
- * Create an HTMLImageElement from a URL or object URL.
- * Used to load images before processing them on canvas.
- * Note: crossOrigin attribute removed — object URLs are same-origin and don't need it.
+ * Create an HTMLImageElement from a URL.
+ * Sets crossOrigin='anonymous' for remote URLs so the canvas is not tainted.
+ * For object URLs (blob:) or data URLs, crossOrigin is not needed.
  */
 export const createImage = (url: string): Promise<HTMLImageElement> =>
   new Promise((resolve, reject) => {
     const image = new Image();
+    // Set crossOrigin for remote URLs — required for canvas getImageData/toBlob
+    // Firebase Storage bucket must have CORS configured (see cors.json)
+    if (url.startsWith('http')) {
+      image.crossOrigin = 'anonymous';
+    }
     image.addEventListener('load', () => resolve(image));
     image.addEventListener('error', (error) => reject(error));
     image.src = url;
@@ -16,11 +21,9 @@ export const createImage = (url: string): Promise<HTMLImageElement> =>
 /**
  * Extract cropped image from source using Canvas API.
  *
- * Uses fetch + createObjectURL to bypass Firebase Storage CORS restrictions.
- * The crossOrigin='anonymous' approach causes canvas taint with Firebase Storage
- * because Firebase does not serve CORS headers for that auth pattern — canvas.toBlob()
- * silently returns null. Fetching as a blob and creating an object URL avoids taint
- * because the object URL is treated as same-origin.
+ * Loads the image with crossOrigin='anonymous' so canvas operations (getImageData,
+ * toBlob) work without taint errors. This requires the Firebase Storage bucket to
+ * have CORS configured — see cors.json in project root.
  *
  * @param imageSrc - URL of the source image (Firebase Storage URL)
  * @param pixelCrop - Crop area in pixels (from react-easy-crop)
@@ -32,12 +35,7 @@ export const getCroppedImg = async (
   pixelCrop: Area,
   rotation = 0
 ): Promise<Blob> => {
-  // Fetch image as blob and create same-origin object URL to prevent canvas taint
-  const response = await fetch(imageSrc);
-  const blob = await response.blob();
-  const objectUrl = URL.createObjectURL(blob);
-
-  const image = await createImage(objectUrl);
+  const image = await createImage(imageSrc);
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
 
@@ -77,11 +75,10 @@ export const getCroppedImg = async (
     Math.round(0 - safeArea / 2 + image.height * 0.5 - pixelCrop.y)
   );
 
-  // Convert canvas to blob and revoke object URL to avoid memory leaks
+  // Convert canvas to blob
   return new Promise((resolve, reject) => {
     canvas.toBlob(
       (croppedBlob) => {
-        URL.revokeObjectURL(objectUrl);
         if (croppedBlob) {
           resolve(croppedBlob);
         } else {

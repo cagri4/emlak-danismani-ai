@@ -159,10 +159,39 @@ export function AdvancedPhotoEditor({
       return;
     }
 
-    const urlToSave = enhancedUrl || imageUrl;
+    // If sliders changed but no Cloud Function was called yet, call it now
+    if (isDirty && !enhancedUrl) {
+      setIsProcessing(true);
+      setProcessingMessage('Fotoğraf iyileştiriliyor...');
+      try {
+        const result = await enhancePhoto({
+          photoUrl: imageUrl,
+          propertyId,
+          photoIndex,
+          options: { brightness, saturation, sharpen },
+        });
+        if (result.success && result.enhancedUrl) {
+          setEnhancedUrl(result.enhancedUrl);
+          await onSave(result.enhancedUrl);
+          toast.success('Değişiklikler kaydedildi');
+          setIsDirty(false);
+          onClose();
+        } else {
+          toast.error(result.error || 'İyileştirme başarısız oldu');
+        }
+      } catch (error) {
+        console.error('Enhancement error:', error);
+        toast.error('Bir hata oluştu');
+      } finally {
+        setIsProcessing(false);
+        setProcessingMessage('');
+      }
+      return;
+    }
 
+    // If enhancedUrl already exists (from Cloud Function callback), save it directly
     try {
-      await onSave(urlToSave);
+      await onSave(enhancedUrl!);
       toast.success('Değişiklikler kaydedildi');
       setIsDirty(false);
       onClose();
