@@ -75,6 +75,7 @@ export function useChat(): UseChatReturn {
     properties,
     updateProperty,
     deleteProperty,
+    addProperty,
   } = useProperties();
 
   const {
@@ -223,6 +224,38 @@ export function useChat(): UseChatReturn {
           };
 
           addMessage(aiMessage);
+        } else if (action.type === 'add_property' && action.propertyData) {
+          // Execute property add
+          const pd = action.propertyData;
+          const addResult = await addProperty({
+            title: pd.title,
+            type: pd.propertyType as any,
+            listingType: pd.listingType as any,
+            price: pd.price,
+            area: pd.area,
+            rooms: pd.rooms,
+            status: 'aktif' as any,
+            description: '',
+            location: {
+              city: pd.city,
+              district: pd.district,
+              neighborhood: pd.neighborhood || '',
+            },
+            features: pd.features || [],
+          });
+          const statusText = addResult.success
+            ? `\n\n✅ "${pd.title}" mülkü başarıyla eklendi!`
+            : `\n\n❌ Ekleme hatası: ${addResult.error}`;
+
+          const aiMessage: ChatMessage = {
+            id: crypto.randomUUID(),
+            role: 'assistant',
+            content: result.text + statusText,
+            timestamp: new Date(),
+            status: 'sent',
+          };
+
+          addMessage(aiMessage);
         } else if ((action.type === 'delete_property' || action.type === 'delete_customer') && action.needsConfirmation) {
           // Store pending action for confirmation
           setPendingAction({
@@ -280,7 +313,7 @@ export function useChat(): UseChatReturn {
     } finally {
       setIsLoading(false);
     }
-  }, [user, messages, pendingAction, addMessage, properties, customers, updateProperty, deleteProperty, deleteCustomer]);
+  }, [user, messages, pendingAction, addMessage, properties, customers, updateProperty, deleteProperty, deleteCustomer, addProperty]);
 
   const clearMessages = useCallback(() => {
     setMessages([]);

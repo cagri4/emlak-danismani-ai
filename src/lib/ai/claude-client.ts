@@ -285,11 +285,23 @@ function formatPrice(price: number): string {
 export interface SmartChatResult {
   text: string
   action?: {
-    type: 'update_price' | 'update_status' | 'delete_property' | 'delete_customer'
-    id: string
+    type: 'update_price' | 'update_status' | 'delete_property' | 'delete_customer' | 'add_property'
+    id?: string
     value?: any
     title?: string
     needsConfirmation?: boolean
+    propertyData?: {
+      title: string
+      propertyType: string
+      listingType: string
+      price: number
+      area: number
+      rooms: string
+      city: string
+      district: string
+      neighborhood?: string
+      features?: string[]
+    }
   }
 }
 
@@ -346,13 +358,14 @@ ${propertySummary || 'Henüz mülk yok'}
 ${customerSummary || 'Henüz müşteri yok'}
 
 YAPABİLECEKLERİN:
-1. Mülk arama ve listeleme
-2. Müşteri arama ve listeleme
-3. Müşteri-mülk eşleştirme önerileri
-4. Mülk fiyat güncelleme
-5. Durum güncelleme (satıldı, kiralandı, aktif, opsiyonlu)
-6. Mülk veya müşteri silme (onay gerektirir)
-7. Genel emlak danışmanlığı soruları
+1. Mülk ekleme (doğal dilde: "3+1 daire ekle, Kadıköy, 120m², 5M TL")
+2. Mülk arama ve listeleme
+3. Müşteri arama ve listeleme
+4. Müşteri-mülk eşleştirme önerileri
+5. Mülk fiyat güncelleme
+6. Durum güncelleme (satıldı, kiralandı, aktif, opsiyonlu)
+7. Mülk veya müşteri silme (onay gerektirir)
+8. Genel emlak danışmanlığı soruları
 
 KURALLAR:
 - Kısa ve öz cevaplar ver
@@ -365,16 +378,23 @@ KURALLAR:
 KOMUT FORMATLARI (ÇOK ÖNEMLİ):
 Cevabının EN SONUNA uygun komutu ekle:
 
-1. Fiyat güncellemesi:
+1. Yeni mülk ekleme:
+<action>{"type":"add_property","title":"Yalıkavak Villa","propertyType":"villa","listingType":"satılık","price":15000000,"area":250,"rooms":"2+1","city":"Muğla","district":"Bodrum","neighborhood":"Yalıkavak","features":["Deniz Manzarası"]}</action>
+
+propertyType: daire | villa | müstakil | arsa | dükkan | ofis
+listingType: satılık | kiralık
+Kullanıcının mesajından çıkarabildiğin tüm alanları doldur. Eksik alanlar için makul varsayımlar yap.
+
+2. Fiyat güncellemesi:
 <action>{"type":"update_price","id":"MULK_ID","value":25000000}</action>
 
-2. Durum güncellemesi:
+3. Durum güncellemesi:
 <action>{"type":"update_status","id":"MULK_ID","value":"satıldı"}</action>
 
-3. Mülk silme (ONAY İSTEYECEK):
+4. Mülk silme (ONAY İSTEYECEK):
 <action>{"type":"delete_property","id":"MULK_ID","title":"Mülk Adı","needsConfirmation":true}</action>
 
-4. Müşteri silme (ONAY İSTEYECEK):
+5. Müşteri silme (ONAY İSTEYECEK):
 <action>{"type":"delete_customer","id":"MUSTERI_ID","title":"Müşteri Adı","needsConfirmation":true}</action>
 
 DİKKAT:
@@ -408,12 +428,31 @@ DİKKAT:
     if (actionMatch) {
       try {
         const actionData = JSON.parse(actionMatch[1])
-        action = {
-          type: actionData.type,
-          id: actionData.id,
-          value: actionData.value,
-          title: actionData.title,
-          needsConfirmation: actionData.needsConfirmation
+        if (actionData.type === 'add_property') {
+          action = {
+            type: 'add_property',
+            title: actionData.title,
+            propertyData: {
+              title: actionData.title || `${actionData.rooms || ''} ${actionData.propertyType || 'Mülk'}`.trim(),
+              propertyType: actionData.propertyType || 'daire',
+              listingType: actionData.listingType || 'satılık',
+              price: actionData.price || 0,
+              area: actionData.area || 0,
+              rooms: actionData.rooms || '',
+              city: actionData.city || '',
+              district: actionData.district || '',
+              neighborhood: actionData.neighborhood || '',
+              features: actionData.features || [],
+            }
+          }
+        } else {
+          action = {
+            type: actionData.type,
+            id: actionData.id,
+            value: actionData.value,
+            title: actionData.title,
+            needsConfirmation: actionData.needsConfirmation
+          }
         }
         // Remove the action tag from response
         responseText = responseText.replace(/<action>.*?<\/action>/s, '').trim()
