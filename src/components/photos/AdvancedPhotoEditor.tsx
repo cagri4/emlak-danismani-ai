@@ -37,6 +37,7 @@ export function AdvancedPhotoEditor({
   const [processingMessage, setProcessingMessage] = useState('');
   const [enhancedUrl, setEnhancedUrl] = useState<string | null>(null);
   const [showBefore, setShowBefore] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
 
   // Enhancement options state
   const [brightness, setBrightness] = useState(1.1);
@@ -141,14 +142,17 @@ export function AdvancedPhotoEditor({
   };
 
   const handleSave = async () => {
-    if (!enhancedUrl) {
+    if (!enhancedUrl && !isDirty) {
       toast.error('Önce bir işlem uygulayın');
       return;
     }
 
+    const urlToSave = enhancedUrl || imageUrl;
+
     try {
-      await onSave(enhancedUrl);
+      await onSave(urlToSave);
       toast.success('Değişiklikler kaydedildi');
+      setIsDirty(false);
       onClose();
     } catch (error) {
       console.error('Save error:', error);
@@ -259,7 +263,7 @@ export function AdvancedPhotoEditor({
                     max="1.2"
                     step="0.05"
                     value={brightness}
-                    onChange={(e) => setBrightness(parseFloat(e.target.value))}
+                    onChange={(e) => { setBrightness(parseFloat(e.target.value)); setIsDirty(true); }}
                     className="w-full"
                     disabled={isProcessing}
                   />
@@ -276,7 +280,7 @@ export function AdvancedPhotoEditor({
                     max="1.2"
                     step="0.05"
                     value={saturation}
-                    onChange={(e) => setSaturation(parseFloat(e.target.value))}
+                    onChange={(e) => { setSaturation(parseFloat(e.target.value)); setIsDirty(true); }}
                     className="w-full"
                     disabled={isProcessing}
                   />
@@ -288,7 +292,7 @@ export function AdvancedPhotoEditor({
                     type="checkbox"
                     id="sharpen"
                     checked={sharpen}
-                    onChange={(e) => setSharpen(e.target.checked)}
+                    onChange={(e) => { setSharpen(e.target.checked); setIsDirty(true); }}
                     className="h-4 w-4 text-blue-600 rounded"
                     disabled={isProcessing}
                   />
@@ -358,7 +362,7 @@ export function AdvancedPhotoEditor({
             </button>
             <button
               onClick={handleSave}
-              disabled={isProcessing || !enhancedUrl}
+              disabled={isProcessing || (!enhancedUrl && !isDirty)}
               className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isProcessing ? 'İşleniyor...' : 'Kaydet'}
