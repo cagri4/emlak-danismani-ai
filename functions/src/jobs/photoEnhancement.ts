@@ -222,11 +222,10 @@ export const enhancePropertyPhoto = functions.onCall<EnhanceRequest, Promise<Enh
 
       console.log(`Uploaded enhanced photo to: ${enhancedStoragePath}`);
 
-      // Get signed URL for enhanced photo
-      const [enhancedUrl] = await bucket.file(enhancedStoragePath).getSignedUrl({
-        action: 'read',
-        expires: '03-01-2500', // Far future expiry
-      });
+      // Make file public and construct download URL
+      await bucket.file(enhancedStoragePath).makePublic();
+      const bucketName = bucket.name;
+      const enhancedUrl = `https://storage.googleapis.com/${bucketName}/${enhancedStoragePath}`;
 
       console.log(`Enhancement complete: ${enhancedUrl}`);
 
