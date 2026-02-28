@@ -162,6 +162,7 @@ export function AdvancedPhotoEditor({
 
     // If sliders changed but no Cloud Function was called yet, call it now
     if (isDirty && !enhancedUrl) {
+      console.log('Calling enhancePhoto with slider values...');
       setIsProcessing(true);
       setProcessingMessage('Fotoğraf iyileştiriliyor...');
       try {
@@ -171,13 +172,22 @@ export function AdvancedPhotoEditor({
           photoIndex,
           options: { brightness, saturation, sharpen },
         });
+        console.log('enhancePhoto result:', result);
         if (result.success && result.enhancedUrl) {
           setEnhancedUrl(result.enhancedUrl);
-          await onSave(result.enhancedUrl);
+          try {
+            await onSave(result.enhancedUrl);
+            console.log('onSave completed');
+          } catch (saveErr) {
+            console.error('onSave error:', saveErr);
+            toast.error('Kaydetme başarısız oldu');
+            return;
+          }
           toast.success('Değişiklikler kaydedildi');
           setIsDirty(false);
           onClose();
         } else {
+          console.log('Enhancement failed:', result.error);
           toast.error(result.error || 'İyileştirme başarısız oldu');
         }
       } catch (error) {
