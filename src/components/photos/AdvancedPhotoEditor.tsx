@@ -154,6 +154,7 @@ export function AdvancedPhotoEditor({
   };
 
   const handleSave = async () => {
+    console.log('handleSave called:', { enhancedUrl, isDirty, brightness, saturation, sharpen });
     if (!enhancedUrl && !isDirty) {
       toast.error('Önce bir işlem uygulayın');
       return;
