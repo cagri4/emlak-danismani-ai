@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 Phase: 7 of 7 (Email & Advanced Features)
 Plan: 3 of 3 in current phase
 Status: Complete
-Last activity: 2026-02-27 — Completed 01-04: Firestore Composite Indexes (Gap Closure)
+Last activity: 2026-02-28 — Completed 04-08: Voice Command Cross-Browser Fix (Gap Closure)
 
 Progress: [██████████] 100%
 
@@ -36,8 +36,8 @@ Progress: [██████████] 100%
 | 07    | 3     | 35 min | 12 min   |
 
 **Recent Trend:**
-- Last 5 plans: 06-05 (93 min), 07-03 (8 min), 07-01 (14 min), 07-02 (13 min), 01-04 (1 min)
-- Trend: Consistent (Gap closure plan completed efficiently)
+- Last 5 plans: 07-03 (8 min), 07-01 (14 min), 07-02 (13 min), 01-04 (1 min), 04-08 (2 min)
+- Trend: Consistent (Gap closure plans completing efficiently)
 
 *Updated after each plan completion*
 | Phase 01 P04 | 1 | 2 tasks | 1 files |
@@ -72,6 +72,8 @@ Progress: [██████████] 100%
 | Phase 07 P02 | 13 | 3 tasks | 6 files |
 | Phase 01 P04 | 72 | 2 tasks | 1 files |
 | Phase 04 P06 | 1 | 2 tasks | 4 files |
+| Phase 04 P08 | 2 | 2 tasks | 2 files |
+| Phase 04-media-enhancement-voice P07 | 2 | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -206,6 +208,10 @@ Recent decisions affecting current work:
 - [Phase 01-04]: Collection group indexes for subcollection property queries
 - [Phase 04]: fetch + createObjectURL instead of crossOrigin='anonymous' to prevent Firebase Storage CORS canvas taint (04-06)
 - [Phase 04]: Crop save storage path uses root properties/${id}/ matching upload path in usePhotoUpload.ts (04-06)
+- [Phase 04-media-enhancement-voice]: isDirty state enables Save when sliders changed without Cloud Function success in AdvancedPhotoEditor (04-07)
+- [Phase 04-media-enhancement-voice]: setTimeout 0ms yield before Cloud Function call ensures loading overlay renders before blocking async call (04-07)
+- [Phase 04-08]: MIME_TYPES fallback chain: webm;codecs=opus -> webm -> ogg;codecs=opus -> ogg -> mp4 -> browser default (cross-browser)
+- [Phase 04-08]: Error tooltip uses bottom-full mb-2 (above button) when button is at viewport bottom
 
 ### Pending Todos
 
@@ -217,7 +223,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-27
-Stopped at: Completed 01-04: Firestore Composite Indexes (Gap Closure)
-Resume file: .planning/phases/01-foundation-compliance/01-04-SUMMARY.md
-Next action: Gap closure complete. All Phase 01 plans implemented.
+Last session: 2026-02-28
+Stopped at: Completed 04-08: Voice Command Cross-Browser Fix (Gap Closure)
+Resume file: .planning/phases/04-media-enhancement-voice/04-08-SUMMARY.md
+Next action: Gap closure complete. Voice recording MIME type detection and error tooltip fixed.
