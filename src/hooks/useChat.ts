@@ -260,7 +260,7 @@ export function useChat(): UseChatReturn {
           // Store pending action for confirmation
           setPendingAction({
             type: action.type,
-            id: action.id,
+            id: action.id!,
             title: action.title || 'Öğe',
           });
 
