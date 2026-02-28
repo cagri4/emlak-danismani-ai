@@ -23,6 +23,7 @@ import { doc, updateDoc, arrayRemove } from 'firebase/firestore'
 import { deleteObject, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { db, storage } from '@/lib/firebase'
 import { useAuth } from '@/contexts/AuthContext'
+import { toast } from 'sonner'
 
 export default function PropertyDetail() {
   const navigate = useNavigate()
@@ -142,22 +143,30 @@ export default function PropertyDetail() {
   }
 
   const handleSetCover = async (photoId: string) => {
-    if (!id || !user || !property?.photos) return
+    if (!id || !user || !property?.photos) {
+      console.error('handleSetCover early return:', { id, user: !!user, photos: property?.photos?.length })
+      return
+    }
 
     try {
+      console.log('Setting cover photo:', photoId, 'from', property.photos.length, 'photos')
       const updatedPhotos = property.photos.map((photo) => ({
         ...photo,
         isCover: photo.id === photoId,
       }))
 
+      console.log('Updated photos isCover:', updatedPhotos.map(p => ({ id: p.id, isCover: p.isCover })))
+
       const propertyRef = doc(db, `users/${user.uid}/properties`, id)
       await updateDoc(propertyRef, {
         photos: updatedPhotos,
       })
+      console.log('Firestore updated successfully')
       setProperty({ ...property, photos: updatedPhotos })
+      toast.success('Kapak fotoğrafı değiştirildi')
     } catch (err) {
       console.error('Error setting cover photo:', err)
-      alert('Kapak fotoğrafı ayarlanamadı')
+      toast.error('Kapak fotoğrafı ayarlanamadı')
     }
   }
 

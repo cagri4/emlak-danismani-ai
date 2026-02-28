@@ -85,6 +85,7 @@ export function PhotoGrid({
   };
 
   const handleSetCover = (photoId: string) => {
+    console.log('PhotoGrid: star clicked for photo:', photoId);
     onSetCover(photoId);
   };
 
@@ -141,7 +142,7 @@ export function PhotoGrid({
                 <div className="absolute bottom-0 inset-x-0 flex flex-wrap items-center justify-center gap-1 p-2 bg-gradient-to-t from-black/60 to-transparent sm:opacity-0 sm:group-hover:opacity-100 sm:absolute sm:inset-0 sm:bg-black/40 sm:from-transparent transition-opacity duration-200">
                   {/* Star icon to set as cover */}
                   <button
-                    onClick={() => handleSetCover(photo.id)}
+                    onClick={(e) => { e.stopPropagation(); e.preventDefault(); handleSetCover(photo.id); }}
                     className="p-2 bg-white rounded-full hover:bg-gray-100 transition-colors"
                     title="Kapak fotoğrafı yap"
                   >
@@ -155,7 +156,7 @@ export function PhotoGrid({
                   {/* Edit icon to crop photo */}
                   {onEdit && (
                     <button
-                      onClick={() => onEdit(photo)}
+                      onClick={(e) => { e.stopPropagation(); onEdit(photo); }}
                       className="p-2 bg-white rounded-full hover:bg-gray-100 transition-colors"
                       title="Kırp"
                     >
@@ -166,7 +167,7 @@ export function PhotoGrid({
                   {/* Advanced Edit icon */}
                   {onAdvancedEdit && (
                     <button
-                      onClick={() => onAdvancedEdit(photo)}
+                      onClick={(e) => { e.stopPropagation(); onAdvancedEdit(photo); }}
                       className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full hover:from-purple-600 hover:to-pink-600 transition-colors"
                       title="AI Düzenle"
                     >
@@ -186,7 +187,7 @@ export function PhotoGrid({
 
                   {/* Trash icon to delete */}
                   <button
-                    onClick={() => onDelete(photo.id)}
+                    onClick={(e) => { e.stopPropagation(); onDelete(photo.id); }}
                     className="p-2 bg-white rounded-full hover:bg-red-50 transition-colors"
                     title="Sil"
                   >
